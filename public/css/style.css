@@ -7,7 +7,10 @@
 
 html,body {
     height: 100%;
-    color: #fff;
+}
+
+main {
+    margin-top: 50px;
 }
 
 header {
