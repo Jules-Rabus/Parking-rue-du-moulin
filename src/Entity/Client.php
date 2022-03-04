@@ -35,6 +35,10 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'Client', targetEntity: Reservation::class)]
     private $reservations;
 
+    #[ORM\Column(type: 'boolean')]
+    private $isVerified = false;
+
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
@@ -179,6 +183,18 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
                 $reservation->setClient(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): self
+    {
+        $this->isVerified = $isVerified;
 
         return $this;
     }

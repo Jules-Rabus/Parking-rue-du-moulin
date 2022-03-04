@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Entity\Admin;
+use App\Entity\Client;
 use App\Form\RegistrationFormType;
 use App\Security\ClientAuthenthiticatorAuthenticator;
 use App\Security\EmailVerifier;
@@ -29,7 +29,7 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, ClientAuthenthiticatorAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
     {
-        $user = new Admin();
+        $user = new Client();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
@@ -48,7 +48,7 @@ class RegistrationController extends AbstractController
             // generate a signed url and email it to the user
             $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
                 (new TemplatedEmail())
-                    ->from(new Address('reservation@parking-rue-du-moulin.fr', 'Parking-rueÃ-du-moulin'))
+                    ->from(new Address('reservation@parking-rue-du-moulin.fr', 'Parking-rue-du-moulin'))
                     ->to($user->getEmail())
                     ->subject('Please Confirm your Email')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
