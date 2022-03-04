@@ -1,0 +1,34 @@
+
+.menu{
+    background-color:#0F0F0F;
+	font-family: Impact;
+	display: flex;
+	justify-content:space-around;
+	height: fit-content;
+	padding: 1rem;
+	transition: .8s;
+}
+.menu div:hover{
+	transition: .8s;
+	font-size:3rem;
+}
+.menu a{	
+	font-size: 2rem;
+	color: #e6e6e6;
+	text-decoration:none;
+}
+.rien_input{
+	border:none;
+    background-color:#fc0c42;
+	max-width:fit-content;
+	font-size:2rem;
+	height: auto;
+	transition: .8s;
+	color: #e6e6e6;
+	text-decoration:none;
+	cursor:pointer;
+	margin:0;
+	padding:0;
+	box-shadow:inherit;
+	border-radius: inherit;
+}
