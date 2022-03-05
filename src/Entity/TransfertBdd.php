@@ -19,6 +19,10 @@ class TransfertBdd
     #[ORM\Column(type: 'string', nullable: false)]
     private $jsonFilename;
 
+    #[ORM\ManyToOne(targetEntity: Client::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private $relation;
+    
 
     public function getId(): ?int
     {
@@ -45,6 +49,18 @@ class TransfertBdd
     public function setJsonFilename($jsonFilename)
     {
         $this->jsonFilename = $jsonFilename;
+
+        return $this;
+    }
+
+    public function getRelation(): ?Client
+    {
+        return $this->relation;
+    }
+
+    public function setRelation(?Client $relation): self
+    {
+        $this->relation = $relation;
 
         return $this;
     }

@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
-#[Route('/admin', name: 'admin')]
+#[Route('/admin')]
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'app_admin')]
@@ -58,7 +58,7 @@ class AdminController extends AbstractController
             }
 
             $transfertbdd->setDate(new \DateTime());
-            $transfertbdd->setAdminId($this->security->getUser()->getId());
+            $transfertbdd->setRelation($this->getUser());
 
             $entityManager = $doctrine->getManager();
             $entityManager->persist($transfertbdd);
@@ -69,6 +69,7 @@ class AdminController extends AbstractController
 
         return $this->renderForm('admin/transfertbdd.html.twig', [
             'form' => $form,
+            'transfertbdd' => $this->getDoctrine()->getRepository(TransfertBdd::class)->findAll()
         ]);
     }
 }

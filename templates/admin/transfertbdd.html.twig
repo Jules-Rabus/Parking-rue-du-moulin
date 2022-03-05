@@ -10,5 +10,25 @@
         {{ form_row(form.json) }}
         <button type="submit">Ajouter</button>
     {{ form_end(form) }}
+
+    <table>
+        <thead>
+        <tr>
+            <th>Date du transfert :</th>
+            <th>Admin :</th>
+            <th>Fichier :</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for transfert in transfertbdd %}
+            <tr>
+                <td> {{ transfert.date | date }} </td>
+                <td> {{ transfert.relation.nom }} </td>
+                <td> {{ transfert.jsonfilename }} </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
 </main>
 {% endblock %}
