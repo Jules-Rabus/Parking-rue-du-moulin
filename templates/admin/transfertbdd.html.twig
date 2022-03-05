@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Transfert de ka base de donnée{% endblock %}
+
+{% block body %}
+<main>
+    <h1>Transfert de la base de donnée</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.json) }}
+        <button type="submit">Ajouter</button>
+    {{ form_end(form) }}
+</main>
+{% endblock %}
