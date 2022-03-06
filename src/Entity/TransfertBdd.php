@@ -87,17 +87,34 @@ class TransfertBdd
         foreach ($contents as $content) {
 
             $client = new Client();
+            $reservation = new Reservation();
 
             // On prends que les clients qui ont reservé avec leur mail
             if (filter_var($content->contact, FILTER_VALIDATE_EMAIL) && !empty($content->contact)) {
+
                 if(!$entityManager->getRepository(Client::class)->countEmail($content->contact)){
                     $client->setEmail($content->contact);
                     $client->setNom($content->nom);
-                    $client->setPassword($content->nom.$content->contact);
+                    $password = str_replace(' ', '', $content->nom.$content->date);
+                    $client->setPassword($password);
                     $entityManager->persist($client);
                     $entityManager->flush();
                 }
+
+                $client  = $entityManager->getRepository(Client::class)->FindBY(array("email"=>$content->contact));
+                $reservation->setNombrePlace($content->place);
+                $dateArrivee = new \DateTime($content->date);
+                $reservation->setDateArrivee($dateArrivee);
+                $dateDepart = new \DateTime($content->datef);
+                $reservation->setDateDepart($dateDepart);
+                $dateReservation = new \DateTime($content->date_reservation);
+                $reservation->setDate($dateReservation);
+                $reservation->setCodeAcces($content->code);
+                $reservation->setClient(new Client ($client));
+
+                $entityManager->persist($reservation);
             }
+            $entityManager->flush();
 
         }
 

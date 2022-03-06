@@ -18,19 +18,21 @@
     {% endblock %}
     </head>
 <body>
-<header>
-    <p id="burger" class="burger"></p>
-    <h1><a href="{{ path('default') }}">Projet Symfony</a></h1>
-    <nav>
-        <ul>
-            <li><a href="{{ path('default') }}">Accueil</a></li>
-            <li><a href="{{ path('app_login') }}">Connexion</a></li>
-            <li><a href="{{ path('app_register') }}">Inscription</a></li>
-            <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
-        </ul>
-    </nav>
-</header>
-{% block body %}{% endblock %}
+    <header>
+        <p id="burger" class="burger"></p>
+        <h1><a href="{{ path('default') }}">Projet Symfony</a></h1>
+        <nav>
+            <ul>
+                <li><a href="{{ path('default') }}">Accueil</a></li>
+                <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+    {% block body %}{% endblock %}
+    </main>
 </body>
 <footer>
 
