@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ReservationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
@@ -32,9 +34,13 @@ class Reservation
     #[ORM\JoinColumn(nullable: false)]
     private $Client;
 
-    #[ORM\ManyToOne(targetEntity: Date::class, inversedBy: 'Reservations')]
-    #[ORM\JoinColumn(nullable: false)]
-    private $date;
+    #[ORM\ManyToMany(targetEntity: Date::class, mappedBy: 'relation')]
+    private $dates;
+
+    public function __construct()
+    {
+        $this->dates = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -113,15 +119,31 @@ class Reservation
         return $this;
     }
 
-    public function getDate(): ?Date
+    /**
+     * @return Collection<int, Date>
+     */
+    public function getDates(): Collection
     {
-        return $this->date;
+        return $this->dates;
     }
 
-    public function setDate(?Date $date): self
+    public function addDate(Date $date): self
     {
-        $this->date = $date;
+        if (!$this->dates->contains($date)) {
+            $this->dates[] = $date;
+            $date->addRelation($this);
+        }
 
         return $this;
     }
+
+    public function removeDate(Date $date): self
+    {
+        if ($this->dates->removeElement($date)) {
+            $date->removeRelation($this);
+        }
+
+        return $this;
+    }
+
 }

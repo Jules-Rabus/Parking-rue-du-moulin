@@ -15,35 +15,21 @@ class Date
     #[ORM\Column(type: 'integer')]
     private $id;
 
-    #[ORM\Column(type: 'integer')]
-    private $NombrePlace;
-
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: 'date', unique: true)]
     private $Date;
 
-    #[ORM\OneToMany(mappedBy: 'date', targetEntity: Reservation::class)]
-    private $Reservations;
+    #[ORM\ManyToMany(targetEntity: Reservation::class, inversedBy: 'dates')]
+    private $relation;
 
     public function __construct()
     {
         $this->Reservations = new ArrayCollection();
+        $this->relation = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getNombrePlace(): ?int
-    {
-        return $this->NombrePlace;
-    }
-
-    public function setNombrePlace(int $NombrePlace): self
-    {
-        $this->NombrePlace = $NombrePlace;
-
-        return $this;
     }
 
     public function getDate(): ?\DateTimeInterface
@@ -61,30 +47,26 @@ class Date
     /**
      * @return Collection<int, Reservation>
      */
-    public function getReservations(): Collection
+    public function getRelation(): Collection
     {
-        return $this->Reservations;
+        return $this->relation;
     }
 
-    public function addReservation(Reservation $reservation): self
+    public function addRelation(Reservation $relation): self
     {
-        if (!$this->Reservations->contains($reservation)) {
-            $this->Reservations[] = $reservation;
-            $reservation->setDate($this);
+        if (!$this->relation->contains($relation)) {
+            $this->relation[] = $relation;
         }
 
         return $this;
     }
 
-    public function removeReservation(Reservation $reservation): self
+    public function removeRelation(Reservation $relation): self
     {
-        if ($this->Reservations->removeElement($reservation)) {
-            // set the owning side to null (unless already changed)
-            if ($reservation->getDate() === $this) {
-                $reservation->setDate(null);
-            }
-        }
+        $this->relation->removeElement($relation);
 
         return $this;
     }
+
+
 }

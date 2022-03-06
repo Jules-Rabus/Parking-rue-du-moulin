@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Finder\Finder;
 use App\Entity\Client;
 use App\Entity\Reservation;
+use App\Entity\Date;
 
 
 #[ORM\Entity(repositoryClass: TransfertBddRepository::class)]
@@ -101,13 +102,17 @@ class TransfertBdd
                     $entityManager->flush();
                 }
 
-                $client  = $entityManager->getRepository(Client::class)->FindBY(array("email"=>$content->contact));
+                $client  = $entityManager->getRepository(Client::class)->FindBy(array("email"=>$content->contact));
                 $reservation->setNombrePlace($content->place);
                 $dateArrivee = new \DateTime($content->date);
                 $reservation->setDateArrivee($dateArrivee);
                 $dateDepart = new \DateTime($content->datef);
                 $reservation->setDateDepart($dateDepart);
-                $dateReservation = new \DateTime($content->date_reservation);
+                $dateReservation = new Date();
+                $dateReservation->setNombrePlace($content->place);
+                $date = new \DateTime($content->date);
+                $dateReservation->setDate($date);
+                $dateReservation->addReservation($reservation);
                 $reservation->setDate($dateReservation);
                 $reservation->setCodeAcces($content->code);
                 $reservation->setClient(new Client ($client));

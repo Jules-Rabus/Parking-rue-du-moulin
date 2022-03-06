@@ -31,6 +31,7 @@ class DateRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+
     }
 
     /**
@@ -43,6 +44,15 @@ class DateRepository extends ServiceEntityRepository
         if ($flush) {
             $this->_em->flush();
         }
+    }
+
+    public function countDate(string $date): ?Date {
+        return $this->createQueryBuilder('date')
+            ->select('date')
+            ->andWhere('date.date = :date')
+            ->setParameter('date', $date)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     // /**
