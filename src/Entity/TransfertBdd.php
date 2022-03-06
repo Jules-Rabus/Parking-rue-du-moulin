@@ -4,6 +4,10 @@ namespace App\Entity;
 
 use App\Repository\TransfertBddRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Finder\Finder;
+use App\Entity\Client;
+use App\Entity\Reservation;
+
 
 #[ORM\Entity(repositoryClass: TransfertBddRepository::class)]
 class TransfertBdd
@@ -64,4 +68,39 @@ class TransfertBdd
 
         return $this;
     }
+
+    public function TransfertBdd($entityManager)
+    {
+
+        $finder = new Finder();
+        $finder->files()->in('/home/clients/f0d77ebce5440fda32259bef2b47eddc/sites/dev.parking-rue-du-moulin.fr/projetsymfony/public/uploads/json');
+        $finder->files()->name($this->jsonFilename);
+
+        $contents = array();
+
+        foreach ($finder as $file) {
+
+            $file->getContents();
+            $contents += json_decode($file->getContents());
+        }
+
+        foreach ($contents as $content) {
+
+            $client = new Client();
+
+            // On prends que les clients qui ont reservé avec leur mail
+            if (filter_var($content->contact, FILTER_VALIDATE_EMAIL) && !empty($content->contact)) {
+                if(!$entityManager->getRepository(Client::class)->countEmail($content->contact)){
+                    $client->setEmail($content->contact);
+                    $client->setNom($content->nom);
+                    $client->setPassword($content->nom.$content->contact);
+                    $entityManager->persist($client);
+                    $entityManager->flush();
+                }
+            }
+
+        }
+
+    }
+
 }

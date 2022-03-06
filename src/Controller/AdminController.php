@@ -20,7 +20,6 @@ class AdminController extends AbstractController
     public function index(): Response
     {
         return $this->render('admin/index.html.twig', [
-            'controller_name' => 'AdminController',
         ]);
     }
 
@@ -62,9 +61,10 @@ class AdminController extends AbstractController
 
             $entityManager = $doctrine->getManager();
             $entityManager->persist($transfertbdd);
+            $transfertbdd->TransfertBdd($entityManager);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_admin_transfertbdd');
+            //return $this->redirectToRoute('app_admin_transfertbdd');
         }
 
         return $this->renderForm('admin/transfertbdd.html.twig', [
