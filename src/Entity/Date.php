@@ -12,11 +12,9 @@ class Date
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'date')]
     private $id;
 
-    #[ORM\Column(type: 'date', unique: true)]
-    private $Date;
 
     #[ORM\ManyToMany(targetEntity: Reservation::class, inversedBy: 'dates')]
     private $relation;
@@ -30,18 +28,6 @@ class Date
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getDate(): ?\DateTimeInterface
-    {
-        return $this->Date;
-    }
-
-    public function setDate(\DateTimeInterface $Date): self
-    {
-        $this->Date = $Date;
-
-        return $this;
     }
 
     /**
@@ -66,6 +52,32 @@ class Date
         $this->relation->removeElement($relation);
 
         return $this;
+    }
+
+    public function AjoutDates(  \Datetime $dateDebut, \DateTime $dateFin, $entityManager){
+
+        // Nouveau datetime pour eviter la modification de l'ancien objet au cours de la boucle
+        $dateBoucle = new \DateTime($dateDebut->format('Y-m-d'));
+        $duree = $dateDebut->diff($dateFin)->days;
+
+        for($i = 0 ; $i < 5; $i++){
+
+            $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
+
+            $date = $entityManager->getRepository(Date::class)->selectIfExists($dateBoucle);
+
+            if(!$date){
+                $date = new Date();
+                $date->setDate($dateBoucle);
+                dump($date);
+            }
+
+            $entityManager->persist($date);
+
+        }
+        $entityManager->flush();
+        exit();
+
     }
 
 

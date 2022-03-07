@@ -87,11 +87,11 @@ class TransfertBdd
 
         foreach ($contents as $content) {
 
-            $client = new Client();
-            $reservation = new Reservation();
-
             // On prends que les clients qui ont reservé avec leur mail
             if (filter_var($content->contact, FILTER_VALIDATE_EMAIL) && !empty($content->contact)) {
+
+                $client = new Client();
+                $reservation = new Reservation();
 
                 if(!$entityManager->getRepository(Client::class)->countEmail($content->contact)){
                     $client->setEmail($content->contact);
@@ -101,25 +101,29 @@ class TransfertBdd
                     $entityManager->persist($client);
                     $entityManager->flush();
                 }
+                else{
+                    $client = $entityManager->getRepository(Client::class)->FindOneBy(array("email"=>$content->contact));
+                }
 
-                $client  = $entityManager->getRepository(Client::class)->FindBy(array("email"=>$content->contact));
                 $reservation->setNombrePlace($content->place);
+
                 $dateArrivee = new \DateTime($content->date);
                 $reservation->setDateArrivee($dateArrivee);
                 $dateDepart = new \DateTime($content->datef);
                 $reservation->setDateDepart($dateDepart);
-                $dateReservation = new Date();
-                $dateReservation->setNombrePlace($content->place);
-                $date = new \DateTime($content->date);
-                $dateReservation->setDate($date);
-                $dateReservation->addReservation($reservation);
-                $reservation->setDate($dateReservation);
+                $reservation->AjoutDates($entityManager);
+                $dateReservation = new \DateTime($content->date_reservation);
+                $reservation->setDateReservation($dateReservation);
+
                 $reservation->setCodeAcces($content->code);
-                $reservation->setClient(new Client ($client));
+                $reservation->setClient($client);
 
                 $entityManager->persist($reservation);
+                //$entityManager->persist($client);
+
+                $entityManager->flush();
+                exit();
             }
-            $entityManager->flush();
 
         }
 

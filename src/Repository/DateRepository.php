@@ -46,14 +46,14 @@ class DateRepository extends ServiceEntityRepository
         }
     }
 
-    public function countDate(string $date): ?Date {
+    public function selectIfExists( \DateTime $date): ?Date {
         return $this->createQueryBuilder('date')
-            ->select('date')
-            ->andWhere('date.date = :date')
+            ->andWhere('date = :date')
             ->setParameter('date', $date)
             ->getQuery()
             ->getOneOrNullResult();
     }
+    
 
     // /**
     //  * @return Date[] Returns an array of Date objects

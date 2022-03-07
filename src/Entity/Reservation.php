@@ -6,6 +6,7 @@ use App\Repository\ReservationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Date;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
 class Reservation
@@ -144,6 +145,21 @@ class Reservation
         }
 
         return $this;
+    }
+
+    public function AjoutDates($entityManager){
+
+        $date = new Date();
+        $date->AjoutDates($this->getDateArrivee(),$this->getDateDepart(), $entityManager);
+        $dateBoucle = new \DateTime($this->getDateArrivee()->format('Y-m-d'));
+        $duree = $dateBoucle->diff($this->getDateDepart())->days;
+
+        for($i = 0 ; $i < $duree; $i++){
+
+           $date = $entityManager->getRepository(Date::class)->FindOneBy(array("date"=>$dateBoucle));
+           $this->addDate($date);
+        }
+
     }
 
 }
