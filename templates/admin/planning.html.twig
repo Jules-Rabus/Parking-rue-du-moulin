@@ -1,0 +1,32 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block title %}Planning{% endblock %}
+
+{% block body %}
+
+    <table>
+        <thead>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Aujourd'hui</td>
+                <td>xxxx€</td>
+            </tr>
+
+            {% for key ,date in dates %}
+                <tr>
+                    <td>{{ key | format_datetime(locale='fr',pattern="dd MMMM YYYY")   }}</td>
+                    <td>Arrivee : {{ date.Arrivee }}</td>
+                    <td>Depart :{{ date.Depart }}</td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

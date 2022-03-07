@@ -96,8 +96,11 @@ class TransfertBdd
                 if(!$entityManager->getRepository(Client::class)->countEmail($content->contact)){
                     $client->setEmail($content->contact);
                     $client->setNom($content->nom);
+
+                    //Le client devra faire mdp oublié pour avoir son mdp
                     $password = str_replace(' ', '', $content->nom.$content->date);
                     $client->setPassword($password);
+
                     $entityManager->persist($client);
                     $entityManager->flush();
                 }

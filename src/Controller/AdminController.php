@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\TransfertBdd;
+use App\Entity\Reservation;
 use App\Form\TransfertBddType;
+use Cassandra\Date;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -23,8 +25,34 @@ class AdminController extends AbstractController
         ]);
     }
 
+    #[Route('/planning', name: 'app_admin_planning')]
+    public function planning(ManagerRegistry $doctrine): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $dateBoucle = new \DateTime();
+        $dateBoucle->sub(new \DateInterval("P2D"));
+        $dates = array();
+
+        for($i = 0 ; $i < 367 ; $i++){
+            $dates[$dateBoucle->format('Y-m-d')] = $entityManager->getRepository(Reservation::class)->CountChangement($dateBoucle);
+            $dateBoucle->add(new \DateInterval("P1D"));
+        }
+
+        return $this->render('admin/planning.html.twig', ['dates'=>$dates
+        ]);
+    }
+
+    #[Route('/planning_jour', name: 'app_admin_planning_jour')]
+    public function planningJour(ManagerRegistry $doctrine): Response
+    {
+
+        //$entityManager->getRepository(Reservation::class)->FindBy(array("DateArrivee"=>$dateBoucle));
+        return $this->render('admin/planningjour.html.twig', [
+        ]);
+    }
+
     #[Route('/transfertbdd', name: 'app_admin_transfertbdd')]
-    public function transfert_bdd(Request $request, SluggerInterface $slugger,ManagerRegistry $doctrine): Response
+    public function transfertBdd(Request $request, SluggerInterface $slugger,ManagerRegistry $doctrine): Response
     {
         $transfertbdd = new TransfertBdd();
         $form = $this->createForm(TransfertBddType::class, $transfertbdd);

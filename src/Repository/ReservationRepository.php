@@ -45,6 +45,15 @@ class ReservationRepository extends ServiceEntityRepository
         }
     }
 
+    public function CountChangement( \DateTime $date): ?Array {
+        return $this->createQueryBuilder('reservation')
+            ->select('COUNT(reservation.DateArrivee) AS Arrivee, COUNT(reservation.DateDepart) AS Depart')
+            ->andWhere('reservation.DateArrivee = :date and reservation.DateDepart = :date')
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
     // /**
     //  * @return Reservation[] Returns an array of Reservation objects
     //  */
