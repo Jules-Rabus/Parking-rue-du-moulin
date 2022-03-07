@@ -47,9 +47,10 @@ class DateRepository extends ServiceEntityRepository
     }
 
     public function selectIfExists( \DateTime $date): ?Date {
-        return $this->createQueryBuilder('date')
-            ->andWhere('date = :date')
-            ->setParameter('date', $date)
+        return $this->createQueryBuilder('d')
+            ->select('d')
+            ->andWhere('d.Date = :date')
+            ->setParameter('date', $date->format('Y-m-d'))
             ->getQuery()
             ->getOneOrNullResult();
     }

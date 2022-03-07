@@ -119,10 +119,8 @@ class TransfertBdd
                 $reservation->setClient($client);
 
                 $entityManager->persist($reservation);
-                //$entityManager->persist($client);
 
                 $entityManager->flush();
-                exit();
             }
 
         }

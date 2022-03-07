@@ -156,7 +156,7 @@ class Reservation
 
         for($i = 0 ; $i < $duree; $i++){
 
-           $date = $entityManager->getRepository(Date::class)->FindOneBy(array("date"=>$dateBoucle));
+           $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
            $this->addDate($date);
         }
 
