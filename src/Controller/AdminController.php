@@ -34,7 +34,8 @@ class AdminController extends AbstractController
         $dates = array();
 
         for($i = 0 ; $i < 367 ; $i++){
-            $dates[$dateBoucle->format('Y-m-d')] = $entityManager->getRepository(Reservation::class)->CountChangement($dateBoucle);
+            $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $entityManager->getRepository(Reservation::class)->CountDepart($dateBoucle);
+            $dates[$dateBoucle->format('Y-m-d')]['Arrivee'] = $entityManager->getRepository(Reservation::class)->CountArrivee($dateBoucle);
             $dateBoucle->add(new \DateInterval("P1D"));
         }
 
