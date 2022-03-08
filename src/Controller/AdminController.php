@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Entity\TransfertBdd;
 use App\Entity\Reservation;
+use App\Entity\Date;
 use App\Form\TransfertBddType;
-use Cassandra\Date;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,11 +43,14 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/planning_jour', name: 'app_admin_planning_jour')]
-    public function planningJour(ManagerRegistry $doctrine): Response
+    #[Route('/planning_jour',requirements:['date'=> '\d*{2}-\d*{2}-\d*{4}'], name: 'app_admin_planning_jour')]
+    public function planningJour(ManagerRegistry $doctrine,string $date = '2020-07-27'): Response
     {
+        $entityManager = $doctrine->getManager();
+        $reservations = $entityManager->getRepository(Reservation::class)->FindOneBy(array("DateArrivee"=>new \DateTime($date)));
+        dump($reservations->getDates());
+        exit();
 
-        //$entityManager->getRepository(Reservation::class)->FindBy(array("DateArrivee"=>$dateBoucle));
         return $this->render('admin/planningjour.html.twig', [
         ]);
     }

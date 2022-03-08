@@ -20,7 +20,7 @@
 
             {% for key ,date in dates %}
                 <tr>
-                    <td>{{ key | format_datetime(locale='fr',pattern="EEEE : dd-M-Y") | capitalize  }}</td>
+                    <td>{{ key | format_datetime(locale='fr',pattern="EEEE : dd-MM-Y") | capitalize  }}</td>
                     <td>Arrivee : {{ date.Arrivee }}</td>
                     <td>Depart :{{ date.Depart }}</td>
                 </tr>

@@ -21,7 +21,7 @@
         <tbody>
         {% for transfert in transfertbdd %}
             <tr>
-                <td> {{ transfert.date | format_datetime(locale='fr',pattern="dd M Y") }} </td>
+                <td> {{ transfert.date | format_datetime(locale='fr',pattern="dd MM Y") }} </td>
                 <td> {{ transfert.relation.nom }} </td>
                 <td> {{ transfert.jsonfilename }} </td>
             </tr>
