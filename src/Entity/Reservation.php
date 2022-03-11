@@ -158,6 +158,8 @@ class Reservation
 
            $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
            $this->addDate($date);
+
+           $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
         }
 
     }

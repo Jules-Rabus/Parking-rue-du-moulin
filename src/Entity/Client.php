@@ -30,9 +30,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255)]
     private $Nom;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $Telephone;
-
     #[ORM\OneToMany(mappedBy: 'Client', targetEntity: Reservation::class)]
     private $reservations;
 
@@ -146,18 +143,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getTelephone(): ?string
-    {
-        return $this->Telephone;
-    }
-
-    public function setTelephone(?string $Telephone): self
-    {
-        $this->Telephone = $Telephone;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Reservation>
      */
@@ -204,6 +189,5 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return "Client : " . $this->getNom();
     }
-
-
+    
 }
