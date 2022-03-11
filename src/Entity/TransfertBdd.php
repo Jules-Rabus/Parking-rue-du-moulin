@@ -87,45 +87,48 @@ class TransfertBdd
 
         foreach ($contents as $content) {
 
-            // On prends que les clients qui ont reservé avec leur mail
+            $client = new Client();
+            $reservation = new Reservation();
+
+            //Traitement pour les réservations faites par mail ou téléphone
+
             if (filter_var($content->contact, FILTER_VALIDATE_EMAIL) && !empty($content->contact)) {
 
-                $client = new Client();
-                $reservation = new Reservation();
-
-                if(!$entityManager->getRepository(Client::class)->countEmail($content->contact)){
+                if (!$entityManager->getRepository(Client::class)->countEmail($content->contact)) {
                     $client->setEmail($content->contact);
                     $client->setNom($content->nom);
 
                     //Le client devra faire mdp oublié pour avoir son mdp
-                    $password = str_replace(' ', '', $content->nom.$content->date);
+                    $password = str_replace(' ', '', $content->nom . $content->date);
                     $client->setPassword($password);
 
                     $entityManager->persist($client);
                     $entityManager->flush();
+                } else {
+                    $client = $entityManager->getRepository(Client::class)->FindOneBy(array("email" => $content->contact));
                 }
-                else{
-                    $client = $entityManager->getRepository(Client::class)->FindOneBy(array("email"=>$content->contact));
-                }
 
-                $reservation->setNombrePlace($content->place);
-
-                $dateArrivee = new \DateTime($content->date);
-                $reservation->setDateArrivee($dateArrivee);
-                $dateDepart = new \DateTime($content->datef);
-                $reservation->setDateDepart($dateDepart);
-                $reservation->AjoutDates($entityManager);
-                $dateReservation = new \DateTime($content->date_reservation);
-                $reservation->setDateReservation($dateReservation);
-
-                $reservation->setCodeAcces($content->code);
                 $reservation->setClient($client);
-
-                $entityManager->persist($reservation);
-
-                $entityManager->flush();
+            }
+            else{
+                $reservation->setTelephone($content->contact);
             }
 
+            $reservation->setNombrePlace($content->place);
+
+            //Traitement des Dates
+            $dateArrivee = new \DateTime($content->date);
+            $reservation->setDateArrivee($dateArrivee);
+            $dateDepart = new \DateTime($content->datef);
+            $reservation->setDateDepart($dateDepart);
+            $reservation->AjoutDates($entityManager);
+            $dateReservation = new \DateTime($content->date_reservation);
+            $reservation->setDateReservation($dateReservation);
+
+            $reservation->setCodeAcces($content->code);
+
+            $entityManager->persist($reservation);
+            $entityManager->flush();
         }
 
     }

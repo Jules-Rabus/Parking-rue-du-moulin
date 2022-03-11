@@ -32,11 +32,14 @@ class Reservation
     private $CodeAcces;
 
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'reservations')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private $Client;
 
     #[ORM\ManyToMany(targetEntity: Date::class, mappedBy: 'relation')]
     private $dates;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $Telephone;
 
     public function __construct()
     {
@@ -162,6 +165,18 @@ class Reservation
            $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
         }
 
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->Telephone;
+    }
+
+    public function setTelephone(?string $Telephone): self
+    {
+        $this->Telephone = $Telephone;
+
+        return $this;
     }
 
 }

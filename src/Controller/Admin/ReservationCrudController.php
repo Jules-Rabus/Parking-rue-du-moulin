@@ -9,6 +9,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\CollectionField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ReservationCrudController extends AbstractCrudController
@@ -27,7 +28,8 @@ class ReservationCrudController extends AbstractCrudController
             DateField::new('DateDepart','Date de départ')->setRequired(true),
             IntegerField::new('NombrePlace','Nombre de Place')->setRequired(true),
             AssociationField::new('Client'),
-            CollectionField::new('Dates'),
+            TelephoneField::new('Telephone')->setRequired(false),
+            CollectionField::new('Dates')->hideOnForm(),
             DateField::new('DateReservation','Date de réservation')->hideOnForm(),
             IntegerField::new('CodeAcces',' Code d\'accès')->hideOnForm()
         ];
