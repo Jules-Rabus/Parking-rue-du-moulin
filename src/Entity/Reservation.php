@@ -155,7 +155,7 @@ class Reservation
         $date = new Date();
         $date->AjoutDates($this->getDateArrivee(),$this->getDateDepart(), $entityManager);
         $dateBoucle = new \DateTime($this->getDateArrivee()->format('Y-m-d'));
-        $duree = $dateBoucle->diff($this->getDateDepart())->days;
+        $duree = $dateBoucle->diff($this->getDateDepart())->days+1;
 
         for($i = 0 ; $i < $duree; $i++){
 

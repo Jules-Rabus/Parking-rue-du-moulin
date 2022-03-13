@@ -1,6 +1,121 @@
 {% extends 'baseadmin.html.twig' %}
 
-{% block title %}Planning du jour{% endblock %}
+{% block title %}{{ date | format_datetime(locale='fr',pattern="dd-MM-Y") }} : Planning{% endblock %}
 
 {% block body %}
+
+    <table>
+        <tbody>
+            <tr>
+                <td><a href='{{ path('app_admin_planning_jour', {'date' : date | date_modify("-1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("-1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                <td>
+                    {{ form_start(form) }}
+                    <button type="submit">Chercher</button>
+                    {{ form_end(form) }}
+                </td>
+                <td><a href='{{ path('app_admin_planning_jour', {'date' : date | date_modify("+1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("+1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>{{ date | format_datetime(locale='fr',pattern="EEEE : dd-MM-Y") | capitalize }} : {{ nombrePlaceDisponibles }}</h2>
+
+    {% if arrivees == null and departs == null %}
+
+        <h3>Il n'a aucun mouvement ce jour</h3>
+
+    {% endif %}
+
+    {% if arrivees %}
+
+        <h3>Arrivée :</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Départ</th>
+                    <th>Contact</th>
+                    <th>Place</th>
+                    <th>Code</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+
+
+
+            {% for arrivee in arrivees %}
+                <tr>
+                    {% if arrivee.Client %}
+                        <td>{{ arrivee.Client.Nom }}</td>
+                        <td>{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        <td>{{ arrivee.Client.Email }}</td>
+                        <td>{{ arrivee.NombrePlace }}</td>
+                        <td>{{ arrivee.CodeAcces }}</td>
+                        <td>Action</td>
+                    {% else %}
+                        <td></td>
+                        <td>{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        <td>{{ arrivee.Telephone }}</td>
+                        <td>{{ arrivee.NombrePlace }}</td>
+                        <td>{{ arrivee.CodeAcces }}</td>
+                        <td>Action</td>
+
+
+                    {% endif %}
+
+                </tr>
+
+            {% endfor %}
+
+        {% endif %}
+
+        </tbody>
+    </table>
+
+    {% if departs %}
+
+        <h3>Départ :</h3>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Départ</th>
+                <th>Contact</th>
+                <th>Place</th>
+                <th>Code</th>
+                <th>Action</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for depart in departs %}
+                <tr>
+                    {% if depart.Client %}
+                        <td>{{ depart.Client.Nom }}</td>
+                        <td>{{ depart.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        <td>{{ depart.Client.Email }}</td>
+                        <td>{{ depart.NombrePlace }}</td>
+                        <td>{{ depart.CodeAcces }}</td>
+                        <td>Action</td>
+                    {% else %}
+                        <td></td>
+                        <td>{{ depart.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        <td>{{ depart.Telephone }}</td>
+                        <td>{{ depart.NombrePlace }}</td>
+                        <td>{{ depart.CodeAcces }}</td>
+                        <td>Action</td>
+
+                    {% endif %}
+
+                </tr>
+
+            {% endfor %}
+
+            </tbody>
+        </table>
+        {% endif %}
+
 {% endblock %}

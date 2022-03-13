@@ -72,7 +72,7 @@ class Date
 
         // Nouveau datetime pour eviter la modification de l'ancien objet au cours de la boucle
         $dateBoucle = new \DateTime($dateDebut->format('Y-m-d'));
-        $duree = $dateDebut->diff($dateFin)->days;
+        $duree = $dateDebut->diff($dateFin)->days+1;
 
         for($i = 0 ; $i < $duree; $i++){
 
@@ -89,6 +89,19 @@ class Date
 
         }
 
+    }
+
+    public function NombrePlaceDisponibles($entityManager) : int{
+
+        $reservations = $this->getRelation()->getValues();
+
+        $nombrePlace = 40;
+
+        foreach ($reservations as $reservation){
+            $nombrePlace -= $reservation->getNombrePlace();
+        }
+
+        return $nombrePlace;
     }
 
 

@@ -6,7 +6,9 @@ use App\Entity\TransfertBdd;
 use App\Entity\Reservation;
 use App\Entity\Date;
 use App\Form\TransfertBddType;
+use App\Form\PlanningJourType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
@@ -43,15 +45,28 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/planning_jour',requirements:['date'=> '\d*{2}-\d*{2}-\d*{4}'], name: 'app_admin_planning_jour')]
-    public function planningJour(ManagerRegistry $doctrine,string $date = '2020-07-27'): Response
+    /**
+     * @Route("/planning_jour/{date}", name="app_admin_planning_jour")
+     * @ParamConverter("date", options={"format": "Y-m-d"})
+     */
+    public function planningJour(Request $request,ManagerRegistry $doctrine,\DateTime $date): Response
     {
-        $entityManager = $doctrine->getManager();
-        $reservations = $entityManager->getRepository(Reservation::class)->FindOneBy(array("DateArrivee"=>new \DateTime($date)));
-        dump($reservations->getDates());
-        exit();
+        $form = $this->createForm(PlanningJourType::class,NULL,['date'=>$date]);
+        $form->handleRequest($request);
 
-        return $this->render('admin/planningjour.html.twig', [
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            return $this->redirectToRoute('app_admin_planning_jour',['date'=>$form->getData()['date']->format('Y-m-d')]);
+        }
+
+        $entityManager = $doctrine->getManager();
+        $arrivees = $entityManager->getRepository(Reservation::class)->FindBy(array("DateArrivee"=>$date));
+        $departs = $entityManager->getRepository(Reservation::class)->FindBy(array("DateDepart"=>$date));
+
+        $nombrePlaceDisponibles = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$date));
+        $nombrePlaceDisponibles = $nombrePlaceDisponibles->NombrePlaceDisponibles($entityManager);
+
+        return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'arrivees'=>$arrivees,'departs'=>$departs, "nombrePlaceDisponibles"=>$nombrePlaceDisponibles
         ]);
     }
 
@@ -98,6 +113,7 @@ class AdminController extends AbstractController
 
             //return $this->redirectToRoute('app_admin_transfertbdd');
         }
+
 
         return $this->renderForm('admin/transfertbdd.html.twig', [
             'form' => $form,

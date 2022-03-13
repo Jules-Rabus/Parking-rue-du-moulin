@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Date;
+use App\Entity\Reservation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -53,6 +54,17 @@ class DateRepository extends ServiceEntityRepository
             ->setParameter('date', $date->format('Y-m-d'))
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function selectReservation( \DateTime $date) : ?array {
+        return $this->createQueryBuilder('date')
+            ->select('reservation')
+            ->join('date.id','reservation')
+            ->andWhere('date.Date = :date')
+            ->setParameter('date', $date->format('Y-m-d'))
+            ->getQuery()
+            ->getResult();
+
     }
     
 
