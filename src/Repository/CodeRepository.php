@@ -45,6 +45,14 @@ class CodeRepository extends ServiceEntityRepository
         }
     }
 
+    public function countCode(string $code): int {
+        return $this->createQueryBuilder('code')
+            ->select('COUNT(code.id)')
+            ->andWhere('code.Code = :code')
+            ->setParameter('code', $code)
+            ->getQuery()->getSingleScalarResult();
+    }
+
     // /**
     //  * @return Code[] Returns an array of Code objects
     //  */

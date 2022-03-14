@@ -18,10 +18,10 @@ class Code
     #[ORM\Column(type: 'integer')]
     private $Code;
 
-    #[ORM\Column(type: 'date')]
-    private $DateDÃebut;
+    #[ORM\Column(type: 'date', nullable: true)]
+    private $DateDebut;
 
-    #[ORM\Column(type: 'date')]
+    #[ORM\Column(type: 'date', nullable: true)]
     private $DateFin;
 
     #[ORM\OneToMany(mappedBy: 'CodeAcces', targetEntity: Reservation::class)]
@@ -49,14 +49,14 @@ class Code
         return $this;
     }
 
-    public function getDateDÃebut(): ?\DateTimeInterface
+    public function getDateDebut(): ?\DateTimeInterface
     {
-        return $this->DateDÃebut;
+        return $this->DateDebut;
     }
 
-    public function setDateDÃebut(\DateTimeInterface $DateDÃebut): self
+    public function setDateDebut(\DateTimeInterface $DateDebut): self
     {
-        $this->DateDÃebut = $DateDÃebut;
+        $this->DateDebut = $DateDebut;
 
         return $this;
     }

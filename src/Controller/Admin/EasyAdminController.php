@@ -11,6 +11,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Router\AdminUrlGenerator;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use App\Entity\Reservation;
 use App\Entity\Date;
+use App\Entity\Code;
 
 class EasyAdminController extends AbstractDashboardController
 {
@@ -51,6 +52,11 @@ class EasyAdminController extends AbstractDashboardController
         yield MenuItem::Section('Date');
         yield MenuItem::SubMenu('Actions','fas fa-bars')->setSubItems([
             MenuItem::linkToCrud('Afficher Date', 'fas fa-eye', Date::class)
+        ]);
+
+        yield MenuItem::Section('Code');
+        yield MenuItem::SubMenu('Actions','fas fa-bars')->setSubItems([
+            MenuItem::linkToCrud('Afficher Code', 'fas fa-eye', Code::class)
         ]);
         //yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }

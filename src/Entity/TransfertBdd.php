@@ -8,6 +8,7 @@ use Symfony\Component\Finder\Finder;
 use App\Entity\Client;
 use App\Entity\Reservation;
 use App\Entity\Date;
+use App\Entity\Code;
 
 
 #[ORM\Entity(repositoryClass: TransfertBddRepository::class)]
@@ -114,6 +115,18 @@ class TransfertBdd
                 $reservation->setTelephone($content->contact);
             }
 
+            // Traitement pour les codes
+
+            if( !$entityManager->getRepository(Code::class)->countCode($content->code)){
+                $code = New Code();
+                $code->setCode($content->code);
+                $entityManager->persist($code);
+            }
+            else{
+                $code = $entityManager->getRepository(Code::class)->FindOneBy(array("Code" => $content->code));
+            }
+            $reservation->setCodeAcces($code);
+
             $reservation->setNombrePlace($content->place);
 
             //Traitement des Dates
@@ -124,8 +137,6 @@ class TransfertBdd
             $reservation->AjoutDates($entityManager);
             $dateReservation = new \DateTime($content->date_reservation);
             $reservation->setDateReservation($dateReservation);
-
-            $reservation->setCodeAcces($content->code);
 
             $entityManager->persist($reservation);
             $entityManager->flush();

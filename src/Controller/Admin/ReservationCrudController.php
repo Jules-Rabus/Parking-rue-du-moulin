@@ -29,9 +29,9 @@ class ReservationCrudController extends AbstractCrudController
             IntegerField::new('NombrePlace','Nombre de Place')->setRequired(true),
             AssociationField::new('Client'),
             TelephoneField::new('Telephone')->setRequired(false),
+            AssociationField::new('CodeAcces',' Code d\'accès')->hideOnForm(),
             CollectionField::new('Dates')->hideOnForm(),
             DateField::new('DateReservation','Date de réservation')->hideOnForm(),
-            IntegerField::new('CodeAcces',' Code d\'accès')->hideOnForm()
         ];
     }
 
