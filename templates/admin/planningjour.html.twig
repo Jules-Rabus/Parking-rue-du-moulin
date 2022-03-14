@@ -49,17 +49,17 @@
                 <tr>
                     {% if arrivee.Client %}
                         <td>{{ arrivee.Client.Nom }}</td>
-                        <td>{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : arrivee.DateDepart  | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                         <td>{{ arrivee.Client.Email }}</td>
                         <td>{{ arrivee.NombrePlace }}</td>
-                        <td>{{ arrivee.CodeAcces }}</td>
+                        <td>{{ arrivee.CodeAcces.Code }}</td>
                         <td>Action</td>
                     {% else %}
                         <td></td>
-                        <td>{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : arrivee.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                         <td>{{ arrivee.Telephone }}</td>
                         <td>{{ arrivee.NombrePlace }}</td>
-                        <td>{{ arrivee.CodeAcces }}</td>
+                        <td>{{ arrivee.CodeAcces.Code }}</td>
                         <td>Action</td>
 
 
@@ -82,7 +82,7 @@
             <thead>
             <tr>
                 <th>Nom</th>
-                <th>Départ</th>
+                <th>Arrivée</th>
                 <th>Contact</th>
                 <th>Place</th>
                 <th>Code</th>
@@ -95,17 +95,17 @@
                 <tr>
                     {% if depart.Client %}
                         <td>{{ depart.Client.Nom }}</td>
-                        <td>{{ depart.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : depart.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ depart.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                         <td>{{ depart.Client.Email }}</td>
                         <td>{{ depart.NombrePlace }}</td>
-                        <td>{{ depart.CodeAcces }}</td>
+                        <td>{{ depart.CodeAcces.Code }}</td>
                         <td>Action</td>
                     {% else %}
                         <td></td>
-                        <td>{{ depart.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : depart.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ depart.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                         <td>{{ depart.Telephone }}</td>
                         <td>{{ depart.NombrePlace }}</td>
-                        <td>{{ depart.CodeAcces }}</td>
+                        <td>{{ depart.CodeAcces.Code }}</td>
                         <td>Action</td>
 
                     {% endif %}
@@ -117,5 +117,48 @@
             </tbody>
         </table>
         {% endif %}
+
+
+    {% if voitures %}
+
+        <h3>Voiture présente :</h3>
+
+        <table>
+            <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Départ</th>
+                <th>Arrivée</th>
+                <th>Contact</th>
+                <th>Place</th>
+                <th>Code</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for voiture in voitures %}
+                <tr>
+                    {% if voiture.Client %}
+                        <td>{{ voiture.Client.Nom }}</td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : voiture.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ voiture.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : voiture.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ voiture.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                        <td>{{ voiture.Client.Email }}</td>
+                        <td>{{ voiture.NombrePlace }}</td>
+                        <td>{{ voiture.CodeAcces.Code }}</td>
+                    {% else %}
+                        <td></td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : voiture.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ voiture.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : voiture.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ voiture.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                        <td>{{ voiture.Telephone }}</td>
+                        <td>{{ voiture.NombrePlace }}</td>
+                        <td>{{ voiture.CodeAcces.Code }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+
+            {% endif %}
+
+            </tbody>
+        </table>
 
 {% endblock %}

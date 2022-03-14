@@ -58,6 +58,5 @@ class EasyAdminController extends AbstractDashboardController
         yield MenuItem::SubMenu('Actions','fas fa-bars')->setSubItems([
             MenuItem::linkToCrud('Afficher Code', 'fas fa-eye', Code::class)
         ]);
-        //yield MenuItem::linkToCrud('The Label', 'fas fa-list', EntityClass::class);
     }
 }

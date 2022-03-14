@@ -64,11 +64,12 @@ class AdminController extends AbstractController
         $entityManager = $doctrine->getManager();
         $arrivees = $entityManager->getRepository(Reservation::class)->FindBy(array("DateArrivee"=>$date));
         $departs = $entityManager->getRepository(Reservation::class)->FindBy(array("DateDepart"=>$date));
+        $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($date);
+        $voitures = $dateEntite->getRelation()->getValues();
+        $nombrePlaceDisponibles = $dateEntite->NombrePlaceDisponibles($entityManager);
 
-        $nombrePlaceDisponibles = $entityManager->getRepository(Date::class)->SelectorCreate($date);
-        $nombrePlaceDisponibles = $nombrePlaceDisponibles->NombrePlaceDisponibles($entityManager);
-
-        return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'arrivees'=>$arrivees,'departs'=>$departs, "nombrePlaceDisponibles"=>$nombrePlaceDisponibles
+        return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'arrivees'=>$arrivees,'departs'=>$departs,
+            "nombrePlaceDisponibles"=>$nombrePlaceDisponibles,'voitures'=>$voitures
         ]);
     }
 
