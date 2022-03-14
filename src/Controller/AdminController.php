@@ -6,6 +6,7 @@ use App\Entity\TransfertBdd;
 use App\Entity\Reservation;
 use App\Entity\Date;
 use App\Entity\Code;
+use App\Entity\Message;
 use App\Form\TransfertBddType;
 use App\Form\PlanningJourType;
 use App\Form\ReservationType;
@@ -30,6 +31,9 @@ class AdminController extends AbstractController
         $reservation = new Reservation();
         $form = $this->createForm(ReservationType::class,$reservation);
         $form->handleRequest($request);
+        $formError = null;
+        $formPrix = null;
+
 
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -39,8 +43,6 @@ class AdminController extends AbstractController
             $reservation->AjoutDates($entityManager);
             $reservation->setCodeAcces($code);
             $formPrix = $reservation->Prix();
-
-            $formError = null;
 
             if($reservation->VerificationDisponibilites($entityManager)){
                 if($reservation->getDateDepart() >= $reservation->getDateArrivee()){
@@ -54,12 +56,9 @@ class AdminController extends AbstractController
             else{
                 $formError = "Il n'y a pas de place pour ces dates";
             }
-
-            return $this->renderForm('admin/index.html.twig', ['form'=>$form,'formError'=>$formError,'formPrix'=>$formPrix
-            ]);
         }
 
-        return $this->renderForm('admin/index.html.twig', ['form'=>$form,
+        return $this->renderForm('admin/index.html.twig', ['form'=>$form,'formError'=>$formError,'formPrix'=>$formPrix
         ]);
     }
 
@@ -165,6 +164,8 @@ class AdminController extends AbstractController
     public function message(ManagerRegistry $doctrine, string $contact): Response
     {
         $entityManager = $doctrine->getManager();
+        $message = new Message();
+        $message->heure();
 
 
         return $this->render('admin/message.html.twig');
