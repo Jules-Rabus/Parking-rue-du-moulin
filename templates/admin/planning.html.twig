@@ -4,6 +4,8 @@
 
 {% block body %}
 
+    <h2>Aujourd'hui : {{ date| format_datetime(locale='fr',pattern="dd-MM-Y") }}</h2>
+
     <table>
         <thead>
             <tr>
@@ -14,17 +16,13 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td>Aujourd'hui</td>
-                <td>xxxx€</td>
-            </tr>
 
             {% for key ,date in dates %}
                 <tr>
                     <td><a href='{{ path('app_admin_planning_jour', {'date' : key | date_modify("+1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE : dd-MM-Y") | capitalize  }}</a></td>
                     <td>{{ date.nombrePlaceDisponibles }}</td>
-                    <td>Arrivee : {{ date.Arrivee }}</td>
-                    <td>Depart :{{ date.Depart }}</td>
+                    <td>{{ date.Arrivee }}</td>
+                    <td>{{ date.Depart }}</td>
                 </tr>
 
             {% endfor %}

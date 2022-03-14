@@ -32,6 +32,7 @@ class AdminController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
         $dateBoucle = new \DateTime();
+        $date = new \DateTime();
         $dateBoucle->sub(new \DateInterval("P2D"));
         $dates = array();
 
@@ -43,7 +44,7 @@ class AdminController extends AbstractController
             $dateBoucle->add(new \DateInterval("P1D"));
         }
 
-        return $this->render('admin/planning.html.twig', ['dates'=>$dates
+        return $this->render('admin/planning.html.twig', ['dates'=>$dates,'date'=>$date
         ]);
     }
 
