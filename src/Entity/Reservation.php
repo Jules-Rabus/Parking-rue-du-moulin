@@ -28,9 +28,6 @@ class Reservation
     #[ORM\Column(type: 'date')]
     private $DateReservation;
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private $CodeAcces;
-
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: true)]
     private $Client;
@@ -40,6 +37,9 @@ class Reservation
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $Telephone;
+
+    #[ORM\ManyToOne(targetEntity: Code::class, inversedBy: 'reservations')]
+    private $CodeAcces;
 
     public function __construct()
     {
@@ -95,18 +95,6 @@ class Reservation
     public function setDateReservation(\DateTimeInterface $DateReservation): self
     {
         $this->DateReservation = $DateReservation;
-
-        return $this;
-    }
-
-    public function getCodeAcces(): ?int
-    {
-        return $this->CodeAcces;
-    }
-
-    public function setCodeAcces(?int $CodeAcces): self
-    {
-        $this->CodeAcces = $CodeAcces;
 
         return $this;
     }
@@ -175,6 +163,18 @@ class Reservation
     public function setTelephone(?string $Telephone): self
     {
         $this->Telephone = $Telephone;
+
+        return $this;
+    }
+
+    public function getCodeAcces(): ?Code
+    {
+        return $this->CodeAcces;
+    }
+
+    public function setCodeAcces(?Code $CodeAcces): self
+    {
+        $this->CodeAcces = $CodeAcces;
 
         return $this;
     }
