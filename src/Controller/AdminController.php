@@ -38,13 +38,28 @@ class AdminController extends AbstractController
             $reservation->setDateReservation(new \DateTime());
             $reservation->AjoutDates($entityManager);
             $reservation->setCodeAcces($code);
-            $entityManager->persist($reservation);
-            //$entityManager->flush();
+            $formPrix = $reservation->Prix();
 
-            //return $this->redirectToRoute('admin/index.html.twig');
+            $formError = null;
+
+            if($reservation->VerificationDisponibilites($entityManager)){
+                if($reservation->getDateDepart() >= $reservation->getDateArrivee()){
+                    $entityManager->persist($reservation);
+                    $entityManager->flush();
+                }
+                else{
+                    $formError = "Les dates ne sont pas correctes";
+                }
+            }
+            else{
+                $formError = "Il n'y a pas de place pour ces dates";
+            }
+
+            return $this->renderForm('admin/index.html.twig', ['form'=>$form,'formError'=>$formError,'formPrix'=>$formPrix
+            ]);
         }
 
-        return $this->renderForm('admin/index.html.twig', ['form'=>$form
+        return $this->renderForm('admin/index.html.twig', ['form'=>$form,
         ]);
     }
 
@@ -145,4 +160,14 @@ class AdminController extends AbstractController
             'transfertbdd' => $this->getDoctrine()->getRepository(TransfertBdd::class)->findAll()
         ]);
     }
+
+    #[Route('/message/{contact}', name: 'app_admin_message')]
+    public function message(ManagerRegistry $doctrine, string $contact): Response
+    {
+        $entityManager = $doctrine->getManager();
+
+
+        return $this->render('admin/message.html.twig');
+    }
+
 }

@@ -141,9 +141,9 @@ class Reservation
     public function AjoutDates($entityManager){
 
         $date = new Date();
-        $date->AjoutDates($this->getDateArrivee(),$this->getDateDepart(), $entityManager);
-        $dateBoucle = new \DateTime($this->getDateArrivee()->format('Y-m-d'));
-        $duree = $dateBoucle->diff($this->getDateDepart())->days+1;
+        $date->AjoutDates($this->DateArrivee,$this->DateDepart, $entityManager);
+        $dateBoucle = new \DateTime($this->DateArrivee->format('Y-m-d'));
+        $duree = $this->Duree();
 
         for($i = 0 ; $i < $duree; $i++){
 
@@ -152,6 +152,58 @@ class Reservation
 
            $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
         }
+
+    }
+
+    public function Duree() : int{
+       return $this->DateArrivee->diff($this->DateDepart)->days+1;
+    }
+
+    public function VerificationDisponibilites($entityManager) : int{
+
+        $dateBoucle = new \DateTime($this->DateArrivee->format('Y-m-d'));
+        $duree = $this->Duree();
+        $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
+        $nombrePlaceDisponiblesMin = $date->NombrePlaceDisponibles($entityManager) - $this->NombrePlace;
+
+        for($i = 0 ; $i < $duree; $i++){
+
+            $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
+            $nombrePlaceDisponibles = $date->NombrePlaceDisponibles($entityManager) - $this->NombrePlace;
+            if( $nombrePlaceDisponibles < 0){
+                return -1;
+            }
+            elseif($nombrePlaceDisponibles < $nombrePlaceDisponiblesMin){
+                $nombrePlaceDisponiblesMin = $nombrePlaceDisponibles;
+            }
+
+            $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
+        }
+
+        return $nombrePlaceDisponiblesMin;
+    }
+
+    public function Prix(): int{
+
+        $duree = $this->Duree();
+
+        if($duree < 5){
+            $tarif = array(1 => 5 , 2 => 8, 3 => 10 , 4 => 10 );
+            $prix = $tarif[$duree];
+        }
+        if($duree > 4 && $duree < 29){
+
+            $prix = 10;
+            $duree -= 4;
+            $prix += round($duree/2,0,PHP_ROUND_HALF_UP) * 5;
+        }
+        if( $duree > 28){
+            $prix = 70;
+            $duree -= 29;
+            $prix += round($duree/5,0,PHP_ROUND_HALF_UP) * 5;
+        }
+
+        return $prix * $this->NombrePlace;
 
     }
 

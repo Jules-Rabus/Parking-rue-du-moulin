@@ -4,6 +4,10 @@
 
 {% block body %}
 
+    {% if formError %}
+        <h2>{{ formError }}</h2>
+    {% endif %}
+
     {{ form_start(form) }}
         {{ form_row(form.NombrePlace) }}
         {{ form_row(form.DateArrivee) }}
@@ -12,5 +16,11 @@
         {{ form_row(form.Client) }}
     <button type="submit">Réserver</button>
     {{ form_end(form) }}
+
+    {% if formPrix %}
+
+        <h2>Tarif : {{ formPrix }} €</h2>
+
+    {% endif %}
 
 {% endblock %}
