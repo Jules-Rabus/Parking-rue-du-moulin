@@ -8,6 +8,7 @@
         <thead>
             <tr>
                 <th>Date</th>
+                <th>Nombre de place</th>
                 <th>Arrivee</th>
                 <th>Depart</th>
             </tr>
@@ -21,6 +22,7 @@
             {% for key ,date in dates %}
                 <tr>
                     <td><a href='{{ path('app_admin_planning_jour', {'date' : key | date_modify("+1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE : dd-MM-Y") | capitalize  }}</a></td>
+                    <td>{{ date.nombrePlaceDisponibles }}</td>
                     <td>Arrivee : {{ date.Arrivee }}</td>
                     <td>Depart :{{ date.Depart }}</td>
                 </tr>

@@ -56,15 +56,20 @@ class DateRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function selectReservation( \DateTime $date) : ?array {
-        return $this->createQueryBuilder('date')
-            ->select('reservation')
-            ->join('date.id','reservation')
-            ->andWhere('date.Date = :date')
+    public function SelectorCreate(\DateTime $date): ?Date{
+
+        if( !$this->findOneBy(array("Date"=>$date))){
+            $dateEntite = new Date();
+            $dateEntite->setDate($date);
+            $this->add($dateEntite);
+        }
+
+        return $this->createQueryBuilder('d')
+            ->select('d')
+            ->andWhere('d.Date = :date')
             ->setParameter('date', $date->format('Y-m-d'))
             ->getQuery()
-            ->getResult();
-
+            ->getOneOrNullResult();
     }
     
 
