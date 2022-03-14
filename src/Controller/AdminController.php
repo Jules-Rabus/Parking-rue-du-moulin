@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\TransfertBdd;
 use App\Entity\Reservation;
 use App\Entity\Date;
+use App\Entity\Code;
 use App\Form\TransfertBddType;
 use App\Form\PlanningJourType;
+use App\Form\ReservationType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,9 +23,28 @@ use Doctrine\Persistence\ManagerRegistry;
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'app_admin')]
-    public function index(): Response
+    public function index(Request $request,ManagerRegistry $doctrine): Response
     {
-        return $this->render('admin/index.html.twig', [
+
+        $entityManager = $doctrine->getManager();
+        $reservation = new Reservation();
+        $form = $this->createForm(ReservationType::class,$reservation);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $code = $entityManager->getRepository(Code::class)->SelectOrCreate($reservation->getDateArrivee(),$reservation->getDateDepart());
+
+            $reservation->setDateReservation(new \DateTime());
+            $reservation->AjoutDates($entityManager);
+            $reservation->setCodeAcces($code);
+            $entityManager->persist($reservation);
+            //$entityManager->flush();
+
+            //return $this->redirectToRoute('admin/index.html.twig');
+        }
+
+        return $this->renderForm('admin/index.html.twig', ['form'=>$form
         ]);
     }
 

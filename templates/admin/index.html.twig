@@ -1,18 +1,16 @@
 {% extends 'baseadmin.html.twig' %}
 
-{% block title %}Hello AdminController!{% endblock %}
-
-    <table>
-        <thead>
-
-        </thead>
-        <tbody>
-        
-        </tbody>
-
-
-    </table>
+{% block title %}Réserver{% endblock %}
 
 {% block body %}
+
+    {{ form_start(form) }}
+        {{ form_row(form.NombrePlace) }}
+        {{ form_row(form.DateArrivee) }}
+        {{ form_row(form.DateDepart) }}
+        {{ form_row(form.Telephone) }}
+        {{ form_row(form.Client) }}
+    <button type="submit">Réserver</button>
+    {{ form_end(form) }}
 
 {% endblock %}

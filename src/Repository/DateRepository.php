@@ -62,6 +62,7 @@ class DateRepository extends ServiceEntityRepository
             $dateEntite = new Date();
             $dateEntite->setDate($date);
             $this->add($dateEntite);
+            return $dateEntite;
         }
 
         return $this->createQueryBuilder('d')

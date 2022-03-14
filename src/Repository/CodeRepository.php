@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Code;
+use Cassandra\Date;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -51,6 +52,32 @@ class CodeRepository extends ServiceEntityRepository
             ->andWhere('code.Code = :code')
             ->setParameter('code', $code)
             ->getQuery()->getSingleScalarResult();
+    }
+
+    public function SelectOrCreate(\DateTime $DateDebut, \DateTime $DateFin ): ?Code {
+
+        // a faire envoie mail pour rajouter le code, au programme du portail
+
+        $code = $this->createQueryBuilder('code')
+            ->andWhere('code.DateDebut <= :datedebut')
+            ->andWhere('code.DateFin >= :datefin')
+            ->setParameter('datedebut', $DateDebut->format('Y-m-d'))
+            ->setParameter('datefin', $DateFin->format('Y-m-d'))
+            ->getQuery()
+            ->getOneOrNullResult();
+        ;
+
+        if(!$code){
+            $code = new Code();
+            $code->setCode(rand(1000,9999));
+            $DateDebut = $DateDebut->modify('first day of this month');
+            $DateFin = $DateFin->modify('last day of this month');
+            $code->setDateDebut($DateDebut);
+            $code->setDateFin($DateFin);
+            $this->add($code);
+        }
+
+        return $code;
     }
 
     // /**
