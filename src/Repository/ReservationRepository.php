@@ -44,24 +44,7 @@ class ReservationRepository extends ServiceEntityRepository
             $this->_em->flush();
         }
     }
-
-    public function CountArrivee( \DateTime $date): ?int {
-        return $this->createQueryBuilder('reservation')
-            ->select('COUNT(reservation.DateArrivee) AS Arrivee')
-            ->andWhere('reservation.DateArrivee = :date')
-            ->setParameter('date', $date->format('Y-m-d'))
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
-
-    public function CountDepart( \DateTime $date): ?int {
-        return $this->createQueryBuilder('reservation')
-            ->select('COUNT(reservation.DateDepart) AS Depart')
-            ->andWhere('reservation.DateDepart = :date')
-            ->setParameter('date', $date->format('Y-m-d'))
-            ->getQuery()
-            ->getSingleScalarResult();
-    }
+    
 
     // /**
     //  * @return Reservation[] Returns an array of Reservation objects

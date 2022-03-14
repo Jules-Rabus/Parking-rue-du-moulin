@@ -37,10 +37,10 @@ class AdminController extends AbstractController
         $dates = array();
 
         for($i = 0 ; $i < 367 ; $i++){
-            $nombrePlaceDisponibles = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
-            $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $nombrePlaceDisponibles->NombrePlaceDisponibles($entityManager);
-            $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $entityManager->getRepository(Reservation::class)->CountDepart($dateBoucle);
-            $dates[$dateBoucle->format('Y-m-d')]['Arrivee'] = $entityManager->getRepository(Reservation::class)->CountArrivee($dateBoucle);
+            $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
+            $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $dateEntite->NombrePlaceDisponibles($entityManager);
+            $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $dateEntite->nombreDepart($entityManager);
+            $dates[$dateBoucle->format('Y-m-d')]['Arrivee'] = $dateEntite->nombreArrivee($entityManager);
             $dateBoucle->add(new \DateInterval("P1D"));
         }
 

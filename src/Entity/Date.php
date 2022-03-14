@@ -94,7 +94,6 @@ class Date
     public function NombrePlaceDisponibles($entityManager) : int{
 
         $reservations = $this->getRelation()->getValues();
-
         $nombrePlace = 40;
 
         foreach ($reservations as $reservation){
@@ -102,6 +101,34 @@ class Date
         }
 
         return $nombrePlace;
+    }
+
+    public function nombreDepart($entityManager) : int{
+
+        $reservations = $this->getRelation()->getValues();
+        $nombreDepart = 0;
+
+        foreach ($reservations as $reservation) {
+            if ($reservation->getDateDepart() == $this->getDate()){
+                $nombreDepart += $reservation->getNombrePlace();
+            }
+        }
+
+        return $nombreDepart;
+    }
+
+    public function nombreArrivee($entityManager) : int{
+
+        $reservations = $this->getRelation()->getValues();
+        $nombreArrivee = 0;
+
+        foreach ($reservations as $reservation) {
+            if ($reservation->getDateArrivee() == $this->getDate()){
+                $nombreArrivee += $reservation->getNombrePlace();
+            }
+        }
+
+        return $nombreArrivee;
     }
 
 
