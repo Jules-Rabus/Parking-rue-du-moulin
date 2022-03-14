@@ -165,10 +165,12 @@ class AdminController extends AbstractController
     {
         $entityManager = $doctrine->getManager();
         $message = new Message();
-        $message->heure();
+        $message->setMessage("tata");
+        $message->setContact("+33688200980");
+        $message->setSujet("test");
+        $message->messageTelephone();
 
-
-        return $this->render('admin/message.html.twig');
+        return $this->render('admin/message.html.twig',['message'=>$message->messageMail(),'contact'=>$message->getContact()]);
     }
 
 }
