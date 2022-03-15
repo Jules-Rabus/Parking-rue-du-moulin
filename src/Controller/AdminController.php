@@ -160,17 +160,18 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/message/{contact}', name: 'app_admin_message')]
-    public function message(ManagerRegistry $doctrine, string $contact): Response
+    #[Route('/message/{reservation}', name: 'app_admin_message')]
+    public function message(ManagerRegistry $doctrine, Reservation $reservation): Response
     {
         $entityManager = $doctrine->getManager();
         $message = new Message();
-        $message->setMessage("tata");
-        $message->setContact("+33688200980");
+        $message->setNombreReservation(0);
+        $message->setReservation($reservation);
+        $message->MessageCode();
         $message->setSujet("test");
-        $message->messageTelephone();
 
-        return $this->render('admin/message.html.twig',['message'=>$message->messageMail(),'contact'=>$message->getContact()]);
+
+        return $this->render('admin/message.html.twig',['message'=>$message->getMessageTelephone(),'contact'=>$message->contact()]);
     }
 
 }

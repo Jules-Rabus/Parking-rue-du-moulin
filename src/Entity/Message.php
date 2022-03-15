@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Reservation;
 
 class Message
 {
@@ -12,9 +13,11 @@ class Message
 
     private string $Fin;
 
-    private string $Contact;
+    private Reservation $Reservation;
 
     private string $Sujet;
+
+    private int $NombreReservation;
 
     /**
      * @return string
@@ -65,20 +68,37 @@ class Message
     }
 
     /**
-     * @return string
+     * @return \App\Entity\Reservation
      */
-    public function getContact(): string
+    public function getReservation(): \App\Entity\Reservation
     {
-        return $this->Contact;
+        return $this->Reservation;
     }
 
     /**
-     * @param string $Contact
+     * @param \App\Entity\Reservation $Reservation
      */
-    public function setContact(string $Contact): void
+    public function setReservation(\App\Entity\Reservation $Reservation): void
     {
-        $this->Contact = $Contact;
+        $this->Reservation = $Reservation;
     }
+
+    /**
+     * @return int
+     */
+    public function getNombreReservation(): int
+    {
+        return $this->NombreReservation;
+    }
+
+    /**
+     * @param int $NombreReservation
+     */
+    public function setNombreReservation(int $NombreReservation): void
+    {
+        $this->NombreReservation = $NombreReservation;
+    }
+
 
     /**
      * @return string
@@ -96,7 +116,7 @@ class Message
         $this->Sujet = $Sujet;
     }
 
-    public function heure(){
+    public function Heure(){
 
         $soleil = date_sun_info((new \DateTime())->getTimestamp(), 49.375, 2.1935);
         $heure = new \DateTime();
@@ -106,51 +126,108 @@ class Message
         $jour = (new \DateTime())->format('l');
 
         if ($heure > $soleil || $heure > $soir ){
-            $debut = 'Bonsoir';
-            $fin = 'Bonne soirée';
+            $debut = "Bonsoir";
+            $fin = "Bonne soirée";
         }
         else{
-            $debut = 'Bonjour';
-            $fin = 'Bonne journée';
+            $debut = "Bonjour";
+            $fin = "Bonne journée";
         }
 
         if( $heure < $apresMidi && $heure > $midi  ){
-            $fin = 'Bon après midi';
+            $fin = "Bon après midi";
         }
         if( $heure > $apresMidi && $heure < $soir && $heure < $soleil){
-            $fin = 'Bonne fin de journée';
+            $fin = "Bonne fin de journée";
         }
-        if ($jour == 'Friday' && ($heure > $soleil && $heure > $soir)){
-            $fin = 'Bon week-end';
+        if ($jour == "Friday" && ($heure > $soleil && $heure > $soir)){
+            $fin = "Bon week-end";
         }
-        if ($jour == 'Sunday' && $heure < $midi){
-            $fin = 'Bon dimanche';
+        if ($jour == "Sunday" && $heure < $midi){
+            $fin = "Bon dimanche";
         }
-        if ($jour == 'Monday' && $heure > $midi && !($heure < $soleil || $heure < $soir)){
-            $fin = 'Bonne semaine';
+        if ($jour == "Monday" && $heure > $midi && !($heure < $soleil || $heure < $soir)){
+            $fin = "Bonne semaine";
         }
 
-        $this->Debut = $debut . ",\r";
-        $this->Fin = "\r" . $fin . " à vous,\r";
+        $this->Debut = $debut . ",%0a%0a";
+        $this->Fin = "%0a%0a" . $fin . " à vous,%0aCordialement M. Rabus";
     }
 
-    public function messageMail() : string{
+    public function getMessageMail() : string{
 
-        $this->heure();
+        $this->Heure();
 
-        $message = $this->Debut . $this->Message . $this->Fin;
+        $message = str_replace(' ','%20',($this->Debut . $this->Message . $this->Fin));
 
-        return "class ='mail' href='mailto:" . $this->Contact . "?subject=" . $this->Sujet . "&body=" . $message . "'";
+        return 'href=mailto:' . $this->contact() . '?subject=' . $this->Sujet . '&body=' . $message ;
 
     }
 
-    public function messageTelephone() : string{
+    public function getMessageTelephone() : string{
 
-        $this->heure();
+        $this->Heure();
 
-        $message = $this->Debut . $this->Message . $this->Fin;
+        $message = str_replace(' ','%20',($this->Debut . $this->Message . $this->Fin));
 
-        return "class ='tel' href='sms:" . $this->Contact . "?body=" . $message . "'";
+        return 'href=sms:' . $this->contact() . ';?&body=' . $message ;
+    }
+
+    public function contact() : string{
+
+        if($Client =  $this->Reservation->getClient()){
+            return $Client->getEmail();
+        }
+        return $this->Reservation->getTelephone();
+
+    }
+
+    public function MessageCode(){
+
+        $this->Message = "Votre code d'accès sera le : " . $this->Reservation->getCodeAcces()->getCode();
+
+        if($this->NombreReservation < 2 ){
+            $this->Message = $this->Message . "%0A%0AJe vous rappelle également que le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus ou en espèces à l'arrivée sur le parking via des enveloppes pré-remplies.";
+        }
+
+    }
+
+    public function Place() : string{
+
+        if($this->Reservation->getNombrePlace() > 1){
+            return "de " . $place .  " places";
+        }
+        return "d'une place" ;
+
+    }
+
+    public function MessageExplication(){
+        $this->Message = "Le parking se situe entre le 17 et le 19 rue du moulin à Tillé (portail noir) à 650 mètres à pied de l'aéroport.%0AL'accès au parking se fait via un portail motorisé à digicode. " .
+            "Je vous remercie de me recontacter par sms/mail/telephone 48h00 avant votre arrivée au parking afin d'obtenir votre code d'accès, il sera également valable pour votre retour.%0A" .
+            "Le paiement s'éffectue à votre arrivée au moyen d'enveloppes pré-remplies disponibles à l'entrée du parking et à déposer dans la boite au lettre jaune et verte situé le long du grillage.%0A" .
+            "Le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus soit en espèces.%0AVous restez en possession des clés de votre véhicule.%0ASi vous avez des questions n'hésitez pas." ;
+    }
+
+    public function MessageReservation(){
+
+        if(!$this->NombreReservation){
+            $this->MessageExplication();
+            $this->Message = $this->Message . "%0A%0A";
+        }
+
+        $this->Message = $this->Message . "Je vous confirme votre réservation d'une place de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+            $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->prix() . "€";
+
+    }
+
+    public function MessageAllongement(){
+        $this->Message = "Je vous confirme l'allongement de votre réservation d'une place de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+            $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->prix() . "€";
+    }
+
+    public function MessageAnnulation(){
+        $this->Message = "Je vous confirme l'annulation de votre réservation d'une place de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+            $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->prix() . "€";
     }
 
 
