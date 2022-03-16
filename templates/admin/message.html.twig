@@ -4,6 +4,40 @@
 
 {% block body %}
 
+    <table>
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Départ</th>
+            <th>Arrivée</th>
+            <th>Contact</th>
+            <th>Place</th>
+            <th>Code</th>
+        </tr>
+        </thead>
+        <tbody>
+
+            <tr>
+                {% if message.Reservation.Client %}
+                    <td>{{ message.Reservation.Client.Nom }}</td>
+                    <td><a href='{{ path('app_admin_planning_jour', {'date' : message.Reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                    <td><a href='{{ path('app_admin_planning_jour', {'date' : message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                    <td>{{ message.Reservation.Client.Email }}</td>
+                    <td>{{ message.Reservation.NombrePlace }}</td>
+                    <td>{{ message.Reservation.CodeAcces.Code }}</td>
+                {% else %}
+                    <td></td>
+                    <td><a href='{{ path('app_admin_planning_jour', {'date' : message.Reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                    <td><a href='{{ path('app_admin_planning_jour', {'date' : message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                    <td>{{ message.Reservation.Telephone }}</td>
+                    <td>{{ message.Reservation.NombrePlace }}</td>
+                    <td>{{ message.Reservation.CodeAcces.Code }}</td>
+                {% endif %}
+            </tr>
+
+        </tbody>
+    </table>
+
     {{ form_start(form) }}
         {{ form_row(form.debut) }}
         {{ form_row(form.fin) }}
