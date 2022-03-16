@@ -90,6 +90,7 @@ class AdminController extends AbstractController
      */
     public function planningJour(Request $request,ManagerRegistry $doctrine,\DateTime $date): Response
     {
+
         $form = $this->createForm(PlanningJourType::class,NULL,['date'=>$date]);
         $form->handleRequest($request);
 

@@ -10,15 +10,10 @@ html,body {
 }
 
 main {
-    margin-top: 6rem;
+   padding: 1rem;
 }
 
 header {
-    position: fixed;
-    top:0px;
-    left: 0px;
-    right:0px;
-    padding: 10px;
     z-index: 0;
     background-color: #303030;
 }
