@@ -10,6 +10,7 @@ use App\Entity\Message;
 use App\Form\TransfertBddType;
 use App\Form\PlanningJourType;
 use App\Form\ReservationType;
+use App\Form\MessageType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
@@ -161,17 +162,22 @@ class AdminController extends AbstractController
     }
 
     #[Route('/message/{reservation}', name: 'app_admin_message')]
-    public function message(ManagerRegistry $doctrine, Reservation $reservation): Response
+    public function message(Request $request, ManagerRegistry $doctrine, Reservation $reservation): Response
     {
         $entityManager = $doctrine->getManager();
-        $message = new Message();
-        $message->setNombreReservation(0);
-        $message->setReservation($reservation);
-        $message->MessageCode();
-        $message->setSujet("test");
+        $form = $this->createForm(MessageType::class);
+        $form->handleRequest($request);
 
+        $message = new Message($reservation,$reservation->NombreReservation($entityManager));
 
-        return $this->render('admin/message.html.twig',['message'=>$message->getMessageTelephone(),'contact'=>$message->contact()]);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            return $this->renderForm('admin/message.html.twig',['form'=>$form,
+                'message'=>$message,'messageRetour'=>$message->TraitementFormulaire($form->getData())]);
+        }
+
+        return $this->renderForm('admin/message.html.twig',['form'=>$form,
+            'message'=>$message,'messageRetour'=>null]);
     }
 
 }

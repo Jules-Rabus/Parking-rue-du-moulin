@@ -183,6 +183,14 @@ class Reservation
         return $nombrePlaceDisponiblesMin;
     }
 
+    public function NombreReservation($entityManager) : int{
+
+        if($this->Client){
+            return $entityManager->getRepository(Reservation::class)->NombreReservationClient($this->getId());
+        }
+        return $entityManager->getRepository(Reservation::class)->NombreReservationTelephone($this->Telephone);
+    }
+
     public function Prix(): int{
 
         $duree = $this->Duree();

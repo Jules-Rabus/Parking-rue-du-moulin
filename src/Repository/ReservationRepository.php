@@ -44,6 +44,22 @@ class ReservationRepository extends ServiceEntityRepository
             $this->_em->flush();
         }
     }
+
+    public function NombreReservationClient(int $Id){
+        return $this->createQueryBuilder('reservation')
+            ->select('COUNT(reservation.id)')
+            ->andWhere('reservation.Client = :id')
+            ->setParameter('id', $Id)
+            ->getQuery()->getSingleScalarResult();
+    }
+
+    public function NombreReservationTelephone(int $Telephone){
+        return $this->createQueryBuilder('reservation')
+            ->select('COUNT(reservation.id)')
+            ->andWhere('reservation.Telephone = :telephone')
+            ->setParameter('telephone', $Telephone)
+            ->getQuery()->getSingleScalarResult();
+    }
     
 
     // /**
