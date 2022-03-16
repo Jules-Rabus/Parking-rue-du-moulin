@@ -214,7 +214,14 @@ class Reservation
 
     public function setTelephone(?string $Telephone): self
     {
-        $this->Telephone = $Telephone;
+        // Conversion en +33 + et suppresion des espaces
+
+        if ($Telephone[0] == 0 && ($Telephone[1] == 6 || $Telephone[1] == 7)){
+            $this->Telephone = substr_replace(str_replace(' ','',$Telephone),"+33",0,1);
+        }
+        elseif(strstr($Telephone,"+33")){
+            $this->Telephone = str_replace(' ','',$Telephone);
+        }
 
         return $this;
     }

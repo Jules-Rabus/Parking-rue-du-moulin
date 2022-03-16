@@ -194,8 +194,8 @@ class Message
 
     public function Place() : string{
 
-        if($this->Reservation->getNombrePlace() > 1){
-            return "de " . $place .  " places";
+        if( $nombrePlace = $this->Reservation->getNombrePlace() > 1){
+            return "de " . $nombrePlace .  " places";
         }
         return "d'une place" ;
 
@@ -215,18 +215,18 @@ class Message
             $this->Message = $this->Message . "%0A%0A";
         }
 
-        $this->Message = $this->Message . "Je vous confirme votre réservation d'une place de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->Message = $this->Message . "Je vous confirme votre réservation " . $this->Place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->prix() . "€";
 
     }
 
     public function MessageAllongement(){
-        $this->Message = "Je vous confirme l'allongement de votre réservation d'une place de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->Message = "Je vous confirme l'allongement de votre réservation " . $this->Place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->prix() . "€";
     }
 
     public function MessageAnnulation(){
-        $this->Message = "Je vous confirme l'annulation de votre réservation d'une place de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->Message = "Je vous confirme l'annulation de votre réservation " . $this->Place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->prix() . "€";
     }
 
