@@ -12,7 +12,7 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\Client
-                property: uuid
+                property: email
         # used to reload user from session & other features (e.g. switch_user)
     firewalls:
         dev:

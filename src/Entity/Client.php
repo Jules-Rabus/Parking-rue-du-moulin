@@ -13,13 +13,11 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[UniqueEntity(fields: ['email'], message: 'Il y a déjà un compte existant pour ce mail')]
 class Client implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: 'integer', unique: true)]
     private $id;
-
-    #[ORM\Column(type: 'string', length: 180, unique: true)]
-    private $uuid;
 
     #[ORM\Column(type: 'string', length: 180, unique: true, nullable: true)]
     private $email;
@@ -40,7 +38,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     private $isVerified = false;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private $Telephone;
+    private $telephone;
 
 
     public function __construct()
@@ -58,17 +56,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->email;
     }
 
-    public function getUuid(): ?string
-    {
-        return $this->uuid;
-    }
-
-    public function setUuid(string $uuid): self
-    {
-        $this->uuid = $uuid;
-
-        return $this;
-    }
 
     public function setEmail(string $email): self
     {
