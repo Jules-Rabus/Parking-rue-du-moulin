@@ -40,8 +40,7 @@ header nav {
     height: 100%;
     width: 300px;
     background: #2f2f2f;
-    padding: 20px;
-    opacity: 0.9;
+    padding: 1rem;
 }
 
 .navVisible {
@@ -79,7 +78,7 @@ header nav ul {
 
 header nav ul a {
     display:block;
-    padding:10px;
+    padding:0.5rem;
     color:#c7c7c7;
     text-decoration:none;
 }
@@ -95,22 +94,25 @@ header nav ul a:hover {
 /* Responsive MQ */
 
 @media all and (min-width:800px) {
+
+    header{
+        display: flex;
+    }
+
     header p {
         display: none;
     }
-    
+
     header nav ul a::before {
-        content:""; 
+        content:"";
     }
-    
+
     header nav {
-        position: absolute;
-        width:450px;
-        padding-top:0px;
-        left:initial;
-        right:50px;
-    }   
-    
+        position: initial;
+        height: 100%;
+        width:60%;
+    }
+
     header nav ul li {
         float: left;
         font-size: 14px;
@@ -119,19 +121,20 @@ header nav ul a:hover {
         margin: 0;
         border-top: 2px solid #303030;
     }
-    
+
     header nav ul li:hover {
         border-color: #ED5153;
         background-color: #3A3838;
     }
-    
+
     header {
         border-width: 0px 0px 4px 0px;
         border-color: #1E1E1E;
     }
-    
+
     header h1 {
-        margin-left:50px;   
+        margin-left: 2rem;
+        width: 35%;
     }
 
 }

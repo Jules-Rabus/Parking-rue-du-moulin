@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
-#[Route('/admin_old')]
+#[Route('/admin')]
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'app_admin')]
