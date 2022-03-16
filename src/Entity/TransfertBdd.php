@@ -108,12 +108,24 @@ class TransfertBdd
                 } else {
                     $client = $entityManager->getRepository(Client::class)->FindOneBy(array("email" => $content->contact));
                 }
-
-                $reservation->setClient($client);
             }
             else{
-                $reservation->setTelephone($content->contact);
+
+                if (!$entityManager->getRepository(Client::class)->countTelephone($content->contact)) {
+                    $client->setTelephone($content->contact);
+                    $client->setNom($content->nom);
+
+                    //Le client devra faire mdp oublié pour avoir son mdp
+                    $password = str_replace(' ', '', $content->nom . $content->date);
+                    $client->setPassword($password);
+
+                    $entityManager->persist($client);
+                    $entityManager->flush();
+                } else {
+                    $client = $entityManager->getRepository(Client::class)->FindOneBy(array("telephone" => $content->contact));
+                }
             }
+            $reservation->setClient($client);
 
             // Traitement pour les codes
 
@@ -127,6 +139,7 @@ class TransfertBdd
             }
             $reservation->setCodeAcces($code);
 
+            $reservation->setTelephone($content->contact);
             $reservation->setNombrePlace($content->place);
 
             //Traitement des Dates

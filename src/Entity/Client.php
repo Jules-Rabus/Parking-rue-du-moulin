@@ -19,6 +19,9 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true)]
+    private $uuid;
+
+    #[ORM\Column(type: 'string', length: 180, unique: true, nullable: true)]
     private $email;
 
     #[ORM\Column(type: 'json')]
@@ -36,6 +39,9 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
 
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private $Telephone;
+
 
     public function __construct()
     {
@@ -50,6 +56,18 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function getEmail(): ?string
     {
         return $this->email;
+    }
+
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function setUuid(string $uuid): self
+    {
+        $this->uuid = $uuid;
+
+        return $this;
     }
 
     public function setEmail(string $email): self
@@ -188,6 +206,18 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     public function __toString(): string
     {
         return "Client : " . $this->getNom();
+    }
+
+    public function getTelephone(): ?string
+    {
+        return $this->Telephone;
+    }
+
+    public function setTelephone(?string $Telephone): self
+    {
+        $this->Telephone = $Telephone;
+
+        return $this;
     }
     
 }

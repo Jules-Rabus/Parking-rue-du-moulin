@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Entity\Client;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TelephoneField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ArrayField;
@@ -23,6 +24,7 @@ class ClientCrudController extends AbstractCrudController
     {
         return [
             EmailField::new('email'),
+            TelephoneField::new('Telephone'),
             TextField::new('password'),
             TextField::new('nom'),
             ArrayField::new('roles'),
