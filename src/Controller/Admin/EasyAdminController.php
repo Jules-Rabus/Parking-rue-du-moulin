@@ -12,10 +12,11 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use App\Entity\Reservation;
 use App\Entity\Date;
 use App\Entity\Code;
+use App\Entity\Client;
 
 class EasyAdminController extends AbstractDashboardController
 {
-    #[Route('/admin', name: 'admin')]
+    #[Route('/easy_admin', name: 'easy_admin')]
     public function index(): Response
     {
         // Option 1. You can make your dashboard redirect to some common page of your backend
@@ -57,6 +58,11 @@ class EasyAdminController extends AbstractDashboardController
         yield MenuItem::Section('Code');
         yield MenuItem::SubMenu('Actions','fas fa-bars')->setSubItems([
             MenuItem::linkToCrud('Afficher Code', 'fas fa-eye', Code::class)
+        ]);
+
+        yield MenuItem::Section('Client');
+        yield MenuItem::SubMenu('Actions','fas fa-bars')->setSubItems([
+            MenuItem::linkToCrud('Afficher Client', 'fas fa-eye', Client::class)
         ]);
     }
 }
