@@ -27,14 +27,12 @@ class AdminController extends AbstractController
     #[Route('/', name: 'app_admin')]
     public function index(Request $request,ManagerRegistry $doctrine): Response
     {
-
         $entityManager = $doctrine->getManager();
         $reservation = new Reservation();
         $form = $this->createForm(ReservationType::class,$reservation);
         $form->handleRequest($request);
         $formError = null;
         $formPrix = null;
-
 
         if ($form->isSubmitted() && $form->isValid()) {
 
@@ -57,6 +55,7 @@ class AdminController extends AbstractController
             else{
                 $formError = "Il n'y a pas de place pour ces dates";
             }
+            return $this->redirectToRoute('app_admin_message',['reservation'=>$reservation->getId()]);
         }
 
         return $this->renderForm('admin/index.html.twig', ['form'=>$form,'formError'=>$formError,'formPrix'=>$formPrix
