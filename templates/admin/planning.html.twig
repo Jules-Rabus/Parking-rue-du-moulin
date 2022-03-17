@@ -4,38 +4,48 @@
 
 {% block body %}
 
-    <h2>Aujourd'hui : {{ date| format_datetime(locale='fr',pattern="dd-MM-Y") }}</h2>
+    <div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Nombre de place</th>
-                <th>Arrivee</th>
-                <th>Depart</th>
-            </tr>
-        </thead>
-        <tbody>
+        <h2>Aujourd'hui : {{ date| format_datetime(locale='fr',pattern="dd-MM-Y") }}</h2>
 
-            {% for key ,date in dates %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Nombre de place</th>
+                    <th>Arrivee</th>
+                    <th>Depart</th>
+                </tr>
+            </thead>
+            <tbody>
 
-                {% if key | format_datetime(locale='fr',pattern="dd") == 01  %}
+                {% for key ,date in dates %}
+
+                    {% if key | format_datetime(locale='fr',pattern="dd") == 01  %}
+
+                        <tr>
+                            <td colspan="4"><h2>{{ key | format_datetime(locale='fr',pattern="LLLL") | capitalize }}</h2></td>
+                        </tr>
+
+                    {% endif %}
 
                     <tr>
-                        <td colspan="all"> {{ key | format_datetime(locale='fr',pattern="LLLL") | capitalize }}</td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : key | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE : dd-MM-Y") | capitalize  }}</a></td>
+                        {% if date.nombrePlaceDisponibles > 15 %}
+                            <td class='planning_vert'>{{ date.nombrePlaceDisponibles }}</td>
+                        {% elseif date.nombrePlaceDisponibles > 10 %}
+                            <td class='planning_orange'>{{ date.nombrePlaceDisponibles }}</td>
+                        {% else %}
+                            <td class='planning_rouge'>{{ date.nombrePlaceDisponibles }}</td>
+                        {% endif %}
+
+                        <td>{{ date.Arrivee }}</td>
+                        <td>{{ date.Depart }}</td>
                     </tr>
 
-                {% endif %}
-
-                <tr>
-                    <td><a href='{{ path('app_admin_planning_jour', {'date' : key | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE : dd-MM-Y") | capitalize  }}</a></td>
-                    <td>{{ date.nombrePlaceDisponibles }}</td>
-                    <td>{{ date.Arrivee }}</td>
-                    <td>{{ date.Depart }}</td>
-                </tr>
-
-            {% endfor %}
-        </tbody>
-    </table>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
 {% endblock %}

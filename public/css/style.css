@@ -7,18 +7,29 @@
 
 html,body {
     height: 100%;
+    background-color: #1b1f36;
+    color:#e6e6e6;
 }
 
 main {
-   padding: 1rem;
+    display:flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    gap: 2rem;
+    padding: 1rem;
 }
+
+/* Header */
 
 header {
     z-index: 0;
-    background-color: #303030;
+    background-color: #181924;
+    padding: 1rem;
 }
 
 header h1 {
+    font-size: 1.5rem;
     width: 250px;
     margin: auto;
 }
@@ -31,11 +42,11 @@ header h1 a {
 header nav {
     position: fixed;
     top: 0;
-    left:-300px;
+    left:-100%;
     height: 100%;
-    width: 300px;
-    background: #2f2f2f;
-    padding: 1rem;
+    width: 100%;
+    background: #181924;
+    opacity: 0.95;
 }
 
 .navVisible {
@@ -48,13 +59,11 @@ header p{
 
 header p.burger{
     position: fixed;
-    right: 0px;
-    top:0px;
-    height:50px;
-    width: 50px;
+    right: 3rem;
+    top: 1rem;
     z-index: 1;
     line-height: 1;
-    font-size:3rem;
+    font-size: 2rem;
     color: #8d8d8d;
 }
 
@@ -66,31 +75,37 @@ header p.burgerchecked::before {
     content: '\2716';
 }
 
-
 header nav ul {
+    margin-top: 2rem;
     list-style-type:none;
 }
 
 header nav ul a {
-    display:block;
-    padding:0.5rem;
+    display: block;
+    text-align: center;
+    padding: 1rem;
     color:#c7c7c7;
     text-decoration:none;
-}
-
-header nav ul a::before {
-    content:'\27A4';   
 }
 
 header nav ul a:hover {
     color:white;
 }
 
-/* Responsive MQ */
+header nav ul li{
+    border-top: 2px solid #181924;
+}
+
+header nav ul li:hover {
+    background-color: #101120;
+    border-color: #ED5153;
+}
+
+/* Responsive MQ header */
 
 @media all and (min-width:800px) {
 
-    header{
+    header {
         display: flex;
     }
 
@@ -99,13 +114,17 @@ header nav ul a:hover {
     }
 
     header nav ul a::before {
-        content:"";
+        content: "";
     }
 
     header nav {
         position: initial;
         height: 100%;
-        width:60%;
+        width: 70%;
+    }
+
+    header nav ul {
+        margin-top: 0;
     }
 
     header nav ul li {
@@ -114,12 +133,6 @@ header nav ul a:hover {
         font-weight: 400;
         padding: 2px 15px;
         margin: 0;
-        border-top: 2px solid #303030;
-    }
-
-    header nav ul li:hover {
-        border-color: #ED5153;
-        background-color: #3A3838;
     }
 
     header {
@@ -128,8 +141,76 @@ header nav ul a:hover {
     }
 
     header h1 {
+        text-align: center;
         margin-left: 2rem;
-        width: 35%;
+        width: 25%;
     }
 
+
 }
+
+table{
+    table-layout: fixed;
+    width: 100%;
+    border: 1px solid;
+    border-collapse: collapse;
+}
+
+table a{
+    text-decoration: none;
+    color: white;
+}
+
+table th, td{
+    text-align: center;
+    padding: 1rem;
+    border: 1px solid;
+    overflow-wrap: break-word;
+}
+
+div > h2,h3,table{
+    padding: 1rem 0;
+    text-align: center;
+}
+
+.planning_orange{
+    background-color:#ff6600;
+}
+.planning_rouge{
+    background-color:#ff0039d4;
+}
+.planning_vert{
+    background-color:#33cc33;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    gap:1rem;
+    background-color: #181924;
+    width: fit-content;
+    padding: 1rem;
+    border: 1px solid;
+}
+
+form label{
+    font-size: 2rem;
+    padding-bottom: 1rem;
+}
+
+form input{
+    width: fit-content;
+}
+
+form div{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+
+
+

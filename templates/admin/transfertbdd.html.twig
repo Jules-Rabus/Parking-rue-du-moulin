@@ -3,29 +3,33 @@
 {% block title %}Transfert de la base de donnée{% endblock %}
 
 {% block body %}
-    <h1>Transfert de la base de donnée</h1>
+    
+    <div>
 
-    {{ form_start(form) }}
-        {{ form_row(form.json) }}
-        <button type="submit">Ajouter</button>
-    {{ form_end(form) }}
+        <h1>Transfert de la base de donnée</h1>
 
-    <table>
-        <thead>
-        <tr>
-            <th>Date du transfert :</th>
-            <th>Admin :</th>
-            <th>Fichier :</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for transfert in transfertbdd %}
+        {{ form_start(form) }}
+            {{ form_row(form.json) }}
+            <button type="submit">Ajouter</button>
+        {{ form_end(form) }}
+
+        <table>
+            <thead>
             <tr>
-                <td> {{ transfert.date | format_datetime(locale='fr',pattern="dd MM Y") }} </td>
-                <td> {{ transfert.relation.nom }} </td>
-                <td> {{ transfert.jsonfilename }} </td>
+                <th>Date du transfert :</th>
+                <th>Admin :</th>
+                <th>Fichier :</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for transfert in transfertbdd %}
+                <tr>
+                    <td> {{ transfert.date | format_datetime(locale='fr',pattern="dd MM Y") }} </td>
+                    <td> {{ transfert.relation.nom }} </td>
+                    <td> {{ transfert.jsonfilename }} </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
