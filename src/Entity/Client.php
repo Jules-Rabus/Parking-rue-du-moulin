@@ -29,7 +29,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     private $password;
 
     #[ORM\Column(type: 'string', length: 255)]
-    private $Nom;
+    private $nom;
 
     #[ORM\OneToMany(mappedBy: 'Client', targetEntity: Reservation::class)]
     private $reservations;
@@ -138,12 +138,12 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getNom(): ?string
     {
-        return $this->Nom;
+        return $this->nom;
     }
 
-    public function setNom(string $Nom): self
+    public function setNom(string $nom): self
     {
-        $this->Nom = $Nom;
+        $this->nom = $nom;
 
         return $this;
     }
@@ -197,12 +197,19 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getTelephone(): ?string
     {
-        return $this->Telephone;
+        return $this->telephone;
     }
 
     public function setTelephone(?string $Telephone): self
     {
-        $this->Telephone = $Telephone;
+        // Conversion en +33 + et suppresion des espaces
+
+        if ($Telephone[0] == 0 && ($Telephone[1] == 6 || $Telephone[1] == 7)){
+            $this->telephone = substr_replace(str_replace(' ','',$Telephone),"+33",0,1);
+        }
+        elseif(strstr($Telephone,"+33")){
+            $this->telephone = str_replace(' ','',$Telephone);
+        }
 
         return $this;
     }

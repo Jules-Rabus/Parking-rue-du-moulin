@@ -29,7 +29,7 @@ class Reservation
     private $DateReservation;
 
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'reservations')]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: false)]
     private $Client;
 
     #[ORM\ManyToMany(targetEntity: Date::class, mappedBy: 'relation')]

@@ -95,7 +95,7 @@ class TransfertBdd
 
             if (filter_var($content->contact, FILTER_VALIDATE_EMAIL) && !empty($content->contact)) {
 
-                if (!$entityManager->getRepository(Client::class)->countEmail($content->contact)) {
+                if (! $entityManager->getRepository(Client::class)->countEmail($content->contact)) {
                     $client->setEmail($content->contact);
                     $client->setNom($content->nom);
 
@@ -105,13 +105,14 @@ class TransfertBdd
 
                     $entityManager->persist($client);
                     $entityManager->flush();
-                } else {
+                }
+                else{
                     $client = $entityManager->getRepository(Client::class)->FindOneBy(array("email" => $content->contact));
                 }
             }
-            else{
+            elseif( !empty($content->contact)){
 
-                if (!$entityManager->getRepository(Client::class)->countTelephone($content->contact)) {
+                if (! $entityManager->getRepository(Client::class)->countTelephone($content->contact)) {
                     $client->setTelephone($content->contact);
                     $client->setNom($content->nom);
 
@@ -121,7 +122,8 @@ class TransfertBdd
 
                     $entityManager->persist($client);
                     $entityManager->flush();
-                } else {
+                }
+                else{
                     $client = $entityManager->getRepository(Client::class)->FindOneBy(array("telephone" => $content->contact));
                 }
             }

@@ -195,10 +195,12 @@ class Message
 
     public function contact() : string{
 
-        if($Client =  $this->Reservation->getClient()){
-            return $Client->getEmail();
+        $client = $this->Reservation->getClient();
+
+        if( $email = $client->getEmail()){
+            return $email;
         }
-        return $this->Reservation->getTelephone();
+        return $client->getTelephone();
 
     }
 
