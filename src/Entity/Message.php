@@ -283,7 +283,7 @@ class Message
             $this->MessageExplication();
         }
 
-        if($Client =  $this->Reservation->getClient()){
+        if($Client =  $this->Reservation->getClient()->getEmail()){
             return ['message'=>$this->getMessageMail(),'type'=>'Mail'];
         }
         return ['message'=>$this->getMessageTelephone(),'type'=>'Sms'];
