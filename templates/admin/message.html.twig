@@ -10,8 +10,8 @@
             <thead>
             <tr>
                 <th>Nom</th>
-                <th>Départ</th>
                 <th>Arrivée</th>
+                <th>Départ</th>
                 <th>Contact</th>
                 <th>Place</th>
                 <th>Code</th>
@@ -21,8 +21,8 @@
 
                 <tr>
                     <td>{{ message.Reservation.Client.Nom }}</td>
-                    <td><a href='{{ path('app_admin_planning_jour', {'date' : message.Reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                     <td><a href='{{ path('app_admin_planning_jour', {'date' : message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                    <td><a href='{{ path('app_admin_planning_jour', {'date' : message.Reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                     {% if message.Reservation.Client.Email %}
                         <td>{{ message.Reservation.Client.Email }}</td>
                     {% else %}
