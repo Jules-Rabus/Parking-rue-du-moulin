@@ -46,7 +46,6 @@ class EasyAdminController extends AbstractDashboardController
     {
         yield MenuItem::Section('Reservation');
         yield MenuItem::SubMenu('Actions','fas fa-bars')->setSubItems([
-            MenuItem::linkToCrud('Ajouter une réservation','fas fa-plus',Reservation::class)->SetAction(Crud::PAGE_NEW),
             MenuItem::linkToCrud('Afficher Réservation', 'fas fa-eye', Reservation::class)
         ]);
 
