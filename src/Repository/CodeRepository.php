@@ -67,14 +67,7 @@ class CodeRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
         ;
 
-        $email = new Email();
-        $email->from('reservation@parking-rue-du-moulin.fr')
-            ->to('jules200204@gmail.com')
-            ->subject('Nouveau code '. $code->getCode())
-            ->text("Nouveau code à ajouter : " . $code->getCode());
-        $mailer->send($email);
-
-        /*if(!$code){
+        if(!$code){
             $code = new Code();
             $code->setCode(rand(1000,9999));
             $DateDebut = $DateDebut->modify('first day of this month');
@@ -83,8 +76,15 @@ class CodeRepository extends ServiceEntityRepository
             $code->setDateFin($DateFin);
             $this->add($code);
 
+            $email = new Email();
+            $email->from('reservation@parking-rue-du-moulin.fr')
+                ->to('jules200204@gmail.com')
+                ->subject('Nouveau code '. $code->getCode())
+                ->text("Nouveau code à ajouter : " . $code->getCode());
+            $mailer->send($email);
+
         }
-        */
+
 
         return $code;
     }
