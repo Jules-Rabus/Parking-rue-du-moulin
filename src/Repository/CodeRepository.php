@@ -3,11 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Code;
-use Cassandra\Date;
+use Symfony\Component\Mime\Email;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Mailer\MailerInterface;
 
 /**
  * @method Code|null find($id, $lockMode = null, $lockVersion = null)
@@ -54,9 +55,8 @@ class CodeRepository extends ServiceEntityRepository
             ->getQuery()->getSingleScalarResult();
     }
 
-    public function SelectOrCreate(\DateTime $DateDebut, \DateTime $DateFin ): ?Code {
+    public function SelectOrCreate(\DateTime $DateDebut, \DateTime $DateFin, MailerInterface $mailer ): ?Code {
 
-        // a faire envoie mail pour rajouter le code, au programme du portail
 
         $code = $this->createQueryBuilder('code')
             ->andWhere('code.DateDebut <= :datedebut')
@@ -67,7 +67,14 @@ class CodeRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
         ;
 
-        if(!$code){
+        $email = new Email();
+        $email->from('reservation@parking-rue-du-moulin.fr')
+            ->to('jules200204@gmail.com')
+            ->subject('Nouveau code '. $code->getCode())
+            ->text("Nouveau code à ajouter : " . $code->getCode());
+        $mailer->send($email);
+
+        /*if(!$code){
             $code = new Code();
             $code->setCode(rand(1000,9999));
             $DateDebut = $DateDebut->modify('first day of this month');
@@ -75,7 +82,9 @@ class CodeRepository extends ServiceEntityRepository
             $code->setDateDebut($DateDebut);
             $code->setDateFin($DateFin);
             $this->add($code);
+
         }
+        */
 
         return $code;
     }

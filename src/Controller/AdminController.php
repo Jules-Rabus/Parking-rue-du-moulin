@@ -11,6 +11,7 @@ use App\Form\TransfertBddType;
 use App\Form\PlanningJourType;
 use App\Form\ReservationType;
 use App\Form\MessageType;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,7 @@ use Doctrine\Persistence\ManagerRegistry;
 class AdminController extends AbstractController
 {
     #[Route('/', name: 'app_admin')]
-    public function index(Request $request,ManagerRegistry $doctrine): Response
+    public function index(Request $request,ManagerRegistry $doctrine, MailerInterface $mailer ): Response
     {
         $entityManager = $doctrine->getManager();
         $reservation = new Reservation();
@@ -36,7 +37,7 @@ class AdminController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $code = $entityManager->getRepository(Code::class)->SelectOrCreate($reservation->getDateArrivee(),$reservation->getDateDepart());
+            $code = $entityManager->getRepository(Code::class)->SelectOrCreate($reservation->getDateArrivee(),$reservation->getDateDepart(),$mailer);
 
             $reservation->setDateReservation(new \DateTime());
             $reservation->AjoutDates($entityManager);
