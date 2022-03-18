@@ -184,7 +184,8 @@ class Message
     public function getMessageMail() : string{
 
         $message = str_replace(' ','%20',($this->Debut . $this->Message . $this->Fin));
-        return 'href=mailto:' . $this->contact() . '?subject=' . $this->Sujet . '&body=' . $message ;
+        $sujet = str_replace(' ','%20', $this->Sujet);
+        return 'href=mailto:' . $this->contact() . '?subject=' . $sujet . '&body=' . $message ;
     }
 
     public function getMessageTelephone() : string{
