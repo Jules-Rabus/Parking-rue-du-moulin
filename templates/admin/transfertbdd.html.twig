@@ -6,8 +6,6 @@
     
     <div>
 
-        <h1>Transfert de la base de donnée</h1>
-
         {{ form_start(form) }}
             {{ form_row(form.json) }}
             <button type="submit">Ajouter</button>
@@ -24,7 +22,7 @@
             <tbody>
             {% for transfert in transfertbdd %}
                 <tr>
-                    <td> {{ transfert.date | format_datetime(locale='fr',pattern="dd MM Y") }} </td>
+                    <td> {{ transfert.date | format_datetime(locale='fr',pattern="dd-MM-Y") }} </td>
                     <td> {{ transfert.relation.nom }} </td>
                     <td> {{ transfert.jsonfilename }} </td>
                 </tr>
