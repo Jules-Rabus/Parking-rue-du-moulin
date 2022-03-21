@@ -1,6 +1,6 @@
 * {
     box-sizing: border-box;
-    transition: .25s ease-in-out;
+    transition: .40s ease-in-out;
     margin: 0;
     padding: 0;
 }
@@ -25,7 +25,7 @@ main {
 header {
     z-index: 0;
     background-color: #181924;
-    padding: 1rem;
+    padding: 0.75rem;
 }
 
 header h1 {
@@ -93,7 +93,7 @@ header nav ul a:hover {
 }
 
 header nav ul li{
-    border-top: 2px solid #181924;
+    border-top: 3px solid #181924;
 }
 
 header nav ul li:hover {
@@ -120,18 +120,20 @@ header nav ul li:hover {
     header nav {
         position: initial;
         height: 100%;
-        width: 70%;
+        max-width: 75%;
     }
 
     header nav ul {
         margin-top: 0;
+        display: flex;
+        flex-grow: 1;
+        flex-wrap: wrap;
+        justify-content: stretch;
+        align-items: center;
     }
 
     header nav ul li {
-        float: left;
-        font-size: 14px;
-        font-weight: 400;
-        padding: 2px 15px;
+        padding: 2px 10px;
         margin: 0;
     }
 
@@ -166,6 +168,7 @@ table th, td{
     padding: 1rem;
     border: 1px solid;
     overflow-wrap: break-word;
+    min-width: fit-content;
 }
 
 
