@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Code;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Address;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -77,7 +78,7 @@ class CodeRepository extends ServiceEntityRepository
             $this->add($code);
 
             $email = new Email();
-            $email->from('reservation@parking-rue-du-moulin.fr')
+            $email->from(new Address('gestion@parking-rue-du-moulin.fr','Gestion Parking'))
                 ->to('jules200204@gmail.com')
                 ->subject('Nouveau code '. $code->getCode())
                 ->text("Nouveau code à ajouter : " . $code->getCode());
