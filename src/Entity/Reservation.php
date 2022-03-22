@@ -41,6 +41,9 @@ class Reservation
     #[ORM\ManyToOne(targetEntity: Code::class, inversedBy: 'reservations')]
     private $CodeAcces;
 
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private $CodeDonne;
+
     public function __construct()
     {
         $this->dates = new ArrayCollection();
@@ -242,6 +245,18 @@ class Reservation
     public function setCodeAcces(?Code $CodeAcces): self
     {
         $this->CodeAcces = $CodeAcces;
+
+        return $this;
+    }
+
+    public function getCodeDonne(): ?bool
+    {
+        return $this->CodeDonne;
+    }
+
+    public function setCodeDonne(?bool $CodeDonne): self
+    {
+        $this->CodeDonne = $CodeDonne;
 
         return $this;
     }
