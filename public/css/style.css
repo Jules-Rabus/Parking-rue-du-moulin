@@ -9,6 +9,7 @@ html,body {
     height: 100%;
     background-color: #1b1f36;
     color:#e6e6e6;
+    font-family: sans-serif;
 }
 
 main {
@@ -174,6 +175,16 @@ table th, td{
     min-width: fit-content;
 }
 
+table a{
+    padding: 0.5rem;
+}
+
+table a:hover{
+    background-color: #101120;
+    border-color: #ED5153;
+    border-radius: 0.5rem;
+}
+
 
 div > h2,h3,table{
     padding: 1rem 0;
@@ -201,15 +212,21 @@ form{
     padding: 1rem;
     border: 1px solid;
     margin: auto;
+    border-radius: 1rem;
 }
 
 form label{
-    font-size: 2rem;
-    padding-bottom: 1rem;
+    font-size: 1.25rem;
+    padding-bottom: 0.5rem;
 }
 
-form input{
+form input,select{
+    font-size: 1rem;
     width: fit-content;
+    border-radius: 1rem;
+    text-align: center;
+    padding: 0.5rem;
+    border: 3px solid #ED5153;
 }
 
 form div{
