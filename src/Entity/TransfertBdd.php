@@ -152,6 +152,10 @@ class TransfertBdd
             $reservation->AjoutDates($entityManager);
             $dateReservation = new \DateTime($content->date_reservation);
             $reservation->setDateReservation($dateReservation);
+            
+            if($dateArrivee < new \DateTime()){
+                $reservation->setCodeDonne(true);
+            }
 
             $entityManager->persist($reservation);
             $entityManager->flush();

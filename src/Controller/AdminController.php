@@ -174,7 +174,7 @@ class AdminController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             return $this->renderForm('admin/message.html.twig',['form'=>$form,
-                'message'=>$message,'messageRetour'=>$message->TraitementFormulaire($form->getData())]);
+                'message'=>$message,'messageRetour'=>$message->TraitementFormulaire($form->getData(),$doctrine)]);
         }
 
         return $this->renderForm('admin/message.html.twig',['form'=>$form,

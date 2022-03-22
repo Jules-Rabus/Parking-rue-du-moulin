@@ -29,7 +29,11 @@
                         <td>{{ message.Reservation.telephone }}</td>
                     {% endif %}
                     <td>{{ message.Reservation.NombrePlace }}</td>
-                    <td>{{ message.Reservation.CodeAcces.Code }}</td>
+                    {% if message.Reservation.CodeDonne %}
+                    <td class='planning_vert'>{{ message.Reservation.CodeAcces.Code }}</td>
+                    {% else %}
+                    <td class='planning_rouge'>{{ message.Reservation.CodeAcces.Code }}</td>
+                    {% endif %}
                 </tr>
 
             </tbody>

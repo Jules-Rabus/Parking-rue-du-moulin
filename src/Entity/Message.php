@@ -262,7 +262,7 @@ class Message
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->prix() . "€.";
     }
 
-    public function TraitementFormulaire($formulaire) : array{
+    public function TraitementFormulaire($formulaire, $doctrine) : array{
 
         if($formulaire['debut']){
             $this->Heure(1);
@@ -278,6 +278,10 @@ class Message
 
         if($formulaire['code']){
             $this->MessageCode();
+            $this->Reservation->setCodeDonne(true);
+            $entityManager = $doctrine->getManager();
+            $entityManager->persist($this->Reservation);
+            $entityManager->flush();
         }
 
         if($formulaire['explication']){
