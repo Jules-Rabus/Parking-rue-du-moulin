@@ -19,30 +19,31 @@ class ReservationType extends AbstractType
         $builder
             ->add('NombrePlace',IntegerType::class,[
                 'label' => 'Nombre de Place',
-                'required' => 'true',
+                'required' => true,
                 'attr' =>['min'=>1, 'max'=>10, 'value' => 1]
             ])
             ->add('DateArrivee', DateType::class,[
                 'label' => 'Date d\'arrivée',
                 'widget' => 'single_text',
                 'data' => $options['date'],
-                'required' => 'true',
+                'required' => true,
                 'attr'=>['min'=>$options['date']->format('Y-m-d')]
             ])
             ->add('DateDepart', DateType::class,[
                 'label' => 'Date de départ',
                 'widget' => 'single_text',
                 'data' => $options['date'],
-                'required' => 'true',
+                'required' => true,
                 'attr'=>['min'=>$options['date']->format('Y-m-d')]
             ])
             ->add('Telephone',TelType::class, [
                 'label' => 'Téléphone',
-                'required' => 'true',
-                'attr' => ['placeholder'=> ' Numéro de Téléphone']])
+                'required' => true,
+                'attr' => ['placeholder'=> 'Numéro de Téléphone']])
             ->add('Client',EntityType::class,[
                 'class' => Client::class,
-                'required' => 'false'
+                'required' => false,
+                'attr' => ['placeholder'=> 'Client']
             ])
         ;
     }
