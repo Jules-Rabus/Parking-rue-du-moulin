@@ -201,6 +201,25 @@ div > h2,h3,table{
     background-color:#33cc33;
 }
 
+.message{
+    background-color: #181924;
+    padding: 0.5rem 1rem;
+    min-width: fit-content;
+    width: 10rem;
+    border-radius: 1rem;
+    border: 1px solid;
+}
+
+.message:hover{
+    background-color: #101120;
+    border: 3px solid #ED5153;
+}
+
+.message a{
+    color:#fff;
+    text-decoration: none;
+}
+
 form{
     display: flex;
     flex-direction: column;
