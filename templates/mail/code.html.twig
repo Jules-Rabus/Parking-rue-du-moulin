@@ -1,0 +1,66 @@
+{% apply inline_css %}
+    <style>
+
+        body{
+            text-align: center;
+            font-family: sans-serif;
+        }
+
+        table{
+            width: 100%;
+            table-layout: fixed;
+            border: 2px solid black;
+            border-collapse: collapse;
+        }
+
+        table th,td{
+            border: 2px solid black;
+            padding: 1rem;
+        }
+        article{
+            text-align: center;
+        }
+
+        article h1{
+            font-size: 2rem;
+        }
+
+        footer{
+            padding: 0.5rem;
+            text-align: center;
+        }
+    </style>
+{% endapply %}
+
+<article>
+    <h1>Votre code d'accès : {{ message.Reservation.CodeAcces.Code }}</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Date d'arrivée</th>
+                <th>Date de départ</th>
+                <th>Nombre de véhicule</th>
+                <th>Tarif de la réservation</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{  message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                <td>{{  message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                <td>{{  message.Reservation.NombrePlace }}</td>
+                <td>{{  message.Reservation.Prix }}</td>
+            </tr>
+        </tbody>
+    </table>
+</article>
+
+<article>
+    <p>Adresse du parking : Entre le 17 et le 19 rue du moulin à Tillé (portail noir).</p>
+</article>
+
+<footer>
+    <p>Adresse e-mail :<a href='mailto:reservation@parking-rue-du-moulin.fr'> reservation@parking-rue-du-moulin.fr</a></p>
+    <p>Téléphone :<a href='sms:+33671731835'> +33.6.71.73.18.35</a></p>
+    <p>Parking-Rue-Du-Moulin</p>
+    <p>Merci de ne pas répondre à cet e-mail automatique</p>
+</footer>

@@ -182,14 +182,12 @@ class Message
     }
 
     public function getMessageMail() : string{
-
         $message = str_replace(' ','%20',($this->Debut . $this->Message . $this->Fin));
         $sujet = str_replace(' ','%20', $this->Sujet);
         return 'href=mailto:' . $this->contact() . '?subject=' . $sujet . '&body=' . $message ;
     }
 
     public function getMessageTelephone() : string{
-
         $message = str_replace(' ','%20',($this->Debut . $this->Message . $this->Fin));
         return 'href=sms:' . $this->contact() . ';?&body=' . $message ;
     }
@@ -262,7 +260,7 @@ class Message
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->prix() . "€.";
     }
 
-    public function TraitementFormulaire($formulaire, $doctrine) : array{
+    public function TraitementFormulaire($formulaire, $doctrine ) : array{
 
         if($formulaire['debut']){
             $this->Heure(1);

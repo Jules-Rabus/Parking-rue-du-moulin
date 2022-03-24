@@ -248,6 +248,14 @@ form input,select{
     border: 3px solid #ED5153;
 }
 
+form input[type=text]{
+    width: 20rem;
+}
+
+form[name=message]{
+    flex-direction: row;
+}
+
 form div{
     display: flex;
     flex-direction: column;
