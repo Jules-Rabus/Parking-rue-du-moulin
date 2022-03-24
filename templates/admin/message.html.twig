@@ -48,14 +48,6 @@
             <button type="submit">Message</button>
         {{ form_end(form) }}
 
-        {% if formEnvoie %}
-
-            {{ form_start(formEnvoie) }}
-            <button type="submit">Envoyer Mail Auto</button>
-            {{ form_end(formEnvoie) }}
-
-        {% endif %}
-
         {% if messageRetour %}
             <h3  class='message' ><a {{ messageRetour.message }}>{{ messageRetour.type }}</a></h3>
         {% endif %}

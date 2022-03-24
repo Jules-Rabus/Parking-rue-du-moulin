@@ -12,9 +12,7 @@ use App\Form\PlanningJourType;
 use App\Form\ReservationType;
 use App\Form\MessageType;
 use App\Form\MailType;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Address;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Response;
@@ -172,38 +170,17 @@ class AdminController extends AbstractController
         $form = $this->createForm(MessageType::class);
         $form->handleRequest($request);
 
-        $message = new Message($reservation,$reservation->NombreReservation($entityManager));
-        $formEnvoie = null;
+        $message = new Message($reservation,$reservation->NombreReservation($entityManager),$mailer);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $message->TraitementFormulaire($form->getData(),$doctrine);
-
-            $formEnvoie = $this->createForm(MailType::class);
-            $formEnvoie->handleRequest($request);
-
-            if ($formEnvoie->isSubmitted() && $formEnvoie->isValid()) {
-                $data = ['destinataire' => 'jules200204@gmail.com', 'sujet' => $message->getSujet(), 'template' => 'code', 'message' => $message ];
-                $this->sendEmail($data,$mailer);
-            }
-
-            return $this->renderForm('admin/message.html.twig',['form'=>$form,'formEnvoie' =>$formEnvoie,
+            return $this->renderForm('admin/message.html.twig',['form'=>$form,
                 'message'=>$message,'messageRetour'=>$message->TraitementFormulaire($form->getData(),$doctrine)]);
         }
 
-        return $this->renderForm('admin/message.html.twig',['form'=>$form,'formEnvoie' =>$formEnvoie,
+        return $this->renderForm('admin/message.html.twig',['form'=>$form,
             'message'=>$message,'messageRetour'=>null]);
     }
 
-    private function sendEmail($data, MailerInterface $mailer){
-        $email = (new TemplatedEmail())
-            ->from(new Address ('reservation@parking-rue-du-moulin.fr', 'Parking Rue Du Moulin'))
-            ->to($data['destinataire'])
-            ->bcc(new Address('reservation@parking-rue-du-moulin.fr','Copie Mail'))
-            ->subject($data['sujet'])
-            ->htmlTemplate('mail/' . $data['template'] . '.html.twig' )
-            ->context(['message' => ($data["message"])]);
-        $mailer->send($email);
-    }
 
 }

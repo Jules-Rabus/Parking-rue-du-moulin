@@ -3,6 +3,9 @@
 namespace App\Entity;
 
 use App\Entity\Reservation;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Address;
 
 class Message
 {
@@ -19,17 +22,20 @@ class Message
 
     private int $NombreReservation;
 
+    private MailerInterface $Mailer;
+
     /**
      * @param \App\Entity\Reservation $Reservation
      * @param int $NombreReservation
      */
-    public function __construct(\App\Entity\Reservation $Reservation, int $NombreReservation)
+    public function __construct(\App\Entity\Reservation $Reservation, int $NombreReservation, MailerInterface $Mailer)
     {
         $this->Debut = '';
         $this->Fin = '';
         $this->Message = '';
         $this->Reservation = $Reservation;
         $this->NombreReservation = $NombreReservation;
+        $this->Mailer = $Mailer;
     }
 
     /**
@@ -280,6 +286,11 @@ class Message
             $entityManager = $doctrine->getManager();
             $entityManager->persist($this->Reservation);
             $entityManager->flush();
+            if($this->Reservation->getClient()->getEmail()){
+                // Changer destinaire pour la prod
+                $data = ['destinataire' => 'jules200204@gmail.com', 'sujet' => $this->getSujet() . ' : ' .$this->Reservation->getCodeAcces()->getCode(), 'template' => 'code', 'message' => $this ];
+                $this->sendEmail($data);
+            }
         }
 
         if($formulaire['explication']){
@@ -291,6 +302,17 @@ class Message
         }
         return ['message'=>$this->getMessageTelephone(),'type'=>'Sms'];
 
+    }
+
+    private function sendEmail($data){
+        $email = (new TemplatedEmail())
+            ->from(new Address ('reservation@parking-rue-du-moulin.fr', 'Parking Rue Du Moulin'))
+            ->to($data['destinataire'])
+            ->bcc(new Address('reservation@parking-rue-du-moulin.fr','Copie Mail'))
+            ->subject($data['sujet'])
+            ->htmlTemplate('mail/' . $data['template'] . '.html.twig' )
+            ->context(['message' => ($data["message"])]);
+        $this->Mailer->send($email);
     }
 
 
