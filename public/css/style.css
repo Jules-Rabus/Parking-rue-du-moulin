@@ -105,6 +105,15 @@ header nav ul li:hover {
     border-color: #ED5153;
 }
 
+header nav ul img{
+    height: 36px;
+    filter: contrast(0.8);
+}
+
+header nav ul img:hover{
+    filter: contrast(1);
+}
+
 /* Responsive MQ header */
 
 @media all and (min-width:800px) {

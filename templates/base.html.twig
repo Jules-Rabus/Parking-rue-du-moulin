@@ -25,13 +25,13 @@
             <ul>
                 <li><a href="{{ path('default') }}">Accueil</a></li>
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                    <li><a href="{{ path('app_logout') }}"><img src="{{ asset('icons/logout.svg') }}"></a></li>
                     {% if is_granted('ROLE_ADMIN') %}
                         <li><a href="{{ path('app_admin') }}">Admin</a></li>
                     {% endif %}
                 {% else %}
-                    <li><a href="{{ path('app_login') }}">Connexion</a></li>
                     <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                    <li><a href="{{ path('app_login') }}"><img src="{{ asset('icons/login.svg') }}"></a></li>
                 {% endif %}
             </ul>
         </nav>
