@@ -7,7 +7,7 @@
         <link rel="stylesheet" href="{{ asset('css/style.css') }}">
         <script type="text/javascript" src="{{ asset('js/burger.js') }}" defer></script>
 
-        <title>{% block title %}Projet Symfony{% endblock %}</title>
+        <title>{% block title %}ParkingRue Du Moulin{% endblock %}</title>
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -40,7 +40,40 @@
     {% block body %}{% endblock %}
     </main>
 </body>
-<footer>
 
+<footer>
+    <nav>
+        <ul>
+            <li>
+                <div>
+                    <a href="sms:+33671731835"><img src="{{ asset('icons/phone.svg') }}">
+                    <p>06.71.73.18.35</a></p>
+                </div>
+                <div>
+                    <a href="mailto:elonico7@hotmail.fr"><img src="{{ asset('icons/email.svg') }}">
+                    <p>elonico7@hotmail.fr</a></p>
+                </div>
+
+            </li>
+
+            <li>
+                <div>
+                    <h2><a href="#" >Parking-Rue-Du-Moulin.fr</a></h2>
+                </div>
+            </li>
+
+            <li>
+                <div>
+                    <p><a href="https://goo.gl/maps/pYakmZUcuUQaFpR46" target="_blank">Localisation</p>
+                    <img src="{{ asset('icons/location.svg') }}"></a>
+                </div>
+                <div>
+                    <p><a href="reglement-parking.pdf" target="_blank">Règlement intérieur</p>
+                    <img src="{{ asset('icons/check.svg') }}"></a>
+                </div>
+            </li>
+        </ul>
+    </nav>
 </footer>
+
 </html>
