@@ -6,7 +6,9 @@ use App\Repository\CodeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Core\Annotation\ApiResource;
 
+#[ApiResource()]
 #[ORM\Entity(repositoryClass: CodeRepository::class)]
 class Code
 {
