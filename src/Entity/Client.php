@@ -9,8 +9,17 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use ApiPlatform\Core\Annotation\ApiResource;
-#[ApiResource()]
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
+#[ApiResource(
+    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'user:read']]],
+    itemOperations: ['get' => ['normalization_context' => ['groups' => 'user:read']]],
+)]
+#[ApiFilter(SearchFilter::class, properties: ['email' => 'partial','nom' => 'partial','telephone'=>'partial'])]
+
 #[UniqueEntity(fields: ['email'], message: 'Il y a déjà un compte existant pour ce mail')]
 class Client implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -18,27 +27,33 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer', unique: true)]
+    #[Groups(['user:read'])]
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true, nullable: true)]
+    #[Groups(['user:read'])]
     private $email;
 
     #[ORM\Column(type: 'json')]
+    #[Groups(['user:read'])]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
     private $password;
 
     #[ORM\Column(type: 'string', length: 255)]
+    #[Groups(['user:read'])]
     private $nom;
 
     #[ORM\OneToMany(mappedBy: 'Client', targetEntity: Reservation::class)]
+    #[Groups(['user:read'])]
     private $reservations;
 
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['user:read'])]
     private $telephone;
 
 

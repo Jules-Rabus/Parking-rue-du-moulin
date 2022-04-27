@@ -7,9 +7,14 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Annotation\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
 
-#[ApiResource()]
 #[ORM\Entity(repositoryClass: CodeRepository::class)]
+#[ApiResource(
+    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'code:read']]],
+    itemOperations: ['get' => ['normalization_context' => ['groups' => 'code:read']]],
+
+)]
 class Code
 {
     #[ORM\Id]
@@ -18,15 +23,19 @@ class Code
     private $id;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(['code:read'])]
     private $Code;
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['code:read'])]
     private $DateDebut;
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Groups(['code:read'])]
     private $DateFin;
 
     #[ORM\OneToMany(mappedBy: 'CodeAcces', targetEntity: Reservation::class)]
+    #[Groups(['code:read'])]
     private $reservations;
 
     public function __construct()

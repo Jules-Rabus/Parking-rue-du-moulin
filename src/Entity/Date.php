@@ -2,23 +2,32 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\DateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DateRepository::class)]
+#[ApiResource(
+    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'date:read']]],
+    itemOperations: ['get' => ['normalization_context' => ['groups' => 'date:read']]],
+)]
 class Date
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['date:read'])]
     private $id;
 
     #[ORM\Column(type: 'date', unique: false)]
+    #[Groups(['date:read'])]
     private $Date;
 
     #[ORM\ManyToMany(targetEntity: Reservation::class, inversedBy: 'dates')]
+    #[Groups(['date:read'])]
     private $relation;
 
     public function __construct()
@@ -91,7 +100,8 @@ class Date
 
     }
 
-    public function NombrePlaceDisponibles($entityManager) : int{
+    #[Groups(['date:read'])]
+    public function getNombrePlaceDisponibles() : int{
 
         $reservations = $this->getRelation()->getValues();
         $nombrePlace = 40;
@@ -103,7 +113,8 @@ class Date
         return $nombrePlace;
     }
 
-    public function nombreDepart($entityManager) : int{
+    #[Groups(['date:read'])]
+    public function getNombreDepart() : int{
 
         $reservations = $this->getRelation()->getValues();
         $nombreDepart = 0;
@@ -117,7 +128,8 @@ class Date
         return $nombreDepart;
     }
 
-    public function nombreArrivee($entityManager) : int{
+    #[Groups(['date:read'])]
+    public function getNombreArrivee() : int{
 
         $reservations = $this->getRelation()->getValues();
         $nombreArrivee = 0;

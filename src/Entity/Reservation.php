@@ -2,46 +2,62 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\ReservationRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use App\Entity\Date;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
+#[ApiResource(
+    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'reservation:read']]],
+    itemOperations: ['get' => ['normalization_context' => ['groups' => 'reservation:read']]],
+)]
+#[ApiFilter(DateFilter::class, properties: ['DateArrivee','DateDepart'])]
 class Reservation
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
+    #[Groups(['reservation:read'])]
     private $id;
 
     #[ORM\Column(type: 'integer')]
+    #[Groups(['reservation:read'])]
     private $NombrePlace;
 
     #[ORM\Column(type: 'date')]
+    #[Groups(['reservation:read'])]
     private $DateArrivee;
 
     #[ORM\Column(type: 'date')]
+    #[Groups(['reservation:read'])]
     private $DateDepart;
 
     #[ORM\Column(type: 'date')]
+    #[Groups(['reservation:read'])]
     private $DateReservation;
 
     #[ORM\ManyToOne(targetEntity: Client::class, inversedBy: 'reservations')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['reservation:read'])]
     private $Client;
 
     #[ORM\ManyToMany(targetEntity: Date::class, mappedBy: 'relation')]
+    #[Groups(['reservation:read'])]
     private $dates;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Groups(['reservation:read'])]
     private $Telephone;
 
     #[ORM\ManyToOne(targetEntity: Code::class, inversedBy: 'reservations')]
+    #[Groups(['reservation:read'])]
     private $CodeAcces;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
+    #[Groups(['reservation:read'])]
     private $CodeDonne;
 
     public function __construct()
@@ -194,7 +210,8 @@ class Reservation
         return $entityManager->getRepository(Reservation::class)->NombreReservationTelephone($this->Telephone);
     }
 
-    public function Prix(): int{
+    #[Groups(['reservation:read'])]
+    public function getPrix(): int{
 
         $duree = $this->Duree();
 

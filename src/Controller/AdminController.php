@@ -75,9 +75,9 @@ class AdminController extends AbstractController
 
         for($i = 0 ; $i < 367 ; $i++){
             $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
-            $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $dateEntite->NombrePlaceDisponibles($entityManager);
-            $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $dateEntite->nombreDepart($entityManager);
-            $dates[$dateBoucle->format('Y-m-d')]['Arrivee'] = $dateEntite->nombreArrivee($entityManager);
+            $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $dateEntite->getNombrePlaceDisponibles();
+            $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $dateEntite->nombreDepart();
+            $dates[$dateBoucle->format('Y-m-d')]['Arrivee'] = $dateEntite->nombreArrivee();
             $dateBoucle->add(new \DateInterval("P1D"));
         }
 
@@ -105,7 +105,7 @@ class AdminController extends AbstractController
         $departs = $entityManager->getRepository(Reservation::class)->FindBy(array("DateDepart"=>$date));
         $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($date);
         $voitures = $dateEntite->getRelation()->getValues();
-        $nombrePlaceDisponibles = $dateEntite->NombrePlaceDisponibles($entityManager);
+        $nombrePlaceDisponibles = $dateEntite->getNombrePlaceDisponibles();
 
         return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'arrivees'=>$arrivees,'departs'=>$departs,
             "nombrePlaceDisponibles"=>$nombrePlaceDisponibles,'voitures'=>$voitures
