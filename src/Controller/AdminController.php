@@ -76,8 +76,8 @@ class AdminController extends AbstractController
         for($i = 0 ; $i < 367 ; $i++){
             $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
             $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $dateEntite->getNombrePlaceDisponibles();
-            $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $dateEntite->nombreDepart();
-            $dates[$dateBoucle->format('Y-m-d')]['Arrivee'] = $dateEntite->nombreArrivee();
+            $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $dateEntite->getnombreDepart();
+            $dates[$dateBoucle->format('Y-m-d')]['Arrivee'] = $dateEntite->getnombreArrivee();
             $dateBoucle->add(new \DateInterval("P1D"));
         }
 
