@@ -143,5 +143,22 @@ class Date
         return $nombreArrivee;
     }
 
+    public function getnombrePlaceCategorie() : int{
+
+        $nombrePlace = $this->getNombrePlaceDisponibles();
+
+        if($nombrePlace > 20){
+            return 3;
+        }
+        if($nombrePlace > 10){
+            return 2;
+        }
+        if($nombrePlace > 5){
+            return 1;
+        }
+        return 0;
+
+    }
+
 
 }

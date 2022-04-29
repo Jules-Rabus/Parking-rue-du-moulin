@@ -183,12 +183,12 @@ class Reservation
         $dateBoucle = new \DateTime($this->DateArrivee->format('Y-m-d'));
         $duree = $this->Duree();
         $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
-        $nombrePlaceDisponiblesMin = $date->NombrePlaceDisponibles($entityManager) - $this->NombrePlace;
+        $nombrePlaceDisponiblesMin = $date->getNombrePlaceDisponibles($entityManager) - $this->NombrePlace;
 
         for($i = 0 ; $i < $duree; $i++){
 
             $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
-            $nombrePlaceDisponibles = $date->NombrePlaceDisponibles($entityManager) - $this->NombrePlace;
+            $nombrePlaceDisponibles = $date->getNombrePlaceDisponibles($entityManager) - $this->NombrePlace;
             if( $nombrePlaceDisponibles < 0){
                 return -1;
             }
