@@ -38,7 +38,7 @@ class ReservationType extends AbstractType
             ])
             ->add('Telephone',TelType::class, [
                 'label' => 'Téléphone',
-                'required' => true,
+                'required' => false,
                 'attr' => ['placeholder'=> 'Numéro de Téléphone']])
             ->add('Client',EntityType::class,[
                 'class' => Client::class,

@@ -56,7 +56,11 @@
                             <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.Id} ) }}'>{{ arrivee.telephone }}</a></td>
                         {% endif %}
                         <td>{{ arrivee.NombrePlace }}</td>
-                        <td>{{ arrivee.CodeAcces.Code }}</td>
+                        {% if arrivee.CodeDonne %}
+                            <td class='planning_vert'>{{ arrivee.CodeAcces.Code }}</td>
+                        {% else %}
+                            <td class='planning_rouge'>{{ arrivee.CodeAcces.Code }}</td>
+                        {% endif %}
                         <td>Action</td>
                     </tr>
 
