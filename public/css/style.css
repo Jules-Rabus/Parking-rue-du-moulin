@@ -1,5 +1,4 @@
 * {
-    box-sizing: border-box;
     transition: .40s ease-in-out;
     margin: 0;
     padding: 0;
@@ -228,7 +227,6 @@ header nav ul li div img:hover{
 }
 
 
-
 table{
     table-layout: fixed;
     width: 100%;
@@ -259,7 +257,6 @@ table a:hover{
     border-radius: 0.5rem;
 }
 
-
 div > h2,h3,table{
     padding: 1rem 0;
     text-align: center;
@@ -273,6 +270,20 @@ div > h2,h3,table{
 }
 .planning_vert{
     background-color:#33cc33;
+}
+
+.oublie{
+    padding: 1rem;
+    background-color: #181924;
+    color:#fff;
+    border-top: 3px solid #181924;
+    border-radius: 1rem;
+}
+
+.oublie:hover{
+    background-color: #101120;
+    border-color: #ED5153;
+    color:white;
 }
 
 .message{
