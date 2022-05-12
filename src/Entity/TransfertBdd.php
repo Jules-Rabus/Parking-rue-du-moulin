@@ -75,7 +75,7 @@ class TransfertBdd
     {
 
         $finder = new Finder();
-        $finder->files()->in('/home/clients/f0d77ebce5440fda32259bef2b47eddc/sites/dev.parking-rue-du-moulin.fr/projetsymfony/public/uploads/json');
+        $finder->files()->in('/home/clients/f0d77ebce5440fda32259bef2b47eddc/sites/dev.parking-rue-du-moulin.fr/recup/public/uploads/json');
         $finder->files()->name($this->jsonFilename);
 
         $contents = array();

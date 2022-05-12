@@ -43,7 +43,7 @@ class AdminController extends AbstractController
             $reservation->setDateReservation(new \DateTime());
             $reservation->AjoutDates($entityManager);
             $reservation->setCodeAcces($code);
-            $formPrix = $reservation->Prix();
+            $formPrix = $reservation->getPrix();
 
             if($reservation->VerificationDisponibilites($entityManager)){
                 if($reservation->getDateDepart() >= $reservation->getDateArrivee()){
@@ -106,9 +106,11 @@ class AdminController extends AbstractController
         $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($date);
         $voitures = $dateEntite->getRelation()->getValues();
         $nombrePlaceDisponibles = $dateEntite->getNombrePlaceDisponibles();
+        $nbrArrivee = $dateEntite->getnombreDepart();
+        $nbrDepart =  $dateEntite->getnombreArrivee();
 
         return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'arrivees'=>$arrivees,'departs'=>$departs,
-            "nombrePlaceDisponibles"=>$nombrePlaceDisponibles,'voitures'=>$voitures
+            "nombrePlaceDisponibles"=>$nombrePlaceDisponibles,'voitures'=>$voitures,'nbrArrivee'=>$nbrArrivee,'nbrDepart'=>$nbrDepart
         ]);
     }
 
