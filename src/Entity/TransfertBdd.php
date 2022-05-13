@@ -71,23 +71,28 @@ class TransfertBdd
         return $this;
     }
 
+    // traitement du fichier json
     public function TransfertBdd($entityManager)
     {
 
+        // On recupere le fichier json
         $finder = new Finder();
         $finder->files()->in('/home/clients/f0d77ebce5440fda32259bef2b47eddc/sites/dev.parking-rue-du-moulin.fr/recup/public/uploads/json');
         $finder->files()->name($this->jsonFilename);
 
         $contents = array();
 
-        foreach ($finder as $file) {
 
+        // on decode chaque ligne du fichier JSON qui correspond a une reservation
+        foreach ($finder as $file) {
             $file->getContents();
             $contents += json_decode($file->getContents());
         }
 
+        // On effectue le traitement pour chaque reservation
         foreach ($contents as $content) {
 
+            // On cree une entite client et reserfation
             $client = new Client();
             $reservation = new Reservation();
 
@@ -95,7 +100,13 @@ class TransfertBdd
 
             if (filter_var($content->contact, FILTER_VALIDATE_EMAIL) && !empty($content->contact)) {
 
+                // Si le contact est un mail
+
+                // On verifie que le client n'a pas deja ete enregistrer dans la BDD
                 if (! $entityManager->getRepository(Client::class)->countEmail($content->contact)) {
+
+                    // On remplit les informations du client
+
                     $client->setEmail($content->contact);
                     $client->setNom($content->nom);
 
@@ -107,12 +118,19 @@ class TransfertBdd
                     $entityManager->flush();
                 }
                 else{
+                    // On recupere le client car il est deja dans la BDD
                     $client = $entityManager->getRepository(Client::class)->FindOneBy(array("email" => $content->contact));
                 }
             }
             elseif( !empty($content->contact)){
 
+                // Si le contact est un telephone
+
+                // On verifie que le client n'a pas deja ete enregistrer dans la BDD
                 if (! $entityManager->getRepository(Client::class)->countTelephone($content->contact)) {
+
+                    // On remplit les informations du client
+
                     $client->setTelephone($content->contact);
                     $client->setNom($content->nom);
 
@@ -124,6 +142,7 @@ class TransfertBdd
                     $entityManager->flush();
                 }
                 else{
+                    // On recupere le client car il est deja dans la BDD
                     $client = $entityManager->getRepository(Client::class)->FindOneBy(array("telephone" => $content->contact));
                 }
             }
@@ -131,12 +150,15 @@ class TransfertBdd
 
             // Traitement pour les codes
 
+            // On regarde si le code a deja ete creer
             if( !$entityManager->getRepository(Code::class)->countCode($content->code)){
+                // On creer un nouveau code dans la bdd
                 $code = New Code();
                 $code->setCode($content->code);
                 $entityManager->persist($code);
             }
             else{
+                // On recupere le code deja existant dans la BDD
                 $code = $entityManager->getRepository(Code::class)->FindOneBy(array("Code" => $content->code));
             }
             $reservation->setCodeAcces($code);
@@ -144,7 +166,7 @@ class TransfertBdd
             $reservation->setTelephone($content->contact);
             $reservation->setNombrePlace($content->place);
 
-            //Traitement des Dates
+            //Traitement des dates de reservations
             $dateArrivee = new \DateTime($content->date);
             $reservation->setDateArrivee($dateArrivee);
             $dateDepart = new \DateTime($content->datef);
@@ -152,7 +174,8 @@ class TransfertBdd
             $reservation->AjoutDates($entityManager);
             $dateReservation = new \DateTime($content->date_reservation);
             $reservation->setDateReservation($dateReservation);
-            
+
+            // Si le client est deja arrivee sur le parking alors il a forcement eu son code
             if($dateArrivee < new \DateTime()){
                 $reservation->setCodeDonne(true);
             }

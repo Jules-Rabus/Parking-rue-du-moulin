@@ -12,10 +12,10 @@ class SecurityController extends AbstractController
     #[Route('/login', name: 'app_login')]
     public function index(AuthenticationUtils $authenticationUtils): Response
     {
-        // get the login error if there is one
+        // On recupere l'erreur lors de l'authentification
         $error = $authenticationUtils->getLastAuthenticationError();
 
-        // last username entered by the user
+        // On recupere le dernier identifiant entre pour ne pas le refaire saisir
         $lastUsername = $authenticationUtils->getLastUsername();
 
         return $this->render('login/index.html.twig', [

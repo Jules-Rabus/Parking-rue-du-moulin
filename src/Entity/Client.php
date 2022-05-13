@@ -172,6 +172,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->reservations;
     }
 
+
     public function addReservation(Reservation $reservation): self
     {
         if (!$this->reservations->contains($reservation)) {
@@ -181,6 +182,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 
     public function removeReservation(Reservation $reservation): self
     {
@@ -216,6 +218,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->telephone;
     }
 
+    // Les clients étant principalement des étrangers, je converti chaque numero afin que les clients reçoivent leur appel/sms même à l'international
     public function setTelephone(?string $Telephone): self
     {
         // Conversion en +33 + et suppresion des espaces

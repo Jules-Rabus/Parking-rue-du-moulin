@@ -10,6 +10,8 @@ use Symfony\Component\Mime\Address;
 class Message
 {
 
+    // Cette entite n'est pas present dans la BDD
+
     private string $Message;
 
     private string $Debut;
@@ -135,8 +137,10 @@ class Message
         $this->Sujet = $Sujet;
     }
 
+    // Cette fonction va permettre de generer automatiquement les formules de politesse en fonction de l'heure de la journee
     public function Heure($moment = 1){
 
+        // On recupère les informations lies à l'heure de la journée
         $soleil = (new \DateTime())->setTimestamp(date_sun_info((new \DateTime())->getTimestamp(), 49.375, 2.1935)['sunset']);
         $heure = new \DateTime();
         $midi = (new \DateTime())->setTime(12,0,0);
@@ -144,6 +148,7 @@ class Message
         $soir = (new \DateTime())->setTime(19,0,0);
         $jour = (new \DateTime())->format('l');
 
+        // En fonction des informations on etablit la bonne formule de politesse
 
         if ($heure > $soleil || $heure > $soir ){
             $debut = "Bonsoir";
@@ -171,6 +176,7 @@ class Message
         }
 
         // Moment: 1 = tout, 2 : début , 3 : fin
+        // Des fois il peut etre utilise de mettre que la formule de politesse a la fin, si on a deja eu la personne dans la journee afin de ne pas se repeter
 
         switch ($moment) {
             case 1:
@@ -187,17 +193,20 @@ class Message
 
     }
 
+    // On cree le lien pour un mail
     public function getMessageMail() : string{
         $message = str_replace(' ','%20',($this->Debut . $this->Message . $this->Fin));
         $sujet = str_replace(' ','%20', $this->Sujet);
         return 'href=mailto:' . $this->contact() . '?subject=' . $sujet . '&body=' . $message ;
     }
 
+    // On creer le lien pour un message
     public function getMessageTelephone() : string{
         $message = str_replace(' ','%20',($this->Debut . $this->Message . $this->Fin));
         return 'href=sms:' . $this->contact() . ';?&body=' . $message ;
     }
 
+    // On recupere le bon contact : mail/telephone
     public function contact() : string{
 
         $client = $this->Reservation->getClient();
@@ -209,6 +218,7 @@ class Message
 
     }
 
+    // template pour envoyer un code
     public function MessageCode(){
 
         $this->Sujet = "Votre code d'accès au parking";
@@ -220,6 +230,7 @@ class Message
 
     }
 
+    // fonction pour mettre un 's' en fonction du nombre de vehicule
     public function Place() : string{
 
         if( $nombrePlace = $this->Reservation->getNombrePlace() > 1){
@@ -229,6 +240,7 @@ class Message
 
     }
 
+    // template pour l'explication du fonctionnement du parking
     public function MessageExplication(){
 
         $this->Sujet = "Explication du fonctionnement";
@@ -238,6 +250,7 @@ class Message
             "Le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus soit en espèces.%0AVous restez en possession des clés de votre véhicule.%0ASi vous avez des questions n'hésitez pas." ;
     }
 
+    // template pour la confirmation d'une reservation
     public function MessageReservation(){
 
         $this->Sujet = "Confirmation de votre réservation";
@@ -252,6 +265,7 @@ class Message
 
     }
 
+    // template pour l'allongement d'une reservation
     public function MessageAllongement(){
 
         $this->Sujet = "Allongement de votre réservation";
@@ -259,6 +273,7 @@ class Message
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
     }
 
+    // template pour l'annulation d'une reservation
     public function MessageAnnulation(){
 
         $this->Sujet = "Annulation de votre réservation";
@@ -266,6 +281,7 @@ class Message
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
     }
 
+    // traitement du formulaire pour les messages
     public function TraitementFormulaire($formulaire, $doctrine ) : array{
 
         if($formulaire['debut']){
@@ -280,12 +296,15 @@ class Message
             $this->MessageReservation();
         }
 
+        //
         if($formulaire['code']){
             $this->MessageCode();
             $this->Reservation->setCodeDonne(true);
             $entityManager = $doctrine->getManager();
             $entityManager->persist($this->Reservation);
             $entityManager->flush();
+
+            // On envoie le mail pour le code automatiquement
             if($this->Reservation->getClient()->getEmail()){
                 // Changer destinaire pour la prod
                 $data = ['destinataire' => 'jules200204@gmail.com', 'sujet' => $this->getSujet() . ' : ' .$this->Reservation->getCodeAcces()->getCode(), 'template' => 'code', 'message' => $this ];
@@ -297,6 +316,8 @@ class Message
             $this->MessageExplication();
         }
 
+        // On retourne le message/ le mail
+
         if($Client =  $this->Reservation->getClient()->getEmail()){
             return ['message'=>$this->getMessageMail(),'type'=>'Mail'];
         }
@@ -304,6 +325,7 @@ class Message
 
     }
 
+    // fonction pour envoyer le mail
     private function sendEmail($data){
         $email = (new TemplatedEmail())
             ->from(new Address ('reservation@parking-rue-du-moulin.fr', 'Parking Rue Du Moulin'))

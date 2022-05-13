@@ -100,12 +100,15 @@ class Date
 
     }
 
+
     #[Groups(['date:read'])]
     public function getNombrePlaceDisponibles() : int{
 
+        // on recupere toutes les reservations en lien avec cette date
         $reservations = $this->getRelation()->getValues();
         $nombrePlace = 40;
 
+        // on enleve au nombre de place, le nombre de vehicule par reservation
         foreach ($reservations as $reservation){
             $nombrePlace -= $reservation->getNombrePlace();
         }
@@ -116,9 +119,11 @@ class Date
     #[Groups(['date:read'])]
     public function getNombreDepart() : int{
 
+        // on recupere toutes les reservations en lien avec cette date
         $reservations = $this->getRelation()->getValues();
         $nombreDepart = 0;
 
+        // On boucle afin de recuperer chaque vehicule qui part ce jour là
         foreach ($reservations as $reservation) {
             if ($reservation->getDateDepart() == $this->getDate()){
                 $nombreDepart += $reservation->getNombrePlace();
@@ -131,9 +136,12 @@ class Date
     #[Groups(['date:read'])]
     public function getNombreArrivee() : int{
 
+        // on recupere toutes les reservations en lien avec cette date
         $reservations = $this->getRelation()->getValues();
         $nombreArrivee = 0;
 
+
+        // On boucle afin de recuperer chaque vehicule qui arrive ce jour là
         foreach ($reservations as $reservation) {
             if ($reservation->getDateArrivee() == $this->getDate()){
                 $nombreArrivee += $reservation->getNombrePlace();
@@ -143,6 +151,7 @@ class Date
         return $nombreArrivee;
     }
 
+    // Cette fonction me sert uniquement dans l'api afin de masquer le nombre de vehicule sur le parking
     public function getnombrePlaceCategorie() : int{
 
         $nombrePlace = $this->getNombrePlaceDisponibles();

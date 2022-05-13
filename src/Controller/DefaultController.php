@@ -14,11 +14,5 @@ class DefaultController extends AbstractController
         return $this->render('default/index.html.twig');
     }
 
-    #[ROUTE('/client', name: 'client')]
-    public function client(): Response
-    {
-        return $this->render('client/index.html.twig');
-    }
-
 
 }
