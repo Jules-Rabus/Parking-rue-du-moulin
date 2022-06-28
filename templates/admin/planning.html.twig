@@ -6,15 +6,16 @@
 
     <div>
 
-        <h2>Aujourd'hui : {{ date| format_datetime(locale='fr',pattern="dd-MM-Y") }}</h2>
+        <div>
+            <h2>Aujourd'hui : {{ date| format_datetime(locale='fr',pattern="dd-MM-Y") }}</h2>
+        </div>
 
-        <table>
+        <table class='planning'>
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Nombre de place</th>
-                    <th>Arrivee</th>
-                    <th>Depart</th>
+                    <th class='planning'>Date</th>
+                    <th>Place</th>
+                    <th>RIen</th>
                 </tr>
             </thead>
             <tbody>
@@ -24,25 +25,35 @@
                     {% if key | format_datetime(locale='fr',pattern="dd") == 01  %}
 
                         <tr>
-                            <td colspan="4"><h2>{{ key | format_datetime(locale='fr',pattern="LLLL") | capitalize }}</h2></td>
+                            <td colspan="2"><h2>{{ key | format_datetime(locale='fr',pattern="LLLL") | capitalize }}</h2></td>
+                            <td> Montant </td>
                         </tr>
 
                     {% endif %}
 
-                    <tr>
-                        <td><a href='{{ path('app_admin_planning_jour', {'date' : key | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE : dd-MM-Y") | capitalize  }}</a></td>
-                        {% if date.nombrePlaceDisponibles > 15 %}
-                            <td class='planning_vert'>{{ date.nombrePlaceDisponibles }}</td>
-                        {% elseif date.nombrePlaceDisponibles > 10 %}
-                            <td class='planning_orange'>{{ date.nombrePlaceDisponibles }}</td>
-                        {% else %}
-                            <td class='planning_rouge'>{{ date.nombrePlaceDisponibles }}</td>
-                        {% endif %}
+                    {% if date.nombrePlaceDisponibles > 15 %}
+                        <tr class='planning_vert'>
+                    {% elseif date.nombrePlaceDisponibles > 10 %}
+                        <tr class='planning_orange'>
+                    {% else %}
+                        <tr class='planning_rouge'>
+                    {% endif %}
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : key | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE dd-MM-Y") | capitalize  }}</a></td>
+                        <td>{{ date.nombrePlaceDisponibles }}</td>
+                        <td class='planning_flex'>
+                            {% if date.Arrivee > 8 %}
+                                <div class='planning_rouge'>Arrivée : {{ date.Arrivee }}</div>
+                            {% else %}
+                                <div>Arrivée : {{ date.Arrivee }}</div>
+                            {% endif %}
 
-                        <td>{{ date.Arrivee }}</td>
-                        <td>{{ date.Depart }}</td>
+                            {% if date.Depart > 8 %}
+                                <div class='planning_rouge'>Départ : {{ date.Depart }}</div>
+                            {% else %}
+                                <div>Départ : {{ date.Depart }}</div>
+                            {% endif %}
+                        </td>
                     </tr>
-
                 {% endfor %}
             </tbody>
         </table>

@@ -4,20 +4,15 @@
 
 {% block body %}
 
-    <table>
-        <tbody>
-            <tr>
-                <td><h3><a href='{{ path('app_admin_planning_jour', {'date' : date | date_modify("-1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("-1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></h3></td>
-                <td>
-                    {{ form_start(form) }}
-                       {{ form_row(form.date) }}
-                    <button type="submit">Chercher</button>
-                    {{ form_end(form) }}
-                </td>
-                <td><h3><a href='{{ path('app_admin_planning_jour', {'date' : date | date_modify("+1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("+1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></h3></td>
-            </tr>
-        </tbody>
-    </table>
+    <div class='planning_jour_menu'>
+        <h3><a href='{{ path('app_admin_planning_jour', {'date' : date | date_modify("-1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("-1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></h3>
+        <div>{{ form_start(form) }}
+             {{ form_row(form.date) }}
+             <button type="submit">Chercher</button>
+             {{ form_end(form) }}
+        </div>
+        <h3><a href='{{ path('app_admin_planning_jour', {'date' : date | date_modify("+1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("+1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></h3>
+    </div>
 
     <div class='planning_jour'>
 
@@ -33,35 +28,34 @@
 
             <h3>Arrivée : {{ nbrArrivee}}</h3>
 
-            <table>
+            <table class='planning_jour'>
                 <thead>
                     <tr>
                         <th>Nom</th>
                         <th>Départ</th>
                         <th>Contact</th>
                         <th>Place</th>
-                        <th>Code</th>
-                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
 
-                {% for arrivee in arrivees %}
-                    <tr>
+                {% for arrivee in arrivees | sort((a, b) => a.DateArrivee <=> b.DateArrivee ) %}
+                    {% if arrivee.CodeDonne %}
+                        <tr class='planning_vert'>
+                    {% elseif aujourdhui | date_modify("+3 day") > date  %}
+                        <tr class='planning_rouge'>
+                    {% else %}
+                        <tr>
+                    {% endif %}
                         <td>{{ arrivee.getClient().nom }}</td>
                         <td><a href='{{ path('app_admin_planning_jour', {'date' : arrivee.DateDepart  | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+
                         {% if arrivee.getClient.Email %}
                             <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.Id} ) }}'>{{ arrivee.getClient.Email }}</a></td>
                         {% else %}
                             <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.Id} ) }}'>{{ arrivee.telephone }}</a></td>
                         {% endif %}
                         <td>{{ arrivee.NombrePlace }}</td>
-                        {% if arrivee.CodeDonne %}
-                            <td class='planning_vert'>{{ arrivee.CodeAcces.Code }}</td>
-                        {% else %}
-                            <td class='planning_rouge'>{{ arrivee.CodeAcces.Code }}</td>
-                        {% endif %}
-                        <td>Action</td>
                     </tr>
 
                 {% endfor %}
@@ -75,15 +69,13 @@
 
             <h3>Départ : {{nbrDepart}}</h3>
 
-            <table>
+            <table class='planning_jour'>
                 <thead>
                 <tr>
                     <th>Nom</th>
                     <th>Arrivée</th>
                     <th>Contact</th>
                     <th>Place</th>
-                    <th>Code</th>
-                    <th>Action</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -99,8 +91,6 @@
                                 <td><a href='{{ path('app_admin_message', {'reservation' : depart.Id} ) }}'>{{ depart.telephone }}</a></td>
                             {% endif %}
                             <td>{{ depart.NombrePlace }}</td>
-                            <td>{{ depart.CodeAcces.Code }}</td>
-                            <td>Action</td>
                         {% endif %}
 
                     </tr>
@@ -116,7 +106,7 @@
 
             <h3>Voiture présente :</h3>
 
-            <table>
+            <table class='planning_jour'>
                 <thead>
                 <tr>
                     <th>Nom</th>
@@ -124,7 +114,6 @@
                     <th>Arrivée</th>
                     <th>Contact</th>
                     <th>Place</th>
-                    <th>Code</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -141,7 +130,6 @@
                                 <td><a href='{{ path('app_admin_message', {'reservation' : voiture.Id} ) }}'>{{ voiture.telephone }}</a></td>
                             {% endif %}
                             <td>{{ voiture.NombrePlace }}</td>
-                            <td>{{ voiture.CodeAcces.Code }}</td>
                         {% endif %}
                     </tr>
                 {% endfor %}

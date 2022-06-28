@@ -1,11 +1,13 @@
 * {
-    transition: .40s ease-in-out;
+    transition: all .40s ease-in-out;
+    transition:font-size 0s;
     margin: 0;
     padding: 0;
 }
 
 html,body {
     height: 100%;
+    width: 100%;
     background-color: #1b1f36;
     color:#e6e6e6;
     font-family: sans-serif;
@@ -16,8 +18,20 @@ main {
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
-    gap: 2rem;
-    padding: 1rem;
+    gap: 1rem;
+    padding: 0.5rem;
+}
+
+main > div{
+    width: 100%;
+}
+
+.flex{
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
 }
 
 /* HEADER */
@@ -59,7 +73,7 @@ header p{
 
 header p.burger{
     position: fixed;
-    right: 3rem;
+    right: 2rem;
     top: 0.2rem;
     line-height: 1;
     z-index: 1;
@@ -216,6 +230,7 @@ header nav ul li div img:hover{
 
 @media all and (max-width:800px) {
 
+
     footer nav ul li:nth-child(2){
         order: -1 ;
     }
@@ -224,14 +239,30 @@ header nav ul li div img:hover{
         order: -1;
     }
 
+    * {
+        font-size: 95% !important;
+    }
+
+    .planning tbody tr td {
+        padding: 0.25rem;
+    }
+
+    .planning_flex div{
+        padding: 0.25rem !important;
+    }
+
+    div > h2,h3,table{
+        padding: 0.5rem 0;
+    }
+
 }
 
 
 table{
-    table-layout: fixed;
     width: 100%;
-    border: 1px solid;
+    border: 2px solid;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
 table a{
@@ -241,20 +272,19 @@ table a{
 
 table th, td{
     text-align: center;
-    padding: 1rem;
-    border: 1px solid;
+    padding: 0.5rem;
+    border: 2px solid;
     overflow-wrap: break-word;
-    min-width: fit-content;
 }
 
 table a{
-    padding: 0.5rem;
+    padding: 0.3rem;
+    border-radius: 0.5rem;
 }
 
 table a:hover{
-    background-color: #101120;
-    border-color: #ED5153;
-    border-radius: 0.5rem;
+    background-color: rgba(16, 17, 32, 0.4);
+    border: 1px solid;
 }
 
 div > h2,h3,table{
@@ -269,7 +299,43 @@ div > h2,h3,table{
     background-color:#ff0039d4;
 }
 .planning_vert{
-    background-color:#33cc33;
+    background-color: #2caf2c;
+}
+.planning thead tr th:first-child{
+    width: 45%;
+}
+
+.planning_flex{
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    border: 1px solid;
+}
+
+.planning_flex div{
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+}
+
+.planning_jour_menu{
+    display: flex;
+    flex-flow: row;
+    justify-content: space-around;
+    align-items: center;
+}
+.planning_jour_menu a{
+    color: #e6e6e6;
+    text-decoration: none;
+}
+.planning_jour_menu h3{
+    background-color: #181924;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+.planning_jour thead tr th:last-child{
+    width: 10%;
 }
 
 .oublie{
@@ -347,7 +413,5 @@ form div{
     justify-content: space-around;
     align-items: center;
 }
-
-
 
 

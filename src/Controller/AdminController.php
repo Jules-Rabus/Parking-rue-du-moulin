@@ -71,19 +71,22 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/planning', name: 'app_admin_planning')]
-    public function planning(ManagerRegistry $doctrine): Response
+    /**
+     * @Route("/planning/{nombre_jours}", name="app_admin_planning")
+     */
+    public function planning(ManagerRegistry $doctrine,int $nombre_jours = 2): Response
     {
 
         // On initialise les variables afin de creer la boucle et stocker les resultats
         $entityManager = $doctrine->getManager();
         $dateBoucle = new \DateTime();
         $date = new \DateTime();
-        $dateBoucle->sub(new \DateInterval("P2D"));
+        $dateInterval = "P" . $nombre_jours . "D";
+        $dateBoucle->sub(new \DateInterval($dateInterval));
         $dates = array();
 
         // On fait qui demarre 2 jours avant la date actuelle et qui s'arrete un an apres
-        for($i = 0 ; $i < 367 ; $i++){
+        for($i = -$nombre_jours ; $i < 367 ; $i++){
             $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
             $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $dateEntite->getNombrePlaceDisponibles();
             $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $dateEntite->getnombreDepart();
@@ -114,15 +117,16 @@ class AdminController extends AbstractController
 
         //On initialise les variables afin recuperer toutes les informations de cette journee sur le parking
         $entityManager = $doctrine->getManager();
-        $arrivees = $entityManager->getRepository(Reservation::class)->FindBy(array("DateArrivee"=>$date));
-        $departs = $entityManager->getRepository(Reservation::class)->FindBy(array("DateDepart"=>$date));
+        $arrivees = $entityManager->getRepository(Reservation::class)->FindBy(array("DateArrivee"=>$date),array("DateDepart"=>"ASC"));
+        $departs = $entityManager->getRepository(Reservation::class)->FindBy(array("DateDepart"=>$date),array("DateArrivee"=>"ASC"));
         $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($date);
         $voitures = $dateEntite->getRelation()->getValues();
         $nombrePlaceDisponibles = $dateEntite->getNombrePlaceDisponibles();
         $nbrArrivee = $dateEntite->getnombreDepart();
         $nbrDepart =  $dateEntite->getnombreArrivee();
+        $aujourdhui = new \DateTime();
 
-        return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'arrivees'=>$arrivees,'departs'=>$departs,
+        return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'aujourdhui'=>$aujourdhui,'arrivees'=>$arrivees,'departs'=>$departs,
             "nombrePlaceDisponibles"=>$nombrePlaceDisponibles,'voitures'=>$voitures,'nbrArrivee'=>$nbrArrivee,'nbrDepart'=>$nbrDepart
         ]);
     }
