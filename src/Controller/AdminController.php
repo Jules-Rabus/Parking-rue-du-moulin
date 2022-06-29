@@ -9,6 +9,7 @@ use App\Entity\Code;
 use App\Entity\Message;
 use App\Form\TransfertBddType;
 use App\Form\PlanningJourType;
+use App\Form\PlanningType;
 use App\Form\ReservationType;
 use App\Form\MessageType;
 use App\Form\MailType;
@@ -74,8 +75,11 @@ class AdminController extends AbstractController
     /**
      * @Route("/planning/{nombre_jours}", name="app_admin_planning")
      */
-    public function planning(ManagerRegistry $doctrine,int $nombre_jours = 2): Response
+    public function planning(ManagerRegistry $doctrine, Request $request, int $nombre_jours = 2): Response
     {
+
+        $form = $this->createForm(PlanningJourType::class,NULL);
+        $form->handleRequest($request);
 
         // On initialise les variables afin de creer la boucle et stocker les resultats
         $entityManager = $doctrine->getManager();
@@ -84,6 +88,12 @@ class AdminController extends AbstractController
         $dateInterval = "P" . $nombre_jours . "D";
         $dateBoucle->sub(new \DateInterval($dateInterval));
         $dates = array();
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            
+            $nombre_jours = $date->diff($form->getData()['date'])->days;
+            return $this->redirectToRoute('app_admin_planning',['nombre_jours'=>$nombre_jours]);
+        }
 
         // On fait qui demarre 2 jours avant la date actuelle et qui s'arrete un an apres
         for($i = -$nombre_jours ; $i < 367 ; $i++){
@@ -94,7 +104,7 @@ class AdminController extends AbstractController
             $dateBoucle->add(new \DateInterval("P1D"));
         }
 
-        return $this->render('admin/planning.html.twig', ['dates'=>$dates,'date'=>$date
+        return $this->renderForm('admin/planning.html.twig', ['form'=>$form,'dates'=>$dates,'date'=>$date
         ]);
     }
 
