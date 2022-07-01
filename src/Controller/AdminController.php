@@ -7,6 +7,7 @@ use App\Entity\Reservation;
 use App\Entity\Date;
 use App\Entity\Code;
 use App\Entity\Message;
+use App\Entity\Statistique;
 use App\Form\TransfertBddType;
 use App\Form\PlanningJourType;
 use App\Form\PlanningType;
@@ -88,9 +89,10 @@ class AdminController extends AbstractController
         $dateInterval = "P" . $nombre_jours . "D";
         $dateBoucle->sub(new \DateInterval($dateInterval));
         $dates = array();
+        $statistique = new Statistique($entityManager);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            
+
             $nombre_jours = $date->diff($form->getData()['date'])->days;
             return $this->redirectToRoute('app_admin_planning',['nombre_jours'=>$nombre_jours]);
         }
@@ -104,7 +106,7 @@ class AdminController extends AbstractController
             $dateBoucle->add(new \DateInterval("P1D"));
         }
 
-        return $this->renderForm('admin/planning.html.twig', ['form'=>$form,'dates'=>$dates,'date'=>$date
+        return $this->renderForm('admin/planning.html.twig', ['form'=>$form,'dates'=>$dates,'date'=>$date,'statistique'=>$statistique
         ]);
     }
 

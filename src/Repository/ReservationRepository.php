@@ -45,12 +45,13 @@ class ReservationRepository extends ServiceEntityRepository
         }
     }
 
-    public function NombreReservationClient(int $Id){
+    public function NombreReservationClient(int $id){
         return $this->createQueryBuilder('reservation')
             ->select('COUNT(reservation.id)')
             ->andWhere('reservation.Client = :id')
-            ->setParameter('id', $Id)
-            ->getQuery()->getSingleScalarResult();
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function NombreReservationTelephone(int $Telephone){
@@ -58,8 +59,28 @@ class ReservationRepository extends ServiceEntityRepository
             ->select('COUNT(reservation.id)')
             ->andWhere('reservation.Telephone = :telephone')
             ->setParameter('telephone', $Telephone)
-            ->getQuery()->getSingleScalarResult();
+            ->getQuery()
+            ->getSingleScalarResult();
     }
+
+    public function ReservationMois( \DateTime $date){
+        return $this->createQueryBuilder('reservation')
+            ->select('reservation.DateArrivee, reservation.DateDepart, reservation.NombrePlace')
+            ->where('reservation.DateArrivee LIKE :date')
+            ->setParameter('date', $date->format('Y-m') . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function ReservationAnnee( \DateTime $date){
+        return $this->createQueryBuilder('reservation')
+            ->select('reservation.DateArrivee, reservation.DateDepart, reservation.NombrePlace')
+            ->where('reservation.DateArrivee LIKE :date')
+            ->setParameter('date', $date->format('Y') . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
     
 
     // /**

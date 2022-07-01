@@ -235,6 +235,30 @@ class Reservation
 
     }
 
+    public static function Prix(\DateTime $dateArrivee, \DateTime $dateDepart, int $nombrePlace): int{
+
+        $duree = $dateArrivee->diff($dateDepart)->days+1;
+
+        if($duree < 5){
+            $tarif = array(1 => 5 , 2 => 8, 3 => 10 , 4 => 10 );
+            $prix = $tarif[$duree];
+        }
+        if($duree > 4 && $duree < 29){
+
+            $prix = 10;
+            $duree -= 4;
+            $prix += round($duree/2,0,PHP_ROUND_HALF_UP) * 5;
+        }
+        if( $duree > 28){
+            $prix = 70;
+            $duree -= 29;
+            $prix += round($duree/5,0,PHP_ROUND_HALF_UP) * 5;
+        }
+
+        return $prix * $nombrePlace;
+
+    }
+
     public function getTelephone(): ?string
     {
         return $this->Telephone;

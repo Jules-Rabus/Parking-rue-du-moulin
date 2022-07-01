@@ -29,6 +29,11 @@
             padding: 0.5rem;
             text-align: center;
         }
+
+        footer p:last-child{
+            font-weight: bold;
+        }
+
     </style>
 {% endapply %}
 
@@ -48,7 +53,7 @@
                 <td>{{  message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
                 <td>{{  message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
                 <td>{{  message.Reservation.NombrePlace }}</td>
-                <td>{{  message.Reservation.Prix }}</td>
+                <td>{{  message.Reservation.Prix }} €</td>
             </tr>
         </tbody>
     </table>
@@ -59,7 +64,6 @@
 </article>
 
 <footer>
-    <p>Adresse e-mail :<a href='mailto:reservation@parking-rue-du-moulin.fr'> reservation@parking-rue-du-moulin.fr</a></p>
     <p>Téléphone :<a href='sms:+33671731835'> +33.6.71.73.18.35</a></p>
     <p>Parking-Rue-Du-Moulin</p>
     <p>Merci de ne pas répondre à cet e-mail automatique</p>
