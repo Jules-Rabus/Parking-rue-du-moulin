@@ -1,0 +1,50 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block title %}Statistique{% endblock %}
+
+{% block body %}
+
+    <div class='flex statistique'>
+
+        {% for key ,statistique in statistiques %}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="3">{{ key | format_datetime(locale='fr',pattern="LLLL") | capitalize  }}</th>
+                        <th>Revenu</th>
+                        <th>Véhicule</th>
+                        <th>Durée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Moyenne</td>
+                        <td>{{ statistique.moyen.recette }}</td>
+                        <td>{{ statistique.moyen.vehicule | round(1, 'floor') }}</td>
+                        <td>{{ statistique.moyen.duree | round(1, 'floor') }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ key | format_datetime(locale='fr',pattern="Y")  }}</td>
+                        <td>{{ statistique.present.recette }}</td>
+                        <td>{{ statistique.present.vehicule | round(1, 'floor') }}</td>
+                        <td>{{ statistique.present.duree | round(1, 'floor') }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ key | date_modify("-1 year") | format_datetime(locale='fr',pattern="Y")  }}</td>
+                        <td>{{ statistique.precedent.recette }}</td>
+                        <td>{{ statistique.precedent.vehicule | round(1, 'floor') }}</td>
+                        <td>{{ statistique.precedent.duree | round(1, 'floor') }}</td>
+                    </tr>
+                    <tr>
+                        <td>Meilleur</td>
+                        <td>{{ statistique.meilleur.recette }}</td>
+                        <td>{{ statistique.meilleur.vehicule | round(1, 'floor') }}</td>
+                        <td>{{ statistique.meilleur.duree | round(1, 'floor') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endfor %}
+    </div>
+    
+{% endblock %}

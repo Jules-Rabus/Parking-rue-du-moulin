@@ -63,7 +63,7 @@ class ReservationRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function ReservationMois( \DateTime $date){
+    public function ReservationStatistiqueMois( \DateTime $date){
         return $this->createQueryBuilder('reservation')
             ->select('reservation.DateArrivee, reservation.DateDepart, reservation.NombrePlace')
             ->where('reservation.DateArrivee LIKE :date')
@@ -72,7 +72,7 @@ class ReservationRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function ReservationAnnee( \DateTime $date){
+    public function ReservationStatistiqueAnnee( \DateTime $date){
         return $this->createQueryBuilder('reservation')
             ->select('reservation.DateArrivee, reservation.DateDepart, reservation.NombrePlace')
             ->where('reservation.DateArrivee LIKE :date')

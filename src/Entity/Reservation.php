@@ -178,6 +178,10 @@ class Reservation
        return $this->DateArrivee->diff($this->DateDepart)->days+1;
     }
 
+    public static function DureeReservation(\DateTime $dateArrivee, \DateTime $dateDepart) : int {
+        return $dateArrivee->diff($dateDepart)->days+1;
+    }
+
     public function VerificationDisponibilites($entityManager) : int{
 
         $dateBoucle = new \DateTime($this->DateArrivee->format('Y-m-d'));

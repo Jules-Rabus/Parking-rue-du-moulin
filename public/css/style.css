@@ -256,6 +256,10 @@ header nav ul li div img:hover{
         padding: 0.5rem 0;
     }
 
+    .statistique table{
+        width: 100% !important;
+    }
+
 }
 
 
@@ -337,6 +341,13 @@ div > h2,h3,table{
 }
 .planning_jour thead tr th:last-child{
     width: 10%;
+}
+
+.statistique{
+    gap: 1rem;
+}
+.statistique table{
+    width: 48%;
 }
 
 .oublie{

@@ -20,7 +20,7 @@
                 <tr>
                     <th class='planning'>Date</th>
                     <th>Place</th>
-                    <th>{{ statistique.getRecetteAnnee(date) }} €</th>
+                    <th><a href='{{ path('app_admin_statistique')}}'>{{ statistique.getRecetteAnnee(date) }} €</a></th>
                 </tr>
             </thead>
             <tbody>
@@ -31,7 +31,7 @@
 
                         <tr>
                             <td colspan="2"><h2>{{ key | format_datetime(locale='fr',pattern="LLLL") | capitalize }}</h2></td>
-                            <td>{{ statistique.getRecetteMoisTwig(key)}} €</td>
+                            <td><a href='{{ path('app_admin_statistique')}}'>{{ statistique.getRecetteMoisTwig(key)}} €</a></td>
                         </tr>
 
                     {% endif %}

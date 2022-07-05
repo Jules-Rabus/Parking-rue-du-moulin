@@ -220,5 +220,42 @@ class AdminController extends AbstractController
             'message'=>$message,'messageRetour'=>null]);
     }
 
+    #[Route('/statistique', name: 'app_admin_statistique')]
+    public function statistique(ManagerRegistry $doctrine) : Response
+    {
+        $entityManager = $doctrine->getManager();
+        $statisque = new Statistique($entityManager);
+        $date = (new \DateTime())->modify('last day of january');
+        $statisques = array();
+
+        for($i = 0; $i <12; $i++){
+            $key = $date->format('Y-m-d');
+            $statisques[$key]['moyen']['vehicule'] = $statisque->getVehiculeMoisMoyenne($date);
+            $statisques[$key]['moyen']['duree'] = $statisque->getDureeMoisMoyenne($date);
+            $statisques[$key]['moyen']['recette'] = $statisque->getRecetteMoisMoyenne($date);
+
+            $statisques[$key]['present']['vehicule'] = $statisque->getVehiculeMois($date);
+            $statisques[$key]['present']['duree'] = $statisque->getDureeMois($date);
+            $statisques[$key]['present']['recette'] = $statisque->getRecetteMois($date);
+
+            $statisques[$key]['meilleur']['vehicule'] = $statisque->getVehiculeMoisMoyenne($date);
+            $statisques[$key]['meilleur']['duree'] = $statisque->getDureeMoisMoyenne($date);
+            $statisques[$key]['meilleur']['recette'] = $statisque->getVehiculeMoisMoyenne($date);
+
+            $dateAvant = (clone $date)->modify('-1 year');
+
+            $statisques[$key]['precedent']['vehicule'] = $statisque->getVehiculeMois($dateAvant);
+            $statisques[$key]['precedent']['duree'] = $statisque->getDureeMois($dateAvant);
+            $statisques[$key]['precedent']['recette'] = $statisque->getRecetteMois($dateAvant);
+
+            $date->modify("first day of next month");
+
+        }
+
+        return $this->render('admin/statistique.html.twig',['statistiques'=>$statisques]);
+
+    }
+
+
 
 }

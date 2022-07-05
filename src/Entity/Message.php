@@ -225,7 +225,7 @@ class Message
         $this->Message = "Votre code d'accès sera le : " . $this->Reservation->getCodeAcces()->getCode();
 
         if($this->NombreReservation < 2 ){
-            $this->Message = $this->Message . "%0A%0AJe vous rappelle également que le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus ou en espèces à l'arrivée sur le parking via des enveloppes pré-remplies.";
+            $this->Message = $this->Message . " , il sera également valable pour votre retour.%0A%0AJe vous rappelle également que le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus ou en espèces à l'arrivée sur le parking via des enveloppes pré-remplies.";
         }
 
     }
