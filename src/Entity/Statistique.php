@@ -20,7 +20,7 @@ class Statistique
     // Recette
 
     // Calcul de la recette du mois
-    public function getRecetteMois(\DateTime $date) : float {
+    public function getRecetteMois(\DateTime $date) : int {
 
         $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueMois($date);
         $recette = 0;
@@ -34,7 +34,7 @@ class Statistique
     }
 
     // Calcul de la recette du jour
-    public function getRecetteJour( \DateTime $date) : float {
+    public function getRecetteJour( \DateTime $date) : int {
 
         $date = new \DateTime($date);
         $reservations = $this->entityManager->getRepository(Reservation::class)->findBy(array('DateArrivee'=>$date));
@@ -48,7 +48,7 @@ class Statistique
     }
 
     // Calcul de la recette de l'année avec un dateTime
-    public function getRecetteAnnee(\DateTime $date) : float {
+    public function getRecetteAnnee(\DateTime $date) : int {
 
         $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueAnnee($date);
         $recette = 0;
@@ -62,7 +62,7 @@ class Statistique
     }
 
     // Calcul de la recette du jour avec un string pour twig
-    public function getRecetteJourTwig(string $date) : float {
+    public function getRecetteJourTwig(string $date) : int {
 
         $reservations = $this->entityManager->getRepository(Reservation::class)->findBy(array('DateArrivee'=>$date));
         $recette = 0;
@@ -75,7 +75,7 @@ class Statistique
     }
 
     // Calcul de la recette du mois avec un string pour twig
-    public function getRecetteMoisTwig(string $date) : float {
+    public function getRecetteMoisTwig(string $date) : int {
 
         $date = new \DateTime($date);
         $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueMois($date);
@@ -90,7 +90,7 @@ class Statistique
     }
 
     // Calcul de la recette de l'année avec un string pour twig
-    public function getRecetteAnneeTwig(string $date) : float {
+    public function getRecetteAnneeTwig(string $date) : int {
 
         $date = new \DateTime($date);
         $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueAnnee($date);
@@ -120,6 +120,24 @@ class Statistique
         if(!$compteur) return 0;
 
         return $recette/$compteur;
+
+    }
+
+    // Calcul du meilleur mois en recette moyen
+    public function getRecetteMoisMeilleur(\DateTime $date) : array {
+
+        $date = clone $date;
+        $meilleur = array('meilleur'=>0,'date'=>$date);
+
+        while($this->dateDebut < $date){
+            if( ($recette = $this->getRecetteMois($date)) > $meilleur['meilleur']){
+                $meilleur['meilleur'] = round($recette,1);
+                $meilleur['date'] = clone $date;
+            }
+            $date->modify("-1 year");
+        }
+
+        return $meilleur;
 
     }
 
@@ -189,6 +207,25 @@ class Statistique
 
     }
 
+    // Calcul du meilleur mois en vehicule moyen
+    public function getVehiculeMoisMeilleur(\DateTime $date) : array {
+
+        $date = clone $date;
+        $meilleur = array('meilleur'=>0,'date'=>$date);
+
+        while($this->dateDebut < $date){
+            if( ($vehicule = $this->getVehiculeMois($date)) > $meilleur['meilleur']){
+                $meilleur['meilleur'] = round($vehicule,1);
+                $meilleur['date'] = clone $date;
+            }
+            $date->modify("-1 year");
+        }
+
+        return $meilleur;
+
+    }
+
+
 
     // Duree
 
@@ -226,6 +263,24 @@ class Statistique
         if(!$compteur) return 0;
 
         return $duree/$compteur;
+    }
+
+    // Calcul du meilleur mois en duree stationnement moyen
+    public function getDureeMoisMeilleur(\DateTime $date) : array {
+
+        $date = clone $date;
+        $meilleur = array('meilleur'=>0,'date'=>$date);
+
+        while($this->dateDebut < $date){
+            if( ($duree = $this->getDureeMois($date)) > $meilleur['meilleur']){
+                $meilleur['meilleur'] = round($duree,1);
+                $meilleur['date'] = clone $date;
+            }
+            $date->modify("-1 year");
+        }
+
+        return $meilleur;
+
     }
 
 

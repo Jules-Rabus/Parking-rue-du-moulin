@@ -172,6 +172,13 @@ class TransfertBdd
             $dateDepart = new \DateTime($content->datef);
             $reservation->setDateDepart($dateDepart);
             $reservation->AjoutDates($entityManager);
+
+            if($content->date_reservation){
+                $dateReservation = new \DateTime($content->date_reservation);
+            }
+            else{
+                $dateReservation = $dateArrivee;
+            }
             $dateReservation = new \DateTime($content->date_reservation);
             $reservation->setDateReservation($dateReservation);
 

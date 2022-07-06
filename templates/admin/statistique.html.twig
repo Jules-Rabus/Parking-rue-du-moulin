@@ -21,26 +21,67 @@
                     <tr>
                         <td>Moyenne</td>
                         <td>{{ statistique.moyen.recette }}</td>
-                        <td>{{ statistique.moyen.vehicule | round(1, 'floor') }}</td>
-                        <td>{{ statistique.moyen.duree | round(1, 'floor') }}</td>
+                        <td>{{ statistique.moyen.vehicule }}</td>
+                        <td>{{ statistique.moyen.duree }}</td>
                     </tr>
                     <tr>
                         <td>{{ key | format_datetime(locale='fr',pattern="Y")  }}</td>
-                        <td>{{ statistique.present.recette }}</td>
-                        <td>{{ statistique.present.vehicule | round(1, 'floor') }}</td>
-                        <td>{{ statistique.present.duree | round(1, 'floor') }}</td>
+                        {% if statistique.present.recette >= statistique.moyen.recette %}
+                            <td class='planning_vert'>{{ statistique.present.recette }}</td>
+                        {% elseif statistique.present.recette >= statistique.moyen.recette - statistique.moyen.recette * 0.85  %}
+                            <td class='planning_orange'>{{ statistique.present.recette }}</td>
+                        {% else %}
+                            <td class='planning_rouge'>{{ statistique.present.recette }}</td>
+                        {% endif %}
+
+                        {% if statistique.present.vehicule >= statistique.moyen.vehicule %}
+                            <td class='planning_vert'>{{ statistique.present.vehicule }}</td>
+                        {% elseif statistique.present.vehicule >= statistique.moyen.vehicule - statistique.moyen.vehicule * 0.85  %}
+                            <td class='planning_orange'>{{ statistique.present.vehicule }}</td>
+                        {% else %}
+                            <td class='planning_rouge'>{{ statistique.present.vehicule }}</td>
+                        {% endif %}
+
+                        {% if statistique.present.duree >= statistique.moyen.duree %}
+                            <td class='planning_vert'>{{ statistique.present.duree }}</td>
+                        {% elseif statistique.present.duree >= statistique.moyen.duree - statistique.moyen.duree * 0.85  %}
+                            <td class='planning_orange'>{{ statistique.present.duree }}</td>
+                        {% else %}
+                            <td class='planning_rouge'>{{ statistique.present.duree }}</td>
+                        {% endif %}
                     </tr>
                     <tr>
                         <td>{{ key | date_modify("-1 year") | format_datetime(locale='fr',pattern="Y")  }}</td>
-                        <td>{{ statistique.precedent.recette }}</td>
-                        <td>{{ statistique.precedent.vehicule | round(1, 'floor') }}</td>
-                        <td>{{ statistique.precedent.duree | round(1, 'floor') }}</td>
+                        {% if statistique.precedent.recette >= statistique.moyen.recette %}
+                            <td class='planning_vert'>{{ statistique.precedent.recette }}</td>
+                        {% elseif statistique.precedent.recette >= statistique.moyen.recette - statistique.moyen.recette * 0.85  %}
+                            <td class='planning_orange'>{{ statistique.precedent.recette }}</td>
+                        {% else %}
+                            <td class='planning_rouge'>{{ statistique.precedent.recette }}</td>
+                        {% endif %}
+
+                        {% if statistique.precedent.vehicule >= statistique.moyen.vehicule %}
+                            <td class='planning_vert'>{{ statistique.precedent.vehicule }}</td>
+                        {% elseif statistique.precedent.vehicule >= statistique.moyen.vehicule - statistique.moyen.vehicule * 0.85  %}
+                            <td class='planning_orange'>{{ statistique.precedent.vehicule }}</td>
+                        {% else %}
+                            <td class='planning_rouge'>{{ statistique.precedent.vehicule }}</td>
+                        {% endif %}
+
+                        {% if statistique.precedent.duree >= statistique.moyen.duree %}
+                            <td class='planning_vert'>{{ statistique.precedent.duree }}</td>
+                        {% elseif statistique.precedent.duree >= statistique.moyen.duree - statistique.moyen.duree * 0.85  %}
+                            <td class='planning_orange'>{{ statistique.precedent.duree  }}</td>
+                        {% else %}
+                            <td class='planning_rouge'>{{ statistique.precedent.duree }}</td>
+                        {% endif %}
+
                     </tr>
                     <tr>
                         <td>Meilleur</td>
-                        <td>{{ statistique.meilleur.recette }}</td>
-                        <td>{{ statistique.meilleur.vehicule | round(1, 'floor') }}</td>
-                        <td>{{ statistique.meilleur.duree | round(1, 'floor') }}</td>
+                        <td>{{ statistique.meilleur.recette.date | format_datetime(locale='fr',pattern="Y") }} : {{ statistique.meilleur.recette.meilleur }}</td>
+                        <td>{{ statistique.meilleur.vehicule.date | format_datetime(locale='fr',pattern="Y") }} : {{ statistique.meilleur.vehicule.meilleur }}</td>
+                        <td>{{ statistique.meilleur.duree.date | format_datetime(locale='fr',pattern="Y") }} : {{ statistique.meilleur.duree.meilleur }}</td>
                     </tr>
                 </tbody>
             </table>
