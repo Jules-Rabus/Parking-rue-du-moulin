@@ -19,20 +19,6 @@ class Statistique
 
     // Recette
 
-    // Calcul de la recette du mois
-    public function getRecetteMois(\DateTime $date) : int {
-
-        $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueMois($date);
-        $recette = 0;
-
-        foreach ($reservations as $reservation){
-            $recette += Reservation::Prix($reservation['DateArrivee'],$reservation['DateDepart'],$reservation['NombrePlace']);
-        }
-
-        return $recette;
-
-    }
-
     // Calcul de la recette du jour
     public function getRecetteJour( \DateTime $date) : int {
 
@@ -47,20 +33,6 @@ class Statistique
         return $recette;
     }
 
-    // Calcul de la recette de l'année avec un dateTime
-    public function getRecetteAnnee(\DateTime $date) : int {
-
-        $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueAnnee($date);
-        $recette = 0;
-
-        foreach ($reservations as $reservation){
-            $recette += Reservation::Prix($reservation['DateArrivee'],$reservation['DateDepart'],$reservation['NombrePlace']);
-        }
-
-        return $recette;
-
-    }
-
     // Calcul de la recette du jour avec un string pour twig
     public function getRecetteJourTwig(string $date) : int {
 
@@ -72,6 +44,20 @@ class Statistique
         }
 
         return $recette;
+    }
+
+    // Calcul de la recette du mois
+    public function getRecetteMois(\DateTime $date) : int {
+
+        $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueMois($date);
+        $recette = 0;
+
+        foreach ($reservations as $reservation){
+            $recette += Reservation::Prix($reservation['DateArrivee'],$reservation['DateDepart'],$reservation['NombrePlace']);
+        }
+
+        return $recette;
+
     }
 
     // Calcul de la recette du mois avec un string pour twig
@@ -89,21 +75,7 @@ class Statistique
 
     }
 
-    // Calcul de la recette de l'année avec un string pour twig
-    public function getRecetteAnneeTwig(string $date) : int {
-
-        $date = new \DateTime($date);
-        $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueAnnee($date);
-        $recette = 0;
-
-        foreach ($reservations as $reservation){
-            $recette += Reservation::Prix($reservation['DateArrivee'],$reservation['DateDepart'],$reservation['NombrePlace']);
-        }
-
-        return $recette;
-
-    }
-
+    // Calcul de la recette moyen des mois
     public function getRecetteMoisMoyen() : float {
 
         $recette = 0;
@@ -159,6 +131,53 @@ class Statistique
 
     }
 
+    // Calcul de la recette de l'année avec un dateTime
+    public function getRecetteAnnee(\DateTime $date) : int {
+
+        $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueAnnee($date);
+        $recette = 0;
+
+        foreach ($reservations as $reservation){
+            $recette += Reservation::Prix($reservation['DateArrivee'],$reservation['DateDepart'],$reservation['NombrePlace']);
+        }
+
+        return $recette;
+
+    }
+
+    // Calcul de la recette de l'année avec un string pour twig
+    public function getRecetteAnneeTwig(string $date) : int {
+
+        $date = new \DateTime($date);
+        $reservations = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueAnnee($date);
+        $recette = 0;
+
+        foreach ($reservations as $reservation){
+            $recette += Reservation::Prix($reservation['DateArrivee'],$reservation['DateDepart'],$reservation['NombrePlace']);
+        }
+
+        return $recette;
+
+    }
+
+    // Calcul de la recette moyen des annees
+    public function getRecetteAnneeMoyen() : float {
+
+        $recette = 0;
+        $compteur = 0;
+        $date = new \DateTime();
+
+        while($this->dateDebut < $date){
+            $recette += $this->getRecetteAnnee($date);
+            $compteur++;
+            $date->modify("-1 year");
+        }
+
+        if(!$compteur) return 0;
+
+        return $recette/$compteur;
+
+    }
 
     // Calcul de la recette moyenne d'une annee
     public function getRecetteAnneeMoyenne(\DateTime $date) : float {
@@ -179,7 +198,7 @@ class Statistique
 
     }
 
-    // Calcul de la recette moyenne d'une annee
+    // Calcul de la recette total depuis le debut
     public function getRecetteTotal() : int {
 
         $reservations = $this->entityManager->getRepository(Reservation::class)->findAll();

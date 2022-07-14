@@ -255,6 +255,7 @@ class AdminController extends AbstractController
         $statisques['nombreReservationMaxClient'] = $statisque->getNombreReservationClientMax();
         $statisques['nombreReservation'] = $statisque->getNombreReservation();
         $statisques['recetteTotal'] = $statisque->getRecetteTotal();
+        $statisques['recetteAnneeMoyen'] = round($statisque->getRecetteAnneeMoyen(),1);
         $statisques['recetteMoisMoyen'] = round($statisque->getRecetteMoisMoyen(),1);
 
         return $this->render('admin/statistique.html.twig',['statistiquesDate'=>$statisquesDate,'statistiques'=>$statisques]);
