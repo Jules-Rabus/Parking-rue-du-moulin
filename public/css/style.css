@@ -1,5 +1,9 @@
 * {
-    transition: all .40s ease-in-out;
+    -webkit-transition: all 0.4s ease, font-size 0s, color 0s;
+    -moz-transition: all 0.4s ease, font-size 0s, color 0s;
+    -o-transition: all 0.4s ease, font-size 0s, color 0s;
+    -ms-transition: all 0.4s ease, font-size 0s, color 0s;
+    transition: all 0.4s ease, font-size 0s, color 0s;
     margin: 0;
     padding: 0;
 }
