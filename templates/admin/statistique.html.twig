@@ -6,7 +6,7 @@
 
     <div class='flex statistique'>
 
-        {% for key ,statistique in statistiques %}
+        {% for key ,statistique in statistiquesDate %}
 
             <table>
                 <thead>
@@ -86,6 +86,37 @@
                 </tbody>
             </table>
         {% endfor %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Nombre Réservation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ statistiques.nombreReservationMaxClient.client.nom }}</td>
+                    <td>{{ statistiques.nombreReservationMaxClient.max }}</td>
+                </tr>
+            </tbody>
+
+
+            <table>
+                <thead>
+                <tr>
+                    <th>Recette Total</th>
+                    <th>Mois Moyen</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ statistiques.recetteTotal }} €</td>
+                    <td>{{ statistiques.recetteMoisMoyen }} €</td>
+                </tr>
+                </tbody>
+            </table>
+
     </div>
     
 {% endblock %}

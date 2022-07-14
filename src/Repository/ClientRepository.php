@@ -65,17 +65,19 @@ class ClientRepository extends ServiceEntityRepository implements PasswordUpgrad
     public function countEmail(string $contact): int {
         return $this->createQueryBuilder('client')
             ->select('COUNT(client.id)')
-            ->andWhere('client.email = :contact')
+            ->where('client.email = :contact')
             ->setParameter('contact', $contact)
-            ->getQuery()->getSingleScalarResult();
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     public function countTelephone(string $contact): int {
         return $this->createQueryBuilder('client')
             ->select('COUNT(client.id)')
-            ->andWhere('client.telephone = :contact')
+            ->where('client.telephone = :contact')
             ->setParameter('contact', $contact)
-            ->getQuery()->getSingleScalarResult();
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     // /**

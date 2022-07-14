@@ -226,33 +226,38 @@ class AdminController extends AbstractController
         $entityManager = $doctrine->getManager();
         $statisque = new Statistique($entityManager);
         $date = (new \DateTime())->modify('last day of january');
-        $statisques = array();
+        $statisquesDate = array();
 
         for($i = 0; $i <12; $i++){
             $key = $date->format('Y-m-d');
-            $statisques[$key]['moyen']['vehicule'] = round($statisque->getVehiculeMoisMoyenne($date),1);
-            $statisques[$key]['moyen']['duree'] = round($statisque->getDureeMoisMoyenne($date),1);
-            $statisques[$key]['moyen']['recette'] = round($statisque->getRecetteMoisMoyenne($date),1);
+            $statisquesDate[$key]['moyen']['vehicule'] = round($statisque->getVehiculeMoisMoyenne($date),1);
+            $statisquesDate[$key]['moyen']['duree'] = round($statisque->getDureeMoisMoyenne($date),1);
+            $statisquesDate[$key]['moyen']['recette'] = round($statisque->getRecetteMoisMoyenne($date),1);
 
-            $statisques[$key]['present']['vehicule'] = round($statisque->getVehiculeMois($date),1);
-            $statisques[$key]['present']['duree'] = round($statisque->getDureeMois($date),1);
-            $statisques[$key]['present']['recette'] = round($statisque->getRecetteMois($date),1);
+            $statisquesDate[$key]['present']['vehicule'] = round($statisque->getVehiculeMois($date),1);
+            $statisquesDate[$key]['present']['duree'] = round($statisque->getDureeMois($date),1);
+            $statisquesDate[$key]['present']['recette'] = round($statisque->getRecetteMois($date),1);
 
-            $statisques[$key]['meilleur']['vehicule'] = $statisque->getVehiculeMoisMeilleur($date);
-            $statisques[$key]['meilleur']['duree'] = $statisque->getDureeMoisMeilleur($date);
-            $statisques[$key]['meilleur']['recette'] = $statisque->getRecetteMoisMeilleur($date);
+            $statisquesDate[$key]['meilleur']['vehicule'] = $statisque->getVehiculeMoisMeilleur($date);
+            $statisquesDate[$key]['meilleur']['duree'] = $statisque->getDureeMoisMeilleur($date);
+            $statisquesDate[$key]['meilleur']['recette'] = $statisque->getRecetteMoisMeilleur($date);
 
             $dateAvant = (clone $date)->modify('-1 year');
 
-            $statisques[$key]['precedent']['vehicule'] = round($statisque->getVehiculeMois($dateAvant),1);
-            $statisques[$key]['precedent']['duree'] = round($statisque->getDureeMois($dateAvant),1);
-            $statisques[$key]['precedent']['recette'] = round($statisque->getRecetteMois($dateAvant),1);
+            $statisquesDate[$key]['precedent']['vehicule'] = round($statisque->getVehiculeMois($dateAvant),1);
+            $statisquesDate[$key]['precedent']['duree'] = round($statisque->getDureeMois($dateAvant),1);
+            $statisquesDate[$key]['precedent']['recette'] = round($statisque->getRecetteMois($dateAvant),1);
 
             $date->modify("first day of next month");
 
         }
 
-        return $this->render('admin/statistique.html.twig',['statistiques'=>$statisques]);
+        $statisques['nombreReservationMaxClient'] = $statisque->getNombreReservationClientMax();
+        $statisques['nombreReservation'] = $statisque->getNombreReservation();
+        $statisques['recetteTotal'] = $statisque->getRecetteTotal();
+        $statisques['recetteMoisMoyen'] = round($statisque->getRecetteMoisMoyen(),1);
+
+        return $this->render('admin/statistique.html.twig',['statistiquesDate'=>$statisquesDate,'statistiques'=>$statisques]);
 
     }
 

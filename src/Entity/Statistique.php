@@ -104,6 +104,24 @@ class Statistique
 
     }
 
+    public function getRecetteMoisMoyen() : float {
+
+        $recette = 0;
+        $compteur = 0;
+        $date = new \DateTime();
+
+        while($this->dateDebut < $date){
+            $recette += $this->getRecetteMois($date);
+            $compteur++;
+            $date->modify("-1 month");
+        }
+
+        if(!$compteur) return 0;
+
+        return $recette/$compteur;
+
+    }
+
     // Calcul de la recette moyenne du mois avec les dernieres annees
     public function getRecetteMoisMoyenne(\DateTime $date) : float {
 
@@ -158,6 +176,20 @@ class Statistique
         if(!$compteur) return 0;
 
         return $recette/$compteur;
+
+    }
+
+    // Calcul de la recette moyenne d'une annee
+    public function getRecetteTotal() : int {
+
+        $reservations = $this->entityManager->getRepository(Reservation::class)->findAll();
+        $recette = 0;
+
+        foreach ($reservations as $reservation){
+            $recette += Reservation::Prix($reservation->getDateArrivee(),$reservation->getDateDepart(),$reservation->getNombrePlace());
+        }
+
+        return $recette;
 
     }
 
@@ -281,6 +313,16 @@ class Statistique
 
         return $meilleur;
 
+    }
+
+    public function getNombreReservationClientMax() : array {
+        $client = $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueNombreClientMax();
+        $client['client'] = $this->entityManager->getRepository(Client::class)->find($client['client']);
+        return $client;
+    }
+
+    public function getNombreReservation() {
+        return $this->entityManager->getRepository(Reservation::class)->ReservationStatistiqueNombre();
     }
 
 
