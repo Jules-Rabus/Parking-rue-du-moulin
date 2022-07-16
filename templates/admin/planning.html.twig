@@ -5,15 +5,46 @@
 {% block body %}
 
     <div>
+        <div class='flex'>
+            <div>
 
-        <div>
-            <div>{{ form_start(form) }}
-                {{ form_row(form.date) }}
-                <button type="submit">Chercher</button>
-                {{ form_end(form) }}
+                <div>{{ form_start(form) }}
+                    {{ form_row(form.date) }}
+                    <button type="submit">Chercher</button>
+                    {{ form_end(form) }}
+                </div>
             </div>
-            <h2>Aujourd'hui : {{ date| format_datetime(locale='fr',pattern="dd-MM-Y") }}</h2>
+            <div class='planning_rapide'>
+                <table>
+                    <tbody>
+
+                        {% for key ,semaines in planningRapide %}
+
+                            <tr>
+                                <td>{{ key | format_datetime(locale='fr',pattern="LLL") | capitalize }}</td>
+
+                            {% for keyDate ,semaine in semaines  %}
+
+                                {% if semaine > 15 %}
+                                    <td class='planning_vert'>
+                                {% elseif semaine > 10 %}
+                                    <td class='planning_orange'>
+                                {% else %}
+                                    <td class='planning_rouge'>
+                                {% endif %}
+                                    <a href='#{{key | format_datetime(locale='fr',pattern="LLL") }}-{{keyDate}}'>{{ semaine }}</a></td>
+
+                            {% endfor %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
         </div>
+        <h2>Aujourd'hui : {{ date | format_datetime(locale='fr',pattern="dd-MM-Y") }}</h2>
 
         <table class='planning'>
             <thead>
@@ -37,11 +68,11 @@
                     {% endif %}
 
                     {% if date.nombrePlaceDisponibles > 15 %}
-                        <tr class='planning_vert'>
+                        <tr class='planning_vert' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd") }}'>
                     {% elseif date.nombrePlaceDisponibles > 10 %}
-                        <tr class='planning_orange'>
+                        <tr class='planning_orange' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd")}}'>
                     {% else %}
-                        <tr class='planning_rouge'>
+                        <tr class='planning_rouge' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd")}}'>
                     {% endif %}
                         <td><a href='{{ path('app_admin_planning_jour', {'date' : key | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE dd-MM-Y") | capitalize  }}</a></td>
                         <td>{{ date.nombrePlaceDisponibles }}</td>

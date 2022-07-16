@@ -32,7 +32,7 @@ main > div{
 .flex{
     display: flex;
     flex-flow: row;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     flex-wrap: wrap;
 }
@@ -298,6 +298,11 @@ table a:hover{
 div > h2,h3,table{
     padding: 1rem 0;
     text-align: center;
+}
+
+.planning_rapide{
+    flex-basis: 25rem;
+    padding: 1rem 0;
 }
 
 .planning_orange{

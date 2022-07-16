@@ -83,12 +83,49 @@ class AdminController extends AbstractController
         $form->handleRequest($request);
 
         // On initialise les variables afin de creer la boucle et stocker les resultats
+
+        // planning
         $entityManager = $doctrine->getManager();
         $dateBoucle = new \DateTime();
         $date = new \DateTime();
         $dateInterval = "P" . $nombre_jours . "D";
         $dateBoucle->sub(new \DateInterval($dateInterval));
         $dates = array();
+
+        // planning rapide
+        $planningRapide = array();
+        $planningRapideDateDebut = new \DateTime('first day of next month');
+        $planningRapideDateFin = new \DateTime('first day of this month');
+        $planningRapideDateBoucle = clone $planningRapideDateFin;
+        $nombrePlaceDisponibleMin = 40;
+
+        // Ajout du mois actuelle au complet
+
+        while($planningRapideDateBoucle < $planningRapideDateDebut){
+            $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($planningRapideDateBoucle);
+            $nombrePlaceDisponible = $dateEntite->getNombrePlaceDisponibles();
+
+
+            // On actualise si necessaire le nombre de place disponible min
+            if ($nombrePlaceDisponibleMin > $nombrePlaceDisponible)$nombrePlaceDisponibleMin = $nombrePlaceDisponible;
+
+            $dateTest = (clone $planningRapideDateBoucle)->modify('+1 day');
+
+            // A chaque debut de mois ou de debut de semaine, on enregistre
+            if( $planningRapideDateBoucle->format('W') != $dateTest->format('W')
+            ) {
+                // On enregistre le nombre de place disponible minimun pour cette date
+                $planningRapide[$planningRapideDateBoucle->format('M')][$planningRapideDateBoucle->format('d')] = $nombrePlaceDisponibleMin;
+                $nombrePlaceDisponibleMin = 40;
+            }
+
+            $planningRapideDateBoucle->modify('+1 day');
+        }
+
+        // On arrete le planning rapide pour afficher que 7 mois
+        $planningRapideDateFin->modify('+7 month');
+
+        // statistique
         $statistique = new Statistique($entityManager);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -97,16 +134,42 @@ class AdminController extends AbstractController
             return $this->redirectToRoute('app_admin_planning',['nombre_jours'=>$nombre_jours]);
         }
 
-        // On fait qui demarre 2 jours avant la date actuelle et qui s'arrete un an apres
-        for($i = -$nombre_jours ; $i < 367 ; $i++){
+        // On demarre 2 jours avant la date actuelle et qui s'arrete un an apres
+        // Sauf si un nombre de jours en arriere est entree
+        for($i = -$nombre_jours ; $i < 367 ; $i++) {
             $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
-            $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $dateEntite->getNombrePlaceDisponibles();
+            $nombrePlaceDisponible = $dateEntite->getNombrePlaceDisponibles();
+            $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $nombrePlaceDisponible;
             $dates[$dateBoucle->format('Y-m-d')]['Depart'] = $dateEntite->getnombreDepart();
             $dates[$dateBoucle->format('Y-m-d')]['Arrivee'] = $dateEntite->getnombreArrivee();
+
+            // planning rapide
+
+            // On verifie si la date ne depasse pas 6 mois
+            if($dateBoucle < $planningRapideDateFin && $dateBoucle > $planningRapideDateDebut){
+
+                // On actualise si necessaire le nombre de place disponible min
+                if ($nombrePlaceDisponibleMin > $nombrePlaceDisponible)$nombrePlaceDisponibleMin = $nombrePlaceDisponible;
+
+                // On clone la date de boucle et rajoute un jour
+                $dateTest = (clone $dateBoucle)->modify('+1 day');
+                $dateTestSemaineCourte = (clone $dateBoucle)->modify('last day of this month');
+
+                // A chaque debut de mois ou de debut de semaine, on enregistre
+                if( $dateBoucle->format('W') != $dateTest->format('W') && $dateTestSemaineCourte->diff($dateBoucle)->days > 2
+                    || $dateBoucle->format('m') != $dateTest->format('m')
+                ) {
+                    // On enregistre le nombre de place disponible minimun pour cette date
+                    $planningRapide[$dateBoucle->format('M')][$dateBoucle->format('d')] = $nombrePlaceDisponibleMin;
+                    $nombrePlaceDisponibleMin = 40;
+                }
+            }
+
             $dateBoucle->add(new \DateInterval("P1D"));
         }
 
-        return $this->renderForm('admin/planning.html.twig', ['form'=>$form,'dates'=>$dates,'date'=>$date,'statistique'=>$statistique
+
+        return $this->renderForm('admin/planning.html.twig', ['form'=>$form,'dates'=>$dates,'date'=>$date,'statistique'=>$statistique,'planningRapide'=>$planningRapide
         ]);
     }
 
