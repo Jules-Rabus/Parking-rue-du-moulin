@@ -15,6 +15,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 #[ApiResource(
+    attributes: ["security" => "is_granted('ROLE_ADMIN')"],
     collectionOperations: ['get' => ['normalization_context' => ['groups' => 'user:read']]],
     itemOperations: ['get' => ['normalization_context' => ['groups' => 'user:read']]],
 )]
