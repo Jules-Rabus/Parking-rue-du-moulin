@@ -77,13 +77,13 @@
                         <td><a href='{{ path('app_admin_planning_jour', {'date' : key | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE dd-MM-Y") | capitalize  }}</a></td>
                         <td>{{ date.nombrePlaceDisponibles }}</td>
                         <td class='planning_flex'>
-                            {% if date.Arrivee > 8 %}
+                            {% if date.Arrivee > 5 %}
                                 <div class='planning_rouge'>Arrivée : {{ date.Arrivee }}</div>
                             {% else %}
                                 <div>Arrivée : {{ date.Arrivee }}</div>
                             {% endif %}
 
-                            {% if date.Depart > 8 %}
+                            {% if date.Depart > 5 %}
                                 <div class='planning_rouge'>Départ : {{ date.Depart }}</div>
                             {% else %}
                                 <div>Départ : {{ date.Depart }}</div>
