@@ -6,4 +6,10 @@
 /public/bundles/
 /var/
 /vendor/
+/old
+/public/uploads
 ###< symfony/framework-bundle ###
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
