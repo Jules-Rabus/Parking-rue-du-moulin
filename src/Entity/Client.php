@@ -36,7 +36,6 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     private $email;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['user:read'])]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
