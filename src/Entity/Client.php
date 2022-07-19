@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     collectionOperations: ['get' => ['normalization_context' => ['groups' => 'user:read']]],
     itemOperations: ['get' => ['normalization_context' => ['groups' => 'user:read']]],
 )]
-#[ApiFilter(SearchFilter::class, properties: ['email' => 'partial','nom' => 'partial','telephone'=>'partial'])]
+#[ApiFilter(SearchFilter::class, properties: ['email' => 'ipartial','nom' => 'ipartial','telephone'=>'partial'])]
 
 #[UniqueEntity(fields: ['email'], message: 'Il y a déjà un compte existant pour ce mail')]
 class Client implements UserInterface, PasswordAuthenticatedUserInterface
@@ -231,6 +231,16 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    #[Groups(['user:read'])]
+    public function getContact() : string{
+
+        if( $email = $this->getEmail()){
+            return $email;
+        }
+        return $this->getTelephone();
+
     }
     
 }
