@@ -100,8 +100,8 @@ class AdminController extends AbstractController
 
         // planning rapide
         $planningRapide = array();
-        $planningRapideDateDebut = clone $dateBoucle;
-        $planningRapideDateFin = (clone $dateBoucle)->modify("+6 month");
+        $planningRapideDateDebut = new \DateTime('first day of this month');
+        $planningRapideDateFin = (clone $dateBoucle)->modify("last day of this month")->modify("+8 month");
         $nombrePlaceDisponibleMin = 40;
 
         // statistique
