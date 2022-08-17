@@ -99,7 +99,7 @@ class AdminController extends AbstractController
         $planningRapideDateBoucle = clone $planningRapideDateFin;
         $nombrePlaceDisponibleMin = 40;
 
-        // Ajout du mois actuelle au complet
+        // Ajout du mois actuelle au complet de maniere independante car les premiers jours du mois ne sont pas forcement charge
 
         while($planningRapideDateBoucle < $planningRapideDateDebut){
             $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($planningRapideDateBoucle);
@@ -110,12 +110,14 @@ class AdminController extends AbstractController
             if ($nombrePlaceDisponibleMin > $nombrePlaceDisponible)$nombrePlaceDisponibleMin = $nombrePlaceDisponible;
 
             $dateTest = (clone $planningRapideDateBoucle)->modify('+1 day');
+            $dateTestSemaineCourte = (clone $planningRapideDateBoucle)->modify('last day of this month');
 
             // A chaque debut de mois ou de debut de semaine, on enregistre
-            if( $planningRapideDateBoucle->format('W') != $dateTest->format('W')
+            if( $planningRapideDateBoucle ->format('W') != $dateTest->format('W') && $dateTestSemaineCourte->diff($planningRapideDateBoucle )->days > 2
+                || $planningRapideDateBoucle ->format('m') != $dateTest->format('m')
             ) {
                 // On enregistre le nombre de place disponible minimun pour cette date
-                $planningRapide[$planningRapideDateBoucle->format('M')][$planningRapideDateBoucle->format('d')] = $nombrePlaceDisponibleMin;
+                $planningRapide[$planningRapideDateBoucle ->format('M')][$planningRapideDateBoucle ->format('d')] = $nombrePlaceDisponibleMin;
                 $nombrePlaceDisponibleMin = 40;
             }
 
@@ -165,7 +167,7 @@ class AdminController extends AbstractController
                 }
             }
 
-            $dateBoucle->add(new \DateInterval("P1D"));
+            $dateBoucle->modify('+1 day');
         }
 
 
