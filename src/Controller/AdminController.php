@@ -76,7 +76,7 @@ class AdminController extends AbstractController
     /**
      * @Route("/planning/{nombre_jours}", name="app_admin_planning")
      */
-    public function planning(ManagerRegistry $doctrine, Request $request, int $nombre_jours = 2): Response
+    public function planning(ManagerRegistry $doctrine, Request $request, int $nombre_jours = 0): Response
     {
 
         $form = $this->createForm(PlanningJourType::class,NULL);
@@ -86,59 +86,34 @@ class AdminController extends AbstractController
 
         // planning
         $entityManager = $doctrine->getManager();
-        $dateBoucle = new \DateTime();
-        $date = new \DateTime();
-        $dateInterval = "P" . $nombre_jours . "D";
-        $dateBoucle->sub(new \DateInterval($dateInterval));
+        $aujourdhui = new \DateTime();
+        $dateBoucle = new \DateTime('first day of this month');
         $dates = array();
+
+        if($nombre_jours){
+            $dateRetour = new \DateTime();
+            $dateRetour->sub(new \DateInterval("P" . $nombre_jours . "D"));
+            if($dateBoucle > $dateRetour){
+                $dateBoucle = $dateRetour;
+            }
+        }
 
         // planning rapide
         $planningRapide = array();
-        $planningRapideDateDebut = new \DateTime('first day of next month');
-        $planningRapideDateFin = new \DateTime('first day of this month');
-        $planningRapideDateBoucle = clone $planningRapideDateFin;
+        $planningRapideDateDebut = clone $dateBoucle;
+        $planningRapideDateFin = (clone $dateBoucle)->modify("+6 month");
         $nombrePlaceDisponibleMin = 40;
-
-        // Ajout du mois actuelle au complet de maniere independante car les premiers jours du mois ne sont pas forcement charge
-
-        while($planningRapideDateBoucle < $planningRapideDateDebut){
-            $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($planningRapideDateBoucle);
-            $nombrePlaceDisponible = $dateEntite->getNombrePlaceDisponibles();
-
-
-            // On actualise si necessaire le nombre de place disponible min
-            if ($nombrePlaceDisponibleMin > $nombrePlaceDisponible)$nombrePlaceDisponibleMin = $nombrePlaceDisponible;
-
-            $dateTest = (clone $planningRapideDateBoucle)->modify('+1 day');
-            $dateTestSemaineCourte = (clone $planningRapideDateBoucle)->modify('last day of this month');
-
-            // A chaque debut de mois ou de debut de semaine, on enregistre
-            if( $planningRapideDateBoucle ->format('W') != $dateTest->format('W') && $dateTestSemaineCourte->diff($planningRapideDateBoucle )->days > 2
-                || $planningRapideDateBoucle ->format('m') != $dateTest->format('m')
-            ) {
-                // On enregistre le nombre de place disponible minimun pour cette date
-                $planningRapide[$planningRapideDateBoucle ->format('M')][$planningRapideDateBoucle ->format('d')] = $nombrePlaceDisponibleMin;
-                $nombrePlaceDisponibleMin = 40;
-            }
-
-            $planningRapideDateBoucle->modify('+1 day');
-        }
-
-        // On arrete le planning rapide pour afficher que 7 mois
-        $planningRapideDateFin->modify('+7 month');
 
         // statistique
         $statistique = new Statistique($entityManager);
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $nombre_jours = $date->diff($form->getData()['date'])->days;
+            $nombre_jours = $aujourdhui->diff($form->getData()['date'])->days;
             return $this->redirectToRoute('app_admin_planning',['nombre_jours'=>$nombre_jours]);
         }
 
-        // On demarre 2 jours avant la date actuelle et qui s'arrete un an apres
-        // Sauf si un nombre de jours en arriere est entree
-        for($i = -$nombre_jours ; $i < 367 ; $i++) {
+        for($i = 0 ; $i < 365 ; $i++) {
             $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
             $nombrePlaceDisponible = $dateEntite->getNombrePlaceDisponibles();
             $dates[$dateBoucle->format('Y-m-d')]['nombrePlaceDisponibles'] = $nombrePlaceDisponible;
@@ -171,7 +146,7 @@ class AdminController extends AbstractController
         }
 
 
-        return $this->renderForm('admin/planning.html.twig', ['form'=>$form,'dates'=>$dates,'date'=>$date,'statistique'=>$statistique,'planningRapide'=>$planningRapide
+        return $this->renderForm('admin/planning.html.twig', ['form'=>$form,'dates'=>$dates,'date'=>$aujourdhui,'statistique'=>$statistique,'planningRapide'=>$planningRapide
         ]);
     }
 
