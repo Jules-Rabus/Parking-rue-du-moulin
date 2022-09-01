@@ -79,7 +79,7 @@
 
                     {% if date.nombrePlaceDisponibles > 15 %}
                         <tr class='planning_vert' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd") }}'>
-                    {% elseif date.nombrePlaceDisponibles > 10 %}
+                    {% elseif date.nombrePlaceDisponibles > 6 %}
                         <tr class='planning_orange' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd")}}'>
                     {% else %}
                         <tr class='planning_rouge' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd")}}'>
