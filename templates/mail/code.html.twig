@@ -53,7 +53,7 @@
                 <td>{{  message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
                 <td>{{  message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
                 <td>{{  message.Reservation.NombrePlace }}</td>
-                <td>{{  message.Reservation.Prix }} €</td>
+                <td>{{  message.Reservation.getPrix }} €</td>
             </tr>
         </tbody>
     </table>
