@@ -80,6 +80,42 @@ class ClientRepository extends ServiceEntityRepository implements PasswordUpgrad
             ->getSingleScalarResult();
     }
 
+    // Recherche des clients en fonction du telephone
+    public function rechercheContactTelephone(string $contact) : array {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = "SELECT C.id, C.nom, C.telephone, count(R.id) as nombreReservation FROM client C LEFT JOIN reservation R ON C.id = R.client_id WHERE C.telephone LIKE :telephone GROUP BY C.id ORDER BY count(R.id) DESC LIMIT 5" ;
+        $query = $conn->prepare($sql);
+        $query->BindValue(':telephone', '%' . $contact . '%');
+        $query = $query->executeQuery();
+
+        return $query->fetchAllAssociative();
+    }
+
+    // Recherche des clients en fonction du nom
+    public function rechercheContactNom(string $contact) : array {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = "SELECT C.id, C.nom, C.telephone, C.email , count(R.id) as nombreReservation FROM client C LEFT JOIN reservation R ON C.id = R.client_id WHERE C.nom LIKE :nom GROUP BY C.id ORDER BY count(R.id) DESC LIMIT 5" ;
+        $query = $conn->prepare($sql);
+        $query->BindValue(':nom', '%' . $contact . '%');
+        $query = $query->executeQuery();
+
+        return $query->fetchAllAssociative();
+    }
+
+    // Recherche des clients en fonction du mail
+    public function rechercheContactMail(string $contact) : array {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = "SELECT C.id, C.nom, C.email, count(R.id) as nombreReservation FROM client C LEFT JOIN reservation R ON C.id = R.client_id WHERE C.email LIKE :email GROUP BY C.id ORDER BY count(R.id) DESC LIMIT 5" ;
+        $query = $conn->prepare($sql);
+        $query->BindValue(':email', '%' . $contact . '%');
+        $query = $query->executeQuery();
+
+        return $query->fetchAllAssociative();
+    }
+
     // /**
     //  * @return Client[] Returns an array of Client objects
     //  */

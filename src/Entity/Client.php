@@ -16,8 +16,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: ClientRepository::class)]
 #[ApiResource(
     attributes: ["security" => "is_granted('ROLE_ADMIN')"],
-    collectionOperations: ['get' => ['normalization_context' => ['groups' => 'user:read']]],
-    itemOperations: ['get' => ['normalization_context' => ['groups' => 'user:read']]],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:write']],
+    itemOperations : ['get']
 )]
 #[ApiFilter(SearchFilter::class, properties: ['email' => 'ipartial','nom' => 'ipartial','telephone'=>'partial'])]
 
@@ -32,17 +33,18 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     private $id;
 
     #[ORM\Column(type: 'string', length: 180, unique: true, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private $email;
 
     #[ORM\Column(type: 'json')]
     private $roles = [];
 
     #[ORM\Column(type: 'string')]
+    #[Groups(['user:write'])]
     private $password;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private $nom;
 
     #[ORM\OneToMany(mappedBy: 'Client', targetEntity: Reservation::class)]
@@ -53,7 +55,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     private $isVerified = false;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private $telephone;
 
 
