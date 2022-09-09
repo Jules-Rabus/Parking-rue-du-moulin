@@ -10,6 +10,7 @@ use App\Entity\Reservation;
 use App\Entity\Message;
 use App\Entity\Date;
 use App\Entity\Client;
+use App\Entity\Code;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Mailer\MailerInterface;
 
@@ -50,9 +51,13 @@ class ApiController extends AbstractController
         if($reservationEntite->VerificationDisponibilites($entityManager) != -1){
             if($reservationEntite->getDateDepart() >= $reservationEntite->getDateArrivee()){
                 $reservationEntite->AjoutDates($entityManager);
+
+                $code = $entityManager->getRepository(Code::class)->SelectOrCreate($reservationEntite->getDateArrivee(),$reservationEntite->getDateDepart(),$mailer);
+                $reservationEntite->setCodeAcces($code);
+
                 $entityManager->persist($reservationEntite);
                 $entityManager->flush();
-
+                
                 $messageEntite = new Message($reservationEntite,$reservationEntite->NombreReservation($entityManager),$mailer);
 
                 $formulaire = ['debut'=> true, 'fin'=> true,'reservation'=>true,'code'=>false, 'explication' =>false ];
