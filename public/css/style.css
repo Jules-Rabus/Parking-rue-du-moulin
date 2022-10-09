@@ -434,4 +434,17 @@ form div{
     align-items: center;
 }
 
+.descriptif{
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+}
+
+.descriptif div{
+    width: 200px;
+    border: 2px solid;
+    border-collapse: collapse;
+}
 
