@@ -31,7 +31,7 @@ main > div{
 
 .flex{
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
     flex-wrap: wrap;
@@ -229,8 +229,12 @@ header nav ul li div img:hover{
     footer nav ul li {
         padding: 2px 10px;
         margin: 0;
-        flex-basis: 100%;
     }
+
+    footer nav ul li:nth-child(2){
+        flex-grow: 1;
+    }
+
 }
 
 @media all and (max-width:800px) {
@@ -321,7 +325,7 @@ div > h2,h3,table{
 
 .planning_flex{
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     justify-content: space-around;
     align-items: center;
     flex-wrap: wrap;
@@ -335,7 +339,7 @@ div > h2,h3,table{
 
 .planning_jour_menu{
     display: flex;
-    flex-flow: row;
+    flex-direction: row;
     justify-content: space-around;
     align-items: center;
 }
@@ -436,16 +440,28 @@ form div{
 }
 
 .descriptif{
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    align-items: stretch;
     justify-content: center;
+    align-items: stretch;
 }
 
 .descriptif div{
-    width: 200px;
-    border: 2px solid;
-    border-collapse: collapse;
+    flex-grow: 1;
+    flex-basis: 40%;
+    min-width: 20%;
+    padding: 1rem;
+    align-items: stretch;
+    gap: 1rem;
+    border-radius: 1rem;
+}
+
+.descriptif div div{
+    background-color: #181924;
+    border: 2px solid #e6e6e6;
+    text-align: center;
+}
+
+.descriptif h3{
+    padding: unset;
+    padding-bottom: 1rem;
 }
 
