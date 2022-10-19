@@ -250,7 +250,7 @@ header nav ul li div img:hover{
     }
 
     * {
-        font-size: 95% !important;
+        font-size: 100% !important;
     }
 
     .planning tbody tr td {
@@ -443,22 +443,24 @@ form div{
 .descriptif{
     justify-content: center;
     align-items: stretch;
+    gap: 1rem;
 }
 
-.descriptif div{
-    flex-grow: 1;
-    flex-basis: 40%;
-    min-width: 20%;
-    padding: 1rem;
+.descriptif > div{
     align-items: stretch;
     gap: 1rem;
     border-radius: 1rem;
+    width: 100%;
 }
 
 .descriptif div div{
+    padding: 1rem;
     background-color: #181924;
     border: 2px solid #e6e6e6;
     text-align: center;
+    flex-basis: 45%;
+    flex-grow: 1;
+    border-radius: 1rem;
 }
 
 .descriptif h3{
