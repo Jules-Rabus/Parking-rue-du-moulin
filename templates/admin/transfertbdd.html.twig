@@ -5,11 +5,17 @@
 {% block body %}
     
     <div>
+        <div class='flex'>
+            {{ form_start(formJson) }}
+                {{ form_row(formJson.json) }}
+                <button type="submit">Récupérer</button>
+            {{ form_end(formJson) }}
 
-        {{ form_start(form) }}
-            {{ form_row(form.json) }}
-            <button type="submit">Ajouter</button>
-        {{ form_end(form) }}
+            {{ form_start(formSql) }}
+                {{ form_row(formSql.check) }}
+                <button type="submit">Récupérer</button>
+            {{ form_end(formSql) }}
+        </div>
 
         <table>
             <thead>

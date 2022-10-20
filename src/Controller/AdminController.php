@@ -9,6 +9,7 @@ use App\Entity\Code;
 use App\Entity\Message;
 use App\Entity\Statistique;
 use App\Form\TransfertBddType;
+use App\Form\TransfertBddSqlType;
 use App\Form\PlanningJourType;
 use App\Form\PlanningType;
 use App\Form\ReservationType;
@@ -189,14 +190,52 @@ class AdminController extends AbstractController
 
         // on creer le formulaire pour le transfert de BDD
         $transfertbdd = new TransfertBdd();
-        $form = $this->createForm(TransfertBddType::class, $transfertbdd);
-        $form->handleRequest($request);
+        $formJson = $this->createForm(TransfertBddType::class, $transfertbdd);
+        $formJson->handleRequest($request);
+
+        $formSql = $this->createForm(TransfertBddSqlType::class, $transfertbdd);
+        $formSql->handleRequest($request);
+
+        if ($formSql->isSubmitted() && $formSql->isValid()) {
+
+            if( $formSql->get('check')->getData()){
+
+                $jsonFile = $formJson->get('json')->getData();
+
+                //Remise a zero de la bdd
+                $sql = $doctrine->getConnection('default');
+
+                $requete = $sql->prepare("DELETE FROM reservation");
+                $requete->execute();
+
+                $requete = $sql->prepare("DELETE FROM date");
+                $requete->execute();
+
+                $requete = $sql->prepare("DELETE FROM client WHERE roles != '[\"ROLE_ADMIN\"]'");
+                $requete->execute();
+
+                $entityManager = $doctrine->getManager();
+
+                $transfertbdd->setJsonFilename("Sql");
+
+                // On recupere la connexion a l'ancienne bdd et fait le traitement
+                $sqlOld = $doctrine->getConnection('old');
+                $transfertbdd->TransfertBddSql($entityManager,$sqlOld);
+
+                $transfertbdd->setDate(new \DateTime());
+                $transfertbdd->setRelation($this->getUser());
+
+                // On inscrit dans la bdd le transfert
+                $entityManager->persist($transfertbdd);
+                $entityManager->flush();
+            }
+        }
 
         // On verifie que le formulaire est envoye et valide
-        if ($form->isSubmitted() && $form->isValid()) {
-            $jsonFile = $form->get('json')->getData();
+        if ($formJson->isSubmitted() && $formJson->isValid()) {
+            $jsonFile = $formJson->get('json')->getData();
 
-            // On verifie qu'on a bien le fichier json non null
+            // On verifie qu'on a bien le fichier json est non null
             if ($jsonFile) {
                 $originalFilename = pathinfo($jsonFile->getClientOriginalName(), PATHINFO_FILENAME);
                 // on securise le chemin du fichier
@@ -215,25 +254,37 @@ class AdminController extends AbstractController
 
                 // On donne le nom du fichier à l'entite
                 $transfertbdd->setJsonFilename($newFilename);
+
+                //Remise a zero de la bdd
+                $sql = $doctrine->getConnection('default');
+
+                $requete = $sql->prepare("DELETE FROM reservation");
+                $requete->execute();
+
+                $requete = $sql->prepare("DELETE FROM date");
+                $requete->execute();
+
+                $requete = $sql->prepare("DELETE FROM client WHERE roles != '[\"ROLE_ADMIN\"]'");
+                $requete->execute();
+
+                $entityManager = $doctrine->getManager();
+
+                $transfertbdd->setDate(new \DateTime());
+                $transfertbdd->setRelation($this->getUser());
+
+                // On effectue le traitement du fichier Json
+                $transfertbdd->TransfertBddJson($entityManager);
+
+                // On inscrit dans la bdd le transfert
+                $entityManager->persist($transfertbdd);
+                $entityManager->flush();
+
             }
-
-
-            $transfertbdd->setDate(new \DateTime());
-            $transfertbdd->setRelation($this->getUser());
-
-            $entityManager = $doctrine->getManager();
-            $entityManager->persist($transfertbdd);
-
-            // On effectue le traitement du fichier JSOn
-            $transfertbdd->TransfertBdd($entityManager);
-
-            $entityManager->flush();
-
-            //return $this->redirectToRoute('app_admin_transfertbdd');
         }
 
         return $this->renderForm('admin/transfertbdd.html.twig', [
-            'form' => $form,
+            'formJson' => $formJson,
+            'formSql' => $formSql,
             'transfertbdd' => $this->getDoctrine()->getRepository(TransfertBdd::class)->findAll()
         ]);
     }
