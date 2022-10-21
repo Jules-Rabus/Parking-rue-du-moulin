@@ -32,13 +32,13 @@
             <ul>
                 <li><a href="{{ path('default') }}">Accueil</a></li>
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <li><a href="{{ path('app_logout') }}"><img src="{{ asset('icons/logout.svg') }}"></a></li>
+                    <li><a href="{{ path('app_logout') }}"><img alt="Logout" src="{{ asset('icons/logout.svg') }}"></a></li>
                     {% if is_granted('ROLE_ADMIN') %}
                         <li><a href="{{ path('app_admin') }}">Admin</a></li>
                     {% endif %}
                 {% else %}
                     <li><a href="{{ path('app_register') }}">Inscription</a></li>
-                    <li><a href="{{ path('app_login') }}"><img src="{{ asset('icons/login.svg') }}"></a></li>
+                    <li><a href="{{ path('app_login') }}"><img alt="Login" src="{{ asset('icons/login.svg') }}"></a></li>
                 {% endif %}
             </ul>
         </nav>
@@ -54,13 +54,13 @@
             <li>
                 <div>
                     <a href="sms:+33671731835">
-                        <img src="{{ asset('icons/phone.svg') }}">
+                        <img alt="Téléphone" src="{{ asset('icons/phone.svg') }}">
                         <p>06.71.73.18.35</p>
                     </a>
                 </div>
                 <div>
                     <a href="mailto:elonico7@hotmail.fr">
-                        <img src="{{ asset('icons/email.svg') }}">
+                        <img alt="Mail" src="{{ asset('icons/email.svg') }}">
                         <p>elonico7@hotmail.fr</p>
                     </a>
                 </div>
@@ -76,13 +76,13 @@
             <li>
                 <div>
                     <a href="https://goo.gl/maps/pYakmZUcuUQaFpR46" target="_blank">
-                        <img src="{{ asset('icons/location.svg') }}">
+                        <img alt="Location parking" src="{{ asset('icons/location.svg') }}">
                         <p>Localisation</p>
                     </a>
                 </div>
                 <div>
                     <a href="reglement-parking.pdf" target="_blank">
-                        <img src="{{ asset('icons/check.svg') }}">
+                        <img alt="Règlement Parking" src="{{ asset('icons/check.svg') }}">
                         <p>Règlement intérieur</p>
                     </a>
                 </div>

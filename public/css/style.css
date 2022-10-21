@@ -35,6 +35,7 @@ main > div{
     justify-content: space-evenly;
     align-items: center;
     flex-wrap: wrap;
+    padding: 1rem;
 }
 
 /* HEADER */
@@ -250,7 +251,7 @@ header nav ul li div img:hover{
     }
 
     * {
-        font-size: 100% !important;
+        font-size: 98% !important;
     }
 
     .planning tbody tr td {
@@ -404,8 +405,9 @@ form{
     align-items: center;
     gap:1rem;
     background-color: #181924;
-    width: fit-content;
-    padding: 1rem;
+    width: 40%;
+    max-width: 90%;
+    padding: 1rem 2rem;
     border: 1px solid;
     margin: auto;
     border-radius: 1rem;
@@ -417,20 +419,32 @@ form label{
 }
 
 form input,select{
-    font-size: 1rem;
-    width: fit-content;
     border-radius: 1rem;
     text-align: center;
     padding: 0.5rem;
     border: 3px solid #ED5153;
-}
-
-form input[type=text]{
-    width: 20rem;
+    width: 80%;
+    max-width: 20rem;
 }
 
 form[name=message]{
     flex-direction: row;
+
+}
+
+form button{
+    all: unset;
+    transition: all 0.4s ease;
+    color: #e6e6e6;
+    background-color: #1b1f36;
+    border: 3px solid #181924;
+    padding: 1rem;
+    border-radius: 1rem;
+    cursor: pointer;
+}
+
+form button:hover{
+    border: 3px solid #ED5153;
 }
 
 form div{
