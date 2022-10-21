@@ -36,6 +36,7 @@ main > div{
     align-items: center;
     flex-wrap: wrap;
     padding: 1rem;
+    gap: 1rem;
 }
 
 /* HEADER */
@@ -45,6 +46,7 @@ header {
     top:0;
     background-color: #181924;
     padding: 0.75rem;
+    padding-bottom: 0.4rem;
 }
 
 header h1 {
@@ -105,13 +107,9 @@ header nav ul {
 header nav ul a {
     display: block;
     text-align: center;
-    padding: 1rem;
-    color:#c7c7c7;
+    padding: 0.5rem 1rem;
+    color: unset;
     text-decoration:none;
-}
-
-header nav ul a:hover {
-    color:white;
 }
 
 header nav ul li{
@@ -119,12 +117,13 @@ header nav ul li{
 }
 
 header nav ul li:hover {
+    color:white;
     background-color: #101120;
     border-color: #ED5153;
 }
 
 header nav ul img{
-    height: 36px;
+    width: 40px;
     filter: contrast(0.6);
 }
 
@@ -201,6 +200,7 @@ header nav ul li div img:hover{
 
     header nav {
         position: initial;
+        padding-top: 0.5rem;
     }
 
     header nav ul {
@@ -209,6 +209,11 @@ header nav ul li div img:hover{
         flex-grow: 1;
         flex-wrap: wrap;
         justify-content: space-evenly;
+        align-items: stretch;
+    }
+
+    header nav ul li{
+        display: flex;
         align-items: center;
     }
 
@@ -405,12 +410,11 @@ form{
     align-items: center;
     gap:1rem;
     background-color: #181924;
-    width: 40%;
-    max-width: 90%;
     padding: 1rem 2rem;
     border: 1px solid;
     margin: auto;
     border-radius: 1rem;
+    max-width: 75%;
 }
 
 form label{
@@ -423,13 +427,17 @@ form input,select{
     text-align: center;
     padding: 0.5rem;
     border: 3px solid #ED5153;
-    width: 80%;
-    max-width: 20rem;
+    margin: 0 1rem;
+    width: 100%;
+    max-width: 15rem;
 }
 
 form[name=message]{
     flex-direction: row;
+}
 
+form input[type=date]{
+    width: fit-content;
 }
 
 form button{
