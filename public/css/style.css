@@ -370,7 +370,7 @@ div > h2,h3,table{
     width: 48%;
 }
 
-.oublie{
+.lien{
     padding: 1rem;
     background-color: #181924;
     color:#fff;
@@ -378,7 +378,7 @@ div > h2,h3,table{
     border-radius: 1rem;
 }
 
-.oublie:hover{
+.lien:hover{
     background-color: #101120;
     border-color: #ED5153;
     color:white;
