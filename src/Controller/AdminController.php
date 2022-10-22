@@ -8,6 +8,7 @@ use App\Entity\Date;
 use App\Entity\Code;
 use App\Entity\Message;
 use App\Entity\Statistique;
+use App\Entity\Client;
 use App\Form\TransfertBddType;
 use App\Form\TransfertBddSqlType;
 use App\Form\PlanningJourType;
@@ -287,6 +288,17 @@ class AdminController extends AbstractController
             'formSql' => $formSql,
             'transfertbdd' => $this->getDoctrine()->getRepository(TransfertBdd::class)->findAll()
         ]);
+    }
+
+    #[Route('/client/{client}', name: 'app_admin_client')]
+    public function client(Request $request, ManagerRegistry $doctrine, Client $client, MailerInterface $mailer): Response
+    {
+
+        $aujourdhui = new \DateTime();
+        $reservations = $client->getReservationsTri();
+
+        return $this->render('admin/client.html.twig',['client'=>$client,'reservations'=>$reservations]);
+
     }
 
     #[Route('/message/{reservation}', name: 'app_admin_message')]

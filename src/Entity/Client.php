@@ -244,5 +244,28 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->getTelephone();
 
     }
+
+    #[Groups(['user:read'])]
+    public function getReservationsTri() : array{
+
+        // Tableau avec les reservations triees
+        $reservationsClient = array('futur'=>[],'passe'=>[],'present'=>[]);
+
+        $aujourdhui = new \DateTime();
+
+        // Tri des reservations
+        foreach ($this->getReservations()->getValues() as $reservation) {
+            if ($reservation->getDateArrivee() > $aujourdhui) {
+                $reservationsClient['futur'][] = $reservation;
+            } else if ($reservation->getDateDepart() < $aujourdhui) {
+                $reservationsClient['passe'][] = $reservation;
+            } else {
+                $reservationsClient['present'][] = $reservation;
+            }
+        }
+
+        return $reservationsClient;
+
+    }
     
 }

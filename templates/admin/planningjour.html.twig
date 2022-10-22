@@ -47,7 +47,7 @@
                     {% else %}
                         <tr>
                     {% endif %}
-                        <td>{{ arrivee.getClient().nom }}</td>
+                        <td><a href='{{ path('app_admin_client', {'client' : arrivee.Client.Id} ) }}' >{{ arrivee.getClient.nom }} </a></td>
                         <td><a href='{{ path('app_admin_planning_jour', {'date' : arrivee.DateDepart  | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
 
                         {% if arrivee.getClient.Email %}
@@ -83,7 +83,7 @@
                 {% for depart in departs %}
                     <tr>
                         {% if depart.Client %}
-                            <td>{{ depart.getClient.nom }}</td>
+                            <td><a href='{{ path('app_admin_client', {'client' : depart.Client.Id} ) }}' >{{ depart.getClient.nom }} </a></td>
                             <td><a href='{{ path('app_admin_planning_jour', {'date' : depart.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ depart.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                             {% if depart.getClient.Email %}
                                 <td><a href='{{ path('app_admin_message', {'reservation' : depart.Id} ) }}'>{{ depart.getClient.Email }}</a></td>
