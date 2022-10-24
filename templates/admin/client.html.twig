@@ -3,6 +3,8 @@
 {% block title %}Client : {{ client.nom }}{% endblock %}
 
 {% block body %}
+
+
     
     <table>
         <thead>
@@ -27,84 +29,80 @@
     </table>
 
     {% if reservations.present %}
-        <h3>Réservation Present :</h3>
-
-        <table>
-            <thead>
-            <tr>
-                <th>Arrivée</th>
-                <th>Départ</th>
-                <th>Place</th>
-                <th>Tarif</th>
-                <th>Code</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for reservation in reservations.present %}
-                <tr>
-                    <td><a href='{{ path('app_admin_planning_jour', {'date' : reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
-                    <td><a href='{{ path('app_admin_planning_jour', {'date' : reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
-                    <td>{{ reservation.NombrePlace }}</td>
-                    <td>{{ reservation.getPrix }} €</td>
-                    <td>{{ reservation.CodeAcces.Code }}</td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <h2>Réservation en cours :</h2>
+        <div class="flex reservation">
+        {% for reservation in reservations.present %}
+            <table id='{{ reservation.entite.id }}'>
+                <tbody>
+                    <tr>
+                        <td>{{ reservation.entite.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
+                        <td>{{ reservation.entite.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
+                        <td>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</td>
+                    </tr>
+                    <tr>
+                        <td>{{ reservation.entite.NombrePlace }} VH</td>
+                        <td>{{ reservation.entite.getPrix }} €</td>
+                        <td>{{ reservation.entite.CodeAcces.Code }}</td>
+                    </tr>
+                    <tr>
+                        <td>{{ form_start(reservation.form) }}</td>
+                        <td><button type="submit">Réserver</button></td>
+                        <td>{{ form_end(reservation.form) }}</td>
+                        <td>Annuler</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endfor %}
+        </div>
     {% endif %}
 
     {% if reservations.futur %}
-        <h3>Réservation futur :</h3>
-
-        <table>
-            <thead>
-            <tr>
-                <th>Arrivée</th>
-                <th>Départ</th>
-                <th>Place</th>
-                <th>Tarif</th>
-                <th>Code</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for reservation in reservations.futur %}
+        <h2>Réservation futur :</h2>
+        <div class="flex reservation">
+        {% for reservation in reservations.futur %}
+            <table id='{{ reservation.entite.id }}'>
+                <tbody>
                 <tr>
-                    <td><a href='{{ path('app_admin_planning_jour', {'date' : reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
-                    <td><a href='{{ path('app_admin_planning_jour', {'date' : reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
-                    <td>{{ reservation.NombrePlace }}</td>
-                    <td>{{ reservation.getPrix }} €</td>
-                    <td>{{ reservation.CodeAcces.Code }}</td>
+                    <td>{{ reservation.entite.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
+                    <td>{{ reservation.entite.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
+                    <td>{{ reservation.entite.DateArrivee.diff(aujourdhui).days }} jours</td>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                <tr>
+                    <td>{{ reservation.entite.NombrePlace }} VH</td>
+                    <td>{{ reservation.entite.getPrix }} €</td>
+                    <td>{{ reservation.entite.CodeAcces.Code }}</td>
+                </tr>
+                <tr>
+                    <td>Raccourcir</td>
+                    <td>Allonger</td>
+                    <td>Annuler</td>
+                </tr>
+                </tbody>
+            </table>
+        {% endfor %}
+        </div>
     {% endif %}
 
     {% if reservations.passe %}
-        <h3>Réservation passé :</h3>
-
-        <table>
-            <thead>
-            <tr>
-                <th>Arrivée</th>
-                <th>Départ</th>
-                <th>Place</th>
-                <th>Tarif</th>
-                <th>Code</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for reservation in reservations.passe %}
-                <tr>
-                    <td><a href='{{ path('app_admin_planning_jour', {'date' : reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
-                    <td><a href='{{ path('app_admin_planning_jour', {'date' : reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
-                    <td>{{ reservation.NombrePlace }}</td>
-                    <td>{{ reservation.getPrix }} €</td>
-                    <td>{{ reservation.CodeAcces.Code }}</td>
-                </tr>
+        <h2>Réservation passe :</h2>
+        <div class="flex reservation">
+            {% for reservation in reservations.passe | reverse %}
+                <table id='{{ reservation.entite.id }}'>
+                    <tbody>
+                    <tr>
+                        <td>{{ reservation.entite.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
+                        <td>{{ reservation.entite.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
+                        <td>{{ reservation.entite.Duree }} jours</td>
+                    </tr>
+                    <tr>
+                        <td>{{ reservation.entite.NombrePlace }} VH</td>
+                        <td>{{ reservation.entite.getPrix }} €</td>
+                        <td>{{ reservation.entite.CodeAcces.Code }}</td>
+                    </tr>
+                    </tbody>
+                </table>
             {% endfor %}
-            </tbody>
-        </table>
+        </div>
     {% endif %}
 
 

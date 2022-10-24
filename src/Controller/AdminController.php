@@ -14,6 +14,7 @@ use App\Form\TransfertBddSqlType;
 use App\Form\PlanningJourType;
 use App\Form\PlanningType;
 use App\Form\ReservationType;
+use App\Form\ReservationModificationType;
 use App\Form\MessageType;
 use App\Form\MailType;
 use Symfony\Component\Mailer\MailerInterface;
@@ -295,9 +296,30 @@ class AdminController extends AbstractController
     {
 
         $aujourdhui = new \DateTime();
-        $reservations = $client->getReservationsTri();
+        $test = $this->createForm(ReservationModificationType::class,NULL);
+        $test->handleRequest($request);
 
-        return $this->render('admin/client.html.twig',['client'=>$client,'reservations'=>$reservations]);
+        // On verifie que le formulaire est envoyee et valide
+        if ($test->isSubmitted() && $test->isValid()) {
+            var_dump($test->getData());
+        }
+
+        // On recupere les reservations triees : passe, present, futur
+        $reservationsTri = $client->getReservationsTri();
+
+        $reservationsTemplates = [];
+
+        // On cree un formulaire pour chaque reservation
+        foreach ($reservationsTri as $key => $reservations){
+            $reservationsTemplates[$key] = [];
+            foreach ($reservations as $reservation){
+                $reservationsTemplates[$key][0]['form'] = $this->createForm(ReservationModificationType::class,$reservation)->createView();
+                $reservationsTemplates[$key][0]['entite'] = $reservation;
+            }
+        }
+
+        return $this->renderForm('admin/client.html.twig',['client'=>$client,'reservations'=>$reservationsTemplates,
+            'aujourdhui'=>$aujourdhui]);
 
     }
 

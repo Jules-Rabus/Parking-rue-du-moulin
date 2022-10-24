@@ -275,6 +275,10 @@ header nav ul li div img:hover{
         width: 100% !important;
     }
 
+    .reservation table{
+        width: 100% !important;
+    }
+
 }
 
 
@@ -488,5 +492,15 @@ form div{
 .descriptif h3{
     padding: unset;
     padding-bottom: 1rem;
+}
+
+.reservation table{
+    width: 48%;
+    border-collapse: inherit;
+    border-radius: 1rem;
+}
+
+.reservation td {
+    border: inherit;
 }
 
