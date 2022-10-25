@@ -27,7 +27,7 @@ class Date
     #[Groups(['date:read'])]
     private $Date;
 
-    #[ORM\ManyToMany(targetEntity: Reservation::class, inversedBy: 'dates')]
+    #[ORM\ManyToMany(targetEntity: Reservation::class, mappedBy: 'dates')]
     #[Groups(['date:read'])]
     private $relation;
 

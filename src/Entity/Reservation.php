@@ -45,7 +45,7 @@ class Reservation
     #[Groups(['reservation:read'])]
     private $Client;
 
-    #[ORM\ManyToMany(targetEntity: Date::class, mappedBy: 'relation')]
+    #[ORM\ManyToMany(targetEntity: Date::class, inversedBy: 'relation')]
     #[Groups(['reservation:read'])]
     private $dates;
 
@@ -158,20 +158,28 @@ class Reservation
         return $this;
     }
 
-    public function AjoutDates($entityManager){
+    public function AjoutDates($entityManager, bool $modification = false) : self{
 
         $date = new Date();
         $date->AjoutDates($this->DateArrivee,$this->DateDepart, $entityManager);
         $dateBoucle = new \DateTime($this->DateArrivee->format('Y-m-d'));
         $duree = $this->Duree();
 
+        // On efface les dates actuelles en cas de modification de date
+        if($modification){
+            $this->dates->clear();
+        }
+
         for($i = 0 ; $i < $duree; $i++){
 
-           $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
-           $this->addDate($date);
+            // FindOneBy car on a déja créer verifier que la date a été créer via AjoutDates()
+            $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
+            $this->addDate($date);
 
-           $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
+            $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
         }
+
+        return $this;
 
     }
 
@@ -183,18 +191,33 @@ class Reservation
         return $dateArrivee->diff($dateDepart)->days+1;
     }
 
-    public function VerificationDisponibilites($entityManager) : int{
+    public function VerificationDisponibilites($entityManager,bool $modification = false ) : int{
 
         $dateBoucle = new \DateTime($this->DateArrivee->format('Y-m-d'));
         $duree = $this->Duree();
-        $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
-        $nombrePlaceDisponiblesMin = $date->getNombrePlaceDisponibles($entityManager) - $this->NombrePlace;
+        $date = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
+
+        // placePresent est utile en cas de modification de la reservation pour deduire le vehicule deja present
+        if($modification){
+            $nombrePlaceDisponiblesMin = $date->getNombrePlaceDisponibles($entityManager);
+        }
+        else{
+            $nombrePlaceDisponiblesMin = $date->getNombrePlaceDisponibles($entityManager) - $this->NombrePlace;
+        }
+
 
         for($i = 0 ; $i < $duree; $i++){
 
-            $date = $entityManager->getRepository(Date::class)->FindOneBy(array("Date"=>$dateBoucle));
-            $nombrePlaceDisponibles = $date->getNombrePlaceDisponibles($entityManager) - $this->NombrePlace;
-            if( $nombrePlaceDisponibles < 0){
+            $date = $entityManager->getRepository(Date::class)->SelectorCreate($dateBoucle);
+
+            if($modification){
+                $nombrePlaceDisponibles = $date->getNombrePlaceDisponibles($entityManager);
+            }
+            else{
+                $nombrePlaceDisponibles = $date->getNombrePlaceDisponibles($entityManager) - $this->NombrePlace;
+            }
+
+            if($nombrePlaceDisponibles < 0){
                 return -1;
             }
             elseif($nombrePlaceDisponibles < $nombrePlaceDisponiblesMin){
@@ -202,6 +225,7 @@ class Reservation
             }
 
             $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
+
         }
 
         return $nombrePlaceDisponiblesMin;
