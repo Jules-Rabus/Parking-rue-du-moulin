@@ -22,6 +22,8 @@ class Message
 
     private string $Sujet;
 
+    private string $SujetCourt;
+
     private int $NombreReservation;
 
     private MailerInterface $Mailer;
@@ -120,7 +122,6 @@ class Message
         $this->NombreReservation = $NombreReservation;
     }
 
-
     /**
      * @return string
      */
@@ -135,6 +136,22 @@ class Message
     public function setSujet(string $Sujet): void
     {
         $this->Sujet = $Sujet;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSujetCourt(): string
+    {
+        return $this->SujetCourt;
+    }
+
+    /**
+     * @param string $Sujet
+     */
+    public function setSujetCourt(string $Sujet): void
+    {
+        $this->SujetCourt = $Sujet;
     }
 
     // Cette fonction va permettre de generer automatiquement les formules de politesse en fonction de l'heure de la journee
@@ -219,9 +236,10 @@ class Message
     }
 
     // template pour envoyer un code
-    public function MessageCode(){
+    public function messageCode(){
 
         $this->Sujet = "Votre code d'accès au parking";
+        $this->SujetCourt = "Code";
         $this->Message = "Votre code d'accès sera le : " . $this->Reservation->getCodeAcces()->getCode();
 
         if($this->NombreReservation < 2 ){
@@ -231,7 +249,7 @@ class Message
     }
 
     // fonction pour mettre un 's' en fonction du nombre de vehicule
-    public function Place() : string{
+    public function place() : string{
 
         if( $nombrePlace = $this->Reservation->getNombrePlace() > 1){
             return "de " . $nombrePlace .  " places";
@@ -241,9 +259,10 @@ class Message
     }
 
     // template pour l'explication du fonctionnement du parking
-    public function MessageExplication(){
+    public function messageExplication(){
 
         $this->Sujet = "Explication du fonctionnement";
+        $this->SujetCourt = "Explication";
         $this->Message = "Le parking se situe entre le 17 et le 19 rue du moulin à Tillé (portail noir) à 650 mètres à pied de l'aéroport.%0AL'accès au parking se fait via un portail motorisé à digicode. " .
             "Je vous remercie de me recontacter par sms/mail/telephone 48h00 avant votre arrivée au parking afin d'obtenir votre code d'accès, il sera également valable pour votre retour.%0A" .
             "Le paiement s'éffectue à votre arrivée au moyen d'enveloppes pré-remplies disponibles à l'entrée du parking et à déposer dans la boite au lettre jaune et verte situé le long du grillage.%0A" .
@@ -251,38 +270,41 @@ class Message
     }
 
     // template pour la confirmation d'une reservation
-    public function MessageReservation(){
+    public function messageReservation(){
 
         $this->Sujet = "Confirmation de votre réservation";
+        $this->SujetCourt = "Confirmation";
 
         if(!$this->NombreReservation){
-            $this->MessageExplication();
+            $this->messageExplication();
             $this->Message = $this->Message . "%0A%0A";
         }
 
-        $this->Message = $this->Message . "Je vous confirme votre réservation " . $this->Place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->Message = $this->Message . "Je vous confirme votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
 
     }
 
     // template pour l'allongement d'une reservation
-    public function MessageAllongement(){
+    public function messageAllongement(){
 
         $this->Sujet = "Allongement de votre réservation";
-        $this->Message = "Je vous confirme l'allongement de votre réservation " . $this->Place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->SujetCourt = "Allongement";
+        $this->Message = "Je vous confirme l'allongement de votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
     }
 
     // template pour l'annulation d'une reservation
-    public function MessageAnnulation(){
+    public function messageAnnulation(){
 
         $this->Sujet = "Annulation de votre réservation";
-        $this->Message = "Je vous confirme l'annulation de votre réservation " . $this->Place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->SujetCourt = "Annulation";
+        $this->Message = "Je vous confirme l'annulation de votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
     }
 
     // traitement du formulaire pour les messages
-    public function TraitementFormulaire($formulaire, $doctrine ) : array{
+    public function traitementFormulaire($formulaire, $doctrine ) : array{
 
         if($formulaire['debut']){
             $this->Heure(1);
@@ -293,12 +315,12 @@ class Message
         }
 
         if($formulaire['reservation']){
-            $this->MessageReservation();
+            $this->messageReservation();
         }
 
         //
         if($formulaire['code']){
-            $this->MessageCode();
+            $this->messageCode();
             $this->Reservation->setCodeDonne(true);
             $entityManager = $doctrine->getManager();
             $entityManager->persist($this->Reservation);
@@ -313,7 +335,7 @@ class Message
         }
 
         if($formulaire['explication']){
-            $this->MessageExplication();
+            $this->messageExplication();
         }
 
         // On retourne le message/ le mail
@@ -335,6 +357,19 @@ class Message
             ->htmlTemplate('mail/' . $data['template'] . '.html.twig' )
             ->context(['message' => ($data["message"])]);
         $this->Mailer->send($email);
+    }
+
+    public function messageIntelligent(){
+
+        $aujourdhui = new \DateTime();
+
+        if( $this->Reservation->getDateArrivee()->diff($aujourdhui)->days > 4 ){
+            $this->messageCode();
+            return ["message"=> $this->getMessageTelephone(), "sujet"=> $this->SujetCourt];
+        }
+
+        $this->messageReservation();
+        return ["message"=> $this->getMessageTelephone(), "sujet"=> $this->SujetCourt];
     }
 
 

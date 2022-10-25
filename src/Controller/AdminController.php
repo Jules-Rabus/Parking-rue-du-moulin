@@ -296,6 +296,7 @@ class AdminController extends AbstractController
     {
         $reservationsTemplates = [];
         $aujourdhui = new \DateTime();
+        $entityManager = $doctrine->getManager();
         $form = $this->createForm(ReservationModificationType::class,NULL);
         $form->handleRequest($request);
 
@@ -304,7 +305,7 @@ class AdminController extends AbstractController
 
             // On verifie si le bouton annule est presse
             if($form->get('Annuler')->isClicked()){
-                $entityManager = $doctrine->getManager();
+
                 $reservation = $entityManager->getRepository(Reservation::class)->find($form->getData()['id']);
                 $entityManager->remove($reservation);
                 $entityManager->flush();
@@ -313,9 +314,9 @@ class AdminController extends AbstractController
             // On verifie si le bouton modifier est presse
             if($form->get('Modifier')->isClicked()) {
 
-                $entityManager = $doctrine->getManager();
                 $formData = $form->getData();
 
+                // On traite les informations venant du formulaire
                 $reservationId = $formData['id'];
                 $reservation = $entityManager->getRepository(Reservation::class)->find($reservationId);
                 $reservation->setDateArrivee($formData['DateArrivee']);
@@ -323,17 +324,12 @@ class AdminController extends AbstractController
                 $reservation->setNombrePlace($formData['NombrePlace']);
                 $reservation->AjoutDates($entityManager,true);
 
-                if($reservation->VerificationDisponibilites($entityManager,true) != -1){
-                    if($reservation->getDateDepart() >= $reservation->getDateArrivee()){
+                // On modifie la reservation si elle possible et correcte
+                if($reservation->VerificationDisponibilites($entityManager,true) != -1) {
+                    if ($reservation->getDateDepart() >= $reservation->getDateArrivee()) {
                         $entityManager->persist($reservation);
                         $entityManager->flush();
                     }
-                    else{
-                        $formError = "Les dates ne sont pas correctes";
-                    }
-                }
-                else{
-                    $formError = "Il n'y a pas de place pour ces dates";
                 }
                 return $this->redirect($this->generateUrl('app_admin_client',['client' => $client->getId() ]) . "#" . $reservationId);
 
@@ -345,13 +341,20 @@ class AdminController extends AbstractController
 
         // On cree un formulaire pour chaque reservation
         foreach ($reservationsTri as $key => $reservations){
-            $reservationsTemplates[$key] = [];
-            foreach ($reservations as $reservation){
-                $reservationsTemplates[$key][] = [
-                    'form'=>$this->createForm(ReservationModificationType::class,
-                        $reservation)->createView(),'entite'=> $reservation
-                ] ;
+            if($key != "passe"){
+                $reservationsTemplates[$key] = [];
+                foreach ($reservations as $reservation){
+                    $message = (new Message($reservation,$reservation->NombreReservation($entityManager),$mailer))->messageIntelligent();
+                    $reservationsTemplates[$key][] = [
+                        'form'=>$this->createForm(ReservationModificationType::class, $reservation)->createView(),
+                        'entite'=> $reservation,
+                        'message'=> $message] ;
+                }
             }
+            else{
+                $reservationsTemplates[$key] = $reservations;
+            }
+
         }
 
         return $this->renderForm('admin/client.html.twig',['client'=>$client,'reservations'=>$reservationsTemplates,
@@ -374,7 +377,7 @@ class AdminController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
 
             return $this->renderForm('admin/message.html.twig',['form'=>$form,
-                'message'=>$message,'messageRetour'=>$message->TraitementFormulaire($form->getData(),$doctrine)]);
+                'message'=>$message,'messageRetour'=>$message->traitementFormulaire($form->getData(),$doctrine)]);
         }
 
         return $this->renderForm('admin/message.html.twig',['form'=>$form,

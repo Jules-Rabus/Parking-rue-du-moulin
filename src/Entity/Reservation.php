@@ -234,7 +234,7 @@ class Reservation
     public function NombreReservation($entityManager) : int{
 
         if($this->Client){
-            return $entityManager->getRepository(Reservation::class)->NombreReservationClient($this->getId());
+            return $entityManager->getRepository(Reservation::class)->NombreReservationClient($this->getClient()->getId());
         }
         return $entityManager->getRepository(Reservation::class)->NombreReservationTelephone($this->Telephone);
     }
