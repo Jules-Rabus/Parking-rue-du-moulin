@@ -34,22 +34,21 @@
         {% for reservation in reservations.present %}
             <table id='{{ reservation.entite.id }}'>
                 <tbody>
-                    <tr>
-                        <td>{{ reservation.entite.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
-                        <td>{{ reservation.entite.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
-                        <td>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</td>
+                    <tr>{{ form_start(reservation.form) }}
+                        <td class="reservation_form">{{ form_row(reservation.form.DateArrivee) }}</td>
+                        <td class="reservation_form">{{ form_row(reservation.form.DateDepart) }}</td>
+                        <td class="reservation_form">{{ form_row(reservation.form.NombrePlace) }}</td>
                     </tr>
                     <tr>
-                        <td>{{ reservation.entite.NombrePlace }} VH</td>
+                        <td>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</td>
                         <td>{{ reservation.entite.getPrix }} €</td>
                         <td>{{ reservation.entite.CodeAcces.Code }}</td>
                     </tr>
                     <tr>
-                        <td>{{ form_start(reservation.form) }}</td>
-                        <td><button type="submit">Réserver</button></td>
-                        <td>{{ form_end(reservation.form) }}</td>
-                        <td>Annuler</td>
-                    </tr>
+                        <td>"Message intelligent"</td>
+                        <td>{{ form_row(reservation.form.Annuler) }}</td>
+                        <td>{{ form_row(reservation.form.Modifier) }}</td>
+                    </tr>{{ form_end(reservation.form) }}
                 </tbody>
             </table>
         {% endfor %}

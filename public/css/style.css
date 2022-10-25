@@ -444,7 +444,7 @@ form input[type=date]{
     width: fit-content;
 }
 
-form button{
+button, form button{
     all: unset;
     transition: all 0.4s ease;
     color: #e6e6e6;
@@ -455,7 +455,7 @@ form button{
     cursor: pointer;
 }
 
-form button:hover{
+button:hover, form button:hover{
     border: 3px solid #ED5153;
 }
 
@@ -496,11 +496,27 @@ form div{
 
 .reservation table{
     width: 48%;
+    min-width: fit-content;
     border-collapse: inherit;
     border-radius: 1rem;
 }
 
 .reservation td {
     border: inherit;
+}
+
+.reservation_form div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.reservation_form div input{
+    border-radius: 1rem;
+    text-align: center;
+    padding: 0.5rem;
+    border: 3px solid #ED5153;
+    margin: 0.5rem;
+    width: fit-content;
 }
 

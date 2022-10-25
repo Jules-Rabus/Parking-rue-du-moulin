@@ -57,7 +57,7 @@ class AdminController extends AbstractController
             $formPrix = $reservation->getPrix();
 
             // On verifie que le parking n'est pas plein
-            if($reservation->VerificationDisponibilites($entityManager)){
+            if($reservation->VerificationDisponibilites($entityManager) != -1){
                 if($reservation->getDateDepart() >= $reservation->getDateArrivee()){
                     $entityManager->persist($reservation);
                     $entityManager->flush();
@@ -177,8 +177,8 @@ class AdminController extends AbstractController
         $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($date);
         $voitures = $dateEntite->getRelation()->getValues();
         $nombrePlaceDisponibles = $dateEntite->getNombrePlaceDisponibles();
-        $nbrArrivee = $dateEntite->getnombreDepart();
-        $nbrDepart =  $dateEntite->getnombreArrivee();
+        $nbrArrivee = $dateEntite->getnombreArrivee();
+        $nbrDepart =  $dateEntite->getnombreDepart();
         $aujourdhui = new \DateTime();
 
         return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'aujourdhui'=>$aujourdhui,'arrivees'=>$arrivees,'departs'=>$departs,
@@ -294,27 +294,63 @@ class AdminController extends AbstractController
     #[Route('/client/{client}', name: 'app_admin_client')]
     public function client(Request $request, ManagerRegistry $doctrine, Client $client, MailerInterface $mailer): Response
     {
-
+        $reservationsTemplates = [];
         $aujourdhui = new \DateTime();
-        $test = $this->createForm(ReservationModificationType::class,NULL);
-        $test->handleRequest($request);
+        $form = $this->createForm(ReservationModificationType::class,NULL);
+        $form->handleRequest($request);
 
         // On verifie que le formulaire est envoyee et valide
-        if ($test->isSubmitted() && $test->isValid()) {
-            var_dump($test->getData());
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // On verifie si le bouton annule est presse
+            if($form->get('Annuler')->isClicked()){
+                $entityManager = $doctrine->getManager();
+                $reservation = $entityManager->getRepository(Reservation::class)->find($form->getData()['id']);
+                $entityManager->remove($reservation);
+                $entityManager->flush();
+            }
+
+            // On verifie si le bouton modifier est presse
+            if($form->get('Modifier')->isClicked()) {
+
+                $entityManager = $doctrine->getManager();
+                $formData = $form->getData();
+
+                $reservationId = $formData['id'];
+                $reservation = $entityManager->getRepository(Reservation::class)->find($reservationId);
+                $reservation->setDateArrivee($formData['DateArrivee']);
+                $reservation->setDateDepart($formData['DateDepart']);
+                $reservation->setNombrePlace($formData['NombrePlace']);
+                $reservation->AjoutDates($entityManager,true);
+
+                if($reservation->VerificationDisponibilites($entityManager,true) != -1){
+                    if($reservation->getDateDepart() >= $reservation->getDateArrivee()){
+                        $entityManager->persist($reservation);
+                        $entityManager->flush();
+                    }
+                    else{
+                        $formError = "Les dates ne sont pas correctes";
+                    }
+                }
+                else{
+                    $formError = "Il n'y a pas de place pour ces dates";
+                }
+                return $this->redirect($this->generateUrl('app_admin_client',['client' => $client->getId() ]) . "#" . $reservationId);
+
+            }
         }
 
         // On recupere les reservations triees : passe, present, futur
         $reservationsTri = $client->getReservationsTri();
 
-        $reservationsTemplates = [];
-
         // On cree un formulaire pour chaque reservation
         foreach ($reservationsTri as $key => $reservations){
             $reservationsTemplates[$key] = [];
             foreach ($reservations as $reservation){
-                $reservationsTemplates[$key][0]['form'] = $this->createForm(ReservationModificationType::class,$reservation)->createView();
-                $reservationsTemplates[$key][0]['entite'] = $reservation;
+                $reservationsTemplates[$key][] = [
+                    'form'=>$this->createForm(ReservationModificationType::class,
+                        $reservation)->createView(),'entite'=> $reservation
+                ] ;
             }
         }
 
