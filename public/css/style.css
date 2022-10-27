@@ -440,11 +440,11 @@ form[name=message]{
     flex-direction: row;
 }
 
-form input[type=date]{
+form input[type=date], input[type=number]{
     width: fit-content;
 }
 
-button, form button{
+button, form button, .button{
     all: unset;
     transition: all 0.4s ease;
     color: #e6e6e6;
@@ -494,29 +494,43 @@ form div{
     padding-bottom: 1rem;
 }
 
-.reservation table{
-    width: 48%;
-    min-width: fit-content;
-    border-collapse: inherit;
-    border-radius: 1rem;
+/* Reservation gestion client */
+
+.reservation{
+    max-width: inherit;
 }
 
-.reservation td {
-    border: inherit;
+.reservation form{
+    padding: 1rem;
 }
 
-.reservation_form div{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.reservation label{
+    font-size: 100%;
 }
 
-.reservation_form div input{
-    border-radius: 1rem;
+.reservation form > div {
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
     text-align: center;
-    padding: 0.5rem;
-    border: 3px solid #ED5153;
-    margin: 0.5rem;
-    width: fit-content;
+
 }
+
+.menu_reservation{
+    width: 100%;
+}
+
+.menu_reservation > div{
+    flex-grow: 1;
+}
+
+.reservation form input{
+    margin: 0;
+}
+
+.presentation_reservation > * {
+    flex-basis: 50%;
+    padding-bottom: 1rem;
+}
+
 

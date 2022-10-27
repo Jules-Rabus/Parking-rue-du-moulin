@@ -9,7 +9,7 @@
     <table>
         <thead>
             <tr>
-                <th>Id</th>
+                <th>Client Id</th>
                 <th>Nom</th>
                 <th>Contact</th>
                 <th>Nombre de réservation</th>
@@ -34,25 +34,21 @@
         <h2>Réservation en cours :</h2>
         <div class="flex reservation">
         {% for reservation in reservations.present %}
-            <table id='{{ reservation.entite.id }}'>
-                <tbody>
-                    <tr>{{ form_start(reservation.form) }}
-                        <td class="reservation_form">{{ form_row(reservation.form.DateArrivee) }}</td>
-                        <td class="reservation_form">{{ form_row(reservation.form.DateDepart) }}</td>
-                        <td class="reservation_form">{{ form_row(reservation.form.NombrePlace) }}</td>
-                    </tr>
-                    <tr>
-                        <td>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</td>
-                        <td>{{ reservation.entite.getPrix }} €</td>
-                        <td>{{ reservation.entite.CodeAcces.Code }}</td>
-                    </tr>
-                    <tr>
-                        <td><a {{ reservation.message.message }}>{{ reservation.message.sujet }}</a></td>
-                        <td>{{ form_row(reservation.form.Annuler) }}</td>
-                        <td>{{ form_row(reservation.form.Modifier) }}</td>
-                    </tr>{{ form_end(reservation.form) }}
-                </tbody>
-            </table>
+            {{ form_start(reservation.form,{'attr': {'id': reservation.entite.id }}) }}
+            <div class="presentation_reservation">
+                {{ form_row(reservation.form.DateArrivee) }}
+                {{ form_row(reservation.form.DateDepart) }}
+                {{ form_row(reservation.form.NombrePlace) }}
+                <p>{{ reservation.entite.CodeAcces.Code }}</p>
+                <p>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</p>
+                <p>{{ reservation.entite.getPrix }} €</p>
+            </div>
+            <div class="menu_reservation">
+                {{ form_row(reservation.form.Annuler) }}
+                <div><a class="button" {{ reservation.message.message }}><p>{{ reservation.message.sujet }}</p></a></div>
+                {{ form_row(reservation.form.Modifier) }}
+                {{ form_end(reservation.form) }}
+            </div>
         {% endfor %}
         </div>
     {% endif %}
@@ -61,25 +57,21 @@
         <h2>Réservation futur :</h2>
         <div class="flex reservation">
         {% for reservation in reservations.futur %}
-            <table id='{{ reservation.entite.id }}'>
-                <tbody>
-                <tr>{{ form_start(reservation.form) }}
-                    <td class="reservation_form">{{ form_row(reservation.form.DateArrivee) }}</td>
-                    <td class="reservation_form">{{ form_row(reservation.form.DateDepart) }}</td>
-                    <td class="reservation_form">{{ form_row(reservation.form.NombrePlace) }}</td>
-                </tr>
-                <tr>
-                    <td>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</td>
-                    <td>{{ reservation.entite.getPrix }} €</td>
-                    <td>{{ reservation.entite.CodeAcces.Code }}</td>
-                </tr>
-                <tr>
-                    <td><a {{ reservation.message.message }}>{{ reservation.message.sujet }}</a></td>
-                    <td>{{ form_row(reservation.form.Annuler) }}</td>
-                    <td>{{ form_row(reservation.form.Modifier) }}</td>
-                </tr>{{ form_end(reservation.form) }}
-                </tbody>
-            </table>
+            {{ form_start(reservation.form,{'attr': {'id': reservation.entite.id }}) }}
+            <div class="presentation_reservation">
+                {{ form_row(reservation.form.DateArrivee) }}
+                {{ form_row(reservation.form.DateDepart) }}
+                {{ form_row(reservation.form.NombrePlace) }}
+                <p>{{ reservation.entite.CodeAcces.Code }}</p>
+                <p>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</p>
+                <p>{{ reservation.entite.getPrix }} €</p>
+            </div>
+            <div class="menu_reservation">
+                {{ form_row(reservation.form.Annuler) }}
+                <div><a class="button" {{ reservation.message.message }}><p>{{ reservation.message.sujet }}</p></a></div>
+                {{ form_row(reservation.form.Modifier) }}
+                {{ form_end(reservation.form) }}
+            </div>
         {% endfor %}
         </div>
     {% endif %}
