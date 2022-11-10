@@ -47,6 +47,7 @@ class ReservationRepository extends ServiceEntityRepository
     }
 
     public function NombreReservationClient(int $id){
+
         return $this->createQueryBuilder('reservation')
             ->select('COUNT(reservation.id)')
             ->andWhere('reservation.Client = :id')

@@ -34,6 +34,9 @@
                         <th>Nom</th>
                         <th>Départ</th>
                         <th>Contact</th>
+                        {% if aujourdhui.diff(date).days < 5 %}
+                            <th>Code</th>
+                        {% endif %}
                         <th>Place</th>
                     </tr>
                 </thead>
@@ -42,7 +45,7 @@
                 {% for arrivee in arrivees | sort((a, b) => a.DateArrivee <=> b.DateArrivee ) %}
                     {% if arrivee.CodeDonne %}
                         <tr class='planning_vert'>
-                    {% elseif aujourdhui | date_modify("+3 day") > date  %}
+                    {% elseif aujourdhui.diff(date).days < 4 %}
                         <tr class='planning_rouge'>
                     {% else %}
                         <tr>
@@ -54,6 +57,10 @@
                             <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.Id} ) }}'>{{ arrivee.getClient.Email }}</a></td>
                         {% else %}
                             <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.Id} ) }}'>{{ arrivee.telephone }}</a></td>
+                        {% endif %}
+
+                        {% if aujourdhui.diff(date).days < 5 %}
+                            <td>{{ arrivee.getCodeAcces.getCode }}</td>
                         {% endif %}
                         <td>{{ arrivee.NombrePlace }}</td>
                     </tr>

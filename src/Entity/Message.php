@@ -363,9 +363,9 @@ class Message
 
         $aujourdhui = new \DateTime();
 
-        if( $this->Reservation->getDateArrivee()->diff($aujourdhui)->days > 4 ){
+        if( $this->Reservation->getDateArrivee()->diff($aujourdhui)->days < 5 ){
             $this->messageCode();
-            return ["message"=> $this->getMessageTelephone(), "sujet"=> $this->SujetCourt];
+            return ["message"=> $this->messageCode(), "sujet"=> $this->SujetCourt];
         }
 
         $this->messageReservation();

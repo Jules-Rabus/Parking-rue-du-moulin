@@ -187,7 +187,7 @@ class AdminController extends AbstractController
     }
 
     #[Route('/transfertbdd', name: 'app_admin_transfertbdd')]
-    public function transfertBdd(Request $request, SluggerInterface $slugger,ManagerRegistry $doctrine): Response
+    public function transfertBdd(Request $request, SluggerInterface $slugger,ManagerRegistry $doctrine, MailerInterface $mailer ): Response
     {
 
         // on creer le formulaire pour le transfert de BDD
@@ -216,13 +216,16 @@ class AdminController extends AbstractController
                 $requete = $sql->prepare("DELETE FROM client WHERE roles != '[\"ROLE_ADMIN\"]'");
                 $requete->execute();
 
+                $requete = $sql->prepare("DELETE FROM code");
+                $requete->execute();
+
                 $entityManager = $doctrine->getManager();
 
                 $transfertbdd->setJsonFilename("Sql");
 
                 // On recupere la connexion a l'ancienne bdd et fait le traitement
                 $sqlOld = $doctrine->getConnection('old');
-                $transfertbdd->TransfertBddSql($entityManager,$sqlOld);
+                $transfertbdd->TransfertBddSql($entityManager,$sqlOld,$mailer);
 
                 $transfertbdd->setDate(new \DateTime());
                 $transfertbdd->setRelation($this->getUser());
@@ -269,13 +272,16 @@ class AdminController extends AbstractController
                 $requete = $sql->prepare("DELETE FROM client WHERE roles != '[\"ROLE_ADMIN\"]'");
                 $requete->execute();
 
+                $requete = $sql->prepare("DELETE FROM code");
+                $requete->execute();
+
                 $entityManager = $doctrine->getManager();
 
                 $transfertbdd->setDate(new \DateTime());
                 $transfertbdd->setRelation($this->getUser());
 
                 // On effectue le traitement du fichier Json
-                $transfertbdd->TransfertBddJson($entityManager);
+                $transfertbdd->TransfertBddJson($entityManager,$mailer);
 
                 // On inscrit dans la bdd le transfert
                 $entityManager->persist($transfertbdd);

@@ -72,7 +72,7 @@ class TransfertBdd
     }
 
     // traitement du fichier json
-    public function TransfertBddJson($entityManager)
+    public function TransfertBddJson($entityManager,$mailer)
     {
 
         // On recupere le fichier json
@@ -82,12 +82,16 @@ class TransfertBdd
 
         $contents = array();
 
-
         // on decode chaque ligne du fichier JSON qui correspond a une reservation
         foreach ($finder as $file) {
             $file->getContents();
             $contents += json_decode($file->getContents());
         }
+
+        // Code null pour ancienne reservation sans code
+        $codeNull = new Code();
+        $codeNull->setCode(0);
+        $entityManager->persist($codeNull);
 
         // On effectue le traitement pour chaque reservation
         foreach ($contents as $content) {
@@ -148,30 +152,44 @@ class TransfertBdd
             }
             $reservation->setClient($client);
 
-            // Traitement pour les codes
-
-            // On regarde si le code a deja ete creer
-            if( !$entityManager->getRepository(Code::class)->countCode($content->code)){
-                // On creer un nouveau code dans la bdd
-                $code = New Code();
-                $code->setCode($content->code);
-                $entityManager->persist($code);
-            }
-            else{
-                // On recupere le code deja existant dans la BDD
-                $code = $entityManager->getRepository(Code::class)->FindOneBy(array("Code" => $content->code));
-            }
-            $reservation->setCodeAcces($code);
-
-            $reservation->setTelephone($content->contact);
-            $reservation->setNombrePlace($content->place);
-
             //Traitement des dates de reservations
             $dateArrivee = new \DateTime($content->date);
             $reservation->setDateArrivee($dateArrivee);
             $dateDepart = new \DateTime($content->datef);
             $reservation->setDateDepart($dateDepart);
             $reservation->AjoutDates($entityManager);
+
+            // Traitement pour les codes
+
+            // On regarde si le code n'est pas null
+            if( $content['code'] != 0 ) {
+
+                // On regarde si le code a deja ete cree
+                if (!$entityManager->getRepository(Code::class)->countCode($content['code'])) {
+                    // On cree un nouveau code a partir du code de la reservation
+                    $code = new Code();
+                    $code->setCode($content['code']);
+                    $entityManager->persist($code);
+                } else {
+                    // On recupere le code deja existant dans la BDD
+                    $code = $entityManager->getRepository(Code::class)->FindOneBy(array("Code" => $content['code']));
+                }
+                $reservation->setCodeAcces($code);
+                $reservation->setCodeDonne(true);
+
+            }
+            elseif( new \DateTime() < $dateArrivee  ) {
+                // On cree un code a partir de la date
+                $code = $entityManager->getRepository(Code::class)->SelectOrCreate($dateArrivee,$dateDepart,$mailer,false);
+                $reservation->setCodeAcces($code);
+            }
+            else{
+                $reservation->setCodeAcces($codeNull);
+                $reservation->setCodeDonne(true);
+            }
+
+            $reservation->setTelephone($content->contact);
+            $reservation->setNombrePlace($content->place);
 
             if($content->date_reservation){
                 $dateReservation = new \DateTime($content->date_reservation);
@@ -182,11 +200,6 @@ class TransfertBdd
             $dateReservation = new \DateTime($content->date_reservation);
             $reservation->setDateReservation($dateReservation);
 
-            // Si le client est deja arrivee sur le parking alors il a forcement eu son code
-            if($dateArrivee < new \DateTime()){
-                $reservation->setCodeDonne(true);
-            }
-
             $entityManager->persist($reservation);
             $entityManager->flush();
         }
@@ -194,9 +207,14 @@ class TransfertBdd
     }
 
     // traitement via la connexion sql
-    public function TransfertBddSql($entityManager,$sqlOld)
+    public function TransfertBddSql($entityManager,$sqlOld,$mailer)
     {
         $contents = $sqlOld->fetchAllAssociative('SELECT * FROM reservation');
+
+        // Code null pour ancienne reservation sans code
+        $codeNull = new Code();
+        $codeNull->setCode(0);
+        $entityManager->persist($codeNull);
 
         // On effectue le traitement pour chaque reservation
         foreach ($contents as $content) {
@@ -257,30 +275,44 @@ class TransfertBdd
             }
             $reservation->setClient($client);
 
-            // Traitement pour les codes
-
-            // On regarde si le code a deja ete creer
-            if( !$entityManager->getRepository(Code::class)->countCode($content['code'])){
-                // On creer un nouveau code dans la bdd
-                $code = New Code();
-                $code->setCode($content['code']);
-                $entityManager->persist($code);
-            }
-            else{
-                // On recupere le code deja existant dans la BDD
-                $code = $entityManager->getRepository(Code::class)->FindOneBy(array("Code" => $content['code']));
-            }
-            $reservation->setCodeAcces($code);
-
-            $reservation->setTelephone($content['contact']);
-            $reservation->setNombrePlace($content['place']);
-
             //Traitement des dates de reservations
             $dateArrivee = new \DateTime($content['date']);
             $reservation->setDateArrivee($dateArrivee);
             $dateDepart = new \DateTime($content['datef']);
             $reservation->setDateDepart($dateDepart);
             $reservation->AjoutDates($entityManager);
+
+            // Traitement pour les codes
+
+            // On regarde si le code n'est pas null
+            if( $content['code'] != 0 ) {
+
+                // On regarde si le code a deja ete cree
+                if (!$entityManager->getRepository(Code::class)->countCode($content['code'])) {
+                    // On cree un nouveau code a partir du code de la reservation
+                    $code = new Code();
+                    $code->setCode($content['code']);
+                    $entityManager->persist($code);
+                } else {
+                    // On recupere le code deja existant dans la BDD
+                    $code = $entityManager->getRepository(Code::class)->FindOneBy(array("Code" => $content['code']));
+                }
+                $reservation->setCodeAcces($code);
+                $reservation->setCodeDonne(true);
+
+            }
+            elseif( new \DateTime() < $dateArrivee  ) {
+                // On cree un code a partir de la date
+                $code = $entityManager->getRepository(Code::class)->SelectOrCreate($dateArrivee,$dateDepart,$mailer,false);
+                $reservation->setCodeAcces($code);
+            }
+            else{
+                $reservation->setCodeAcces($codeNull);
+                $reservation->setCodeDonne(true);
+            }
+
+            $reservation->setTelephone($content['contact']);
+            $reservation->setNombrePlace($content['place']);
 
             if($content['date_reservation']){
                 $dateReservation = new \DateTime($content['date_reservation']);
@@ -291,14 +323,10 @@ class TransfertBdd
             $dateReservation = new \DateTime($content['date_reservation']);
             $reservation->setDateReservation($dateReservation);
 
-            // Si le client est deja arrivee sur le parking alors il a forcement eu son code
-            if($dateArrivee < new \DateTime()){
-                $reservation->setCodeDonne(true);
-            }
-
             $entityManager->persist($reservation);
-            $entityManager->flush();
         }
+
+        $entityManager->flush();
 
     }
 

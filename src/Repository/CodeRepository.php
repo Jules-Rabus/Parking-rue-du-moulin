@@ -56,14 +56,19 @@ class CodeRepository extends ServiceEntityRepository
             ->getQuery()->getSingleScalarResult();
     }
 
-    public function SelectOrCreate(\DateTime $DateDebut, \DateTime $DateFin, MailerInterface $mailer ): ?Code {
+    public function SelectOrCreate(\DateTime $dateDebut, \DateTime $dateFin, MailerInterface $mailer, $flush = true ): ?Code {
 
+        $dateDebut = clone $dateDebut;
+        $dateFin = clone $dateFin;
+
+        $dateDebut = $dateDebut->modify('first day of this month');
+        $dateFin = $dateFin->modify('last day of this month');
 
         $code = $this->createQueryBuilder('code')
-            ->andWhere('code.DateDebut <= :datedebut')
-            ->andWhere('code.DateFin >= :datefin')
-            ->setParameter('datedebut', $DateDebut->format('Y-m-d'))
-            ->setParameter('datefin', $DateFin->format('Y-m-d'))
+            ->andWhere('code.DateDebut = :datedebut')
+            ->andWhere('code.DateFin = :datefin')
+            ->setParameter('datedebut', $dateDebut->format('Y-m-d'))
+            ->setParameter('datefin', $dateFin->format('Y-m-d'))
             ->getQuery()
             ->getOneOrNullResult();
         ;
@@ -71,21 +76,18 @@ class CodeRepository extends ServiceEntityRepository
         if(!$code){
             $code = new Code();
             $code->setCode(rand(1000,9999));
-            $DateDebut = $DateDebut->modify('first day of this month');
-            $DateFin = $DateFin->modify('last day of this month');
-            $code->setDateDebut($DateDebut);
-            $code->setDateFin($DateFin);
-            $this->add($code);
+            $code->setDateDebut($dateDebut);
+            $code->setDateFin($dateFin);
+            $this->add($code,$flush);
 
             $email = new Email();
             $email->from(new Address('gestion@parking-rue-du-moulin.fr','Gestion Parking'))
                 ->to('jules200204@gmail.com')
                 ->subject('Nouveau code '. $code->getCode())
                 ->text("Nouveau code à ajouter : " . $code->getCode());
-            $mailer->send($email);
+            //$mailer->send($email);
 
         }
-
 
         return $code;
     }
