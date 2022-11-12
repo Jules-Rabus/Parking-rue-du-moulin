@@ -322,13 +322,13 @@ div > h2,h3,table{
 }
 
 .planning_orange{
-    background-color:#ff6600;
+    background-color:#ff6600 !important;
 }
 .planning_rouge{
-    background-color:#ff0039d4;
+    background-color:#ff0039d4 !important;
 }
 .planning_vert{
-    background-color: #2caf2c;
+    background-color: #2caf2c !important;
 }
 .planning thead tr th:first-child{
     width: 45%;
@@ -455,7 +455,7 @@ button, form button, .button{
     cursor: pointer;
 }
 
-button:hover, form button:hover{
+button:hover, form button:hover, .button:hover{
     border: 3px solid #ED5153;
 }
 

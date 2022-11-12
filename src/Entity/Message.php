@@ -32,7 +32,7 @@ class Message
      * @param \App\Entity\Reservation $Reservation
      * @param int $NombreReservation
      */
-    public function __construct(\App\Entity\Reservation $Reservation, int $NombreReservation, MailerInterface $Mailer)
+    public function __construct(\App\Entity\Reservation $Reservation, int $NombreReservation, MailerInterface $Mailer, bool $heure = false)
     {
         $this->Debut = '';
         $this->Fin = '';
@@ -40,6 +40,7 @@ class Message
         $this->Reservation = $Reservation;
         $this->NombreReservation = $NombreReservation;
         $this->Mailer = $Mailer;
+        if($heure) $this->heure();
     }
 
     /**
@@ -155,7 +156,7 @@ class Message
     }
 
     // Cette fonction va permettre de generer automatiquement les formules de politesse en fonction de l'heure de la journee
-    public function Heure($moment = 1){
+    public function heure($moment = 1){
 
         // On recupère les informations lies à l'heure de la journée
         $soleil = (new \DateTime())->setTimestamp(date_sun_info((new \DateTime())->getTimestamp(), 49.375, 2.1935)['sunset']);
@@ -307,11 +308,11 @@ class Message
     public function traitementFormulaire($formulaire, $doctrine ) : array{
 
         if($formulaire['debut']){
-            $this->Heure(1);
+            $this->Heure(2);
         }
 
         if($formulaire['fin']){
-            $this->Heure(2);
+            $this->Heure(3);
         }
 
         if($formulaire['reservation']){
@@ -365,7 +366,7 @@ class Message
 
         if( $this->Reservation->getDateArrivee()->diff($aujourdhui)->days < 5 ){
             $this->messageCode();
-            return ["message"=> $this->messageCode(), "sujet"=> $this->SujetCourt];
+            return ["message"=> $this->getMessageTelephone(), "sujet"=> $this->SujetCourt];
         }
 
         $this->messageReservation();

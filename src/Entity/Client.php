@@ -267,5 +267,10 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         return $reservationsClient;
 
     }
+
+    #[Groups(['user:read'])]
+    public function getNombreReservation() : int{
+        return count($this->getReservations());
+    }
     
 }

@@ -24,7 +24,7 @@
                 {% else %}
                     <td><a href='sms:{{ client.telephone }}'>{{ client.telephone }}</a></td>
                 {% endif %}
-                <td>{{ reservations | length }}</td>
+                <td>{{ client.getNombreReservation }}</td>
             </tr>
         </tbody>
 
@@ -39,8 +39,16 @@
                 {{ form_row(reservation.form.DateArrivee) }}
                 {{ form_row(reservation.form.DateDepart) }}
                 {{ form_row(reservation.form.NombrePlace) }}
-                <p>{{ reservation.entite.CodeAcces.Code }}</p>
-                <p>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</p>
+                <div>
+                    {% if reservation.entite.CodeDonne %}
+                        <a class="button planning_vert"
+                    {% else %}
+                        <a class="button planning_rouge"
+                    {% endif %}
+                        {{ reservation.code }}>{{ reservation.entite.CodeAcces.Code }}
+                        </a>
+                </div>
+                <p>{{ reservation.entite.Duree }} jours</p>
                 <p>{{ reservation.entite.getPrix }} €</p>
             </div>
             <div class="menu_reservation">
@@ -62,7 +70,15 @@
                 {{ form_row(reservation.form.DateArrivee) }}
                 {{ form_row(reservation.form.DateDepart) }}
                 {{ form_row(reservation.form.NombrePlace) }}
-                <p>{{ reservation.entite.CodeAcces.Code }}</p>
+                <div>
+                    {% if reservation.entite.CodeDonne %}
+                        <a class="button planning_vert">
+                    {% else %}
+                        <a class="button planning_rouge">
+                    {% endif %}
+                        {{ reservation.entite.CodeAcces.Code }}
+                    </a>
+                </div>
                 <p>{{ reservation.entite.DateDepart.diff(aujourdhui).days }} jours</p>
                 <p>{{ reservation.entite.getPrix }} €</p>
             </div>
@@ -83,8 +99,8 @@
                 <table id='{{ reservation.id }}'>
                     <tbody>
                     <tr>
-                        <td>{{ reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
-                        <td>{{ reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }}</td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}'>{{ reservation.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }}</a></td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}'>{{ reservation.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }}</a></td>
                         <td>{{ reservation.Duree }} jours</td>
                     </tr>
                     <tr>

@@ -330,7 +330,7 @@ class AdminController extends AbstractController
                 $reservation->setNombrePlace($formData['NombrePlace']);
                 $reservation->AjoutDates($entityManager,true);
 
-                // On modifie la reservation si elle possible et correcte
+                // On modifie la reservation si elle est possible et correcte
                 if($reservation->VerificationDisponibilites($entityManager,true) != -1) {
                     if ($reservation->getDateDepart() >= $reservation->getDateArrivee()) {
                         $entityManager->persist($reservation);
@@ -344,16 +344,21 @@ class AdminController extends AbstractController
 
         // On recupere les reservations triees : passe, present, futur
         $reservationsTri = $client->getReservationsTri();
+        $nombreReservation = $client->getNombreReservation();
 
         // On cree un formulaire pour chaque reservation
         foreach ($reservationsTri as $key => $reservations){
             if($key != "passe"){
                 $reservationsTemplates[$key] = [];
                 foreach ($reservations as $reservation){
-                    $message = (new Message($reservation,$reservation->NombreReservation($entityManager),$mailer))->messageIntelligent();
+                    $messageEntite = new Message($reservation,$nombreReservation,$mailer,true);
+                    $message = $messageEntite->messageIntelligent();
+                    $messageEntite->messageCode();
+                    $code = $messageEntite->getMessageTelephone();
                     $reservationsTemplates[$key][] = [
                         'form'=>$this->createForm(ReservationModificationType::class, $reservation)->createView(),
                         'entite'=> $reservation,
+                        'code'=> $code,
                         'message'=> $message] ;
                 }
             }
