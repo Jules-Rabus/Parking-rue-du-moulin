@@ -459,6 +459,14 @@ button:hover, form button:hover, .button:hover{
     border: 3px solid #ED5153;
 }
 
+.button_planning_jour{
+    display: block;
+    margin: auto;
+    max-width: fit-content;
+    padding: 0.2rem 1rem;
+
+}
+
 form div{
     display: flex;
     flex-direction: column;

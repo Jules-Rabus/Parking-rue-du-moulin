@@ -157,7 +157,7 @@ class AdminController extends AbstractController
      * @Route("/planning_jour/{date}", name="app_admin_planning_jour")
      * @ParamConverter("date", options={"format": "Y-m-d"})
      */
-    public function planningJour(Request $request,ManagerRegistry $doctrine,\DateTime $date): Response
+    public function planningJour(Request $request,ManagerRegistry $doctrine,\DateTime $date, MailerInterface $mailer): Response
     {
 
         //On creer le formulaire pour aller à la date du planning voulu
@@ -181,7 +181,21 @@ class AdminController extends AbstractController
         $nbrDepart =  $dateEntite->getnombreDepart();
         $aujourdhui = new \DateTime();
 
-        return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'aujourdhui'=>$aujourdhui,'arrivees'=>$arrivees,'departs'=>$departs,
+        // On rajoute la possibilite donner le code
+        $arriveesTemplate = [];
+
+        foreach ($arrivees as $key => $reservation){
+            $nombreReservation = $reservation->getClient()->getNombreReservation();
+            $messageEntite = new Message($reservation,$nombreReservation,$mailer,true);
+            $messageEntite->messageCode();
+            $code = $messageEntite->getMessageTelephone();
+            $arriveesTemplate[$key] = [
+                'entite'=> $reservation,
+                'code'=> $code
+            ];
+        }
+
+        return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'aujourdhui'=>$aujourdhui,'arrivees'=>$arriveesTemplate,'departs'=>$departs,
             "nombrePlaceDisponibles"=>$nombrePlaceDisponibles,'voitures'=>$voitures,'nbrArrivee'=>$nbrArrivee,'nbrDepart'=>$nbrDepart
         ]);
     }

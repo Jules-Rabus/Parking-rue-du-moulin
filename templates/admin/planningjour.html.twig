@@ -42,27 +42,27 @@
                 </thead>
                 <tbody>
 
-                {% for arrivee in arrivees | sort((a, b) => a.DateArrivee <=> b.DateArrivee ) %}
-                    {% if arrivee.CodeDonne %}
+                {% for arrivee in arrivees | sort((a, b) => a.entite.DateArrivee <=> b.entite.DateArrivee ) %}
+                    {% if arrivee.entite.CodeDonne %}
                         <tr class='planning_vert'>
                     {% elseif aujourdhui.diff(date).days < 4 %}
                         <tr class='planning_rouge'>
                     {% else %}
                         <tr>
                     {% endif %}
-                        <td><a href='{{ path('app_admin_client', {'client' : arrivee.Client.Id} ) }}' >{{ arrivee.getClient.nom }} </a></td>
-                        <td><a href='{{ path('app_admin_planning_jour', {'date' : arrivee.DateDepart  | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ arrivee.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                        <td><a href='{{ path('app_admin_client', {'client' : arrivee.entite.Client.Id} ) }}' >{{ arrivee.entite.getClient.nom }} </a></td>
+                        <td><a href='{{ path('app_admin_planning_jour', {'date' : arrivee.entite.DateDepart  | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ arrivee.entite.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
 
-                        {% if arrivee.getClient.Email %}
-                            <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.Id} ) }}'>{{ arrivee.getClient.Email }}</a></td>
+                        {% if arrivee.entite.getClient.Email %}
+                            <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.entite.Id} ) }}'>{{ arrivee.entite.getClient.Email }}</a></td>
                         {% else %}
-                            <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.Id} ) }}'>{{ arrivee.telephone }}</a></td>
+                            <td><a href='{{ path('app_admin_message', {'reservation' : arrivee.entite.Id} ) }}'>{{ arrivee.entite.telephone }}</a></td>
                         {% endif %}
 
                         {% if aujourdhui.diff(date).days < 5 %}
-                            <td>{{ arrivee.getCodeAcces.getCode }}</td>
+                            <td><a class="button button_planning_jour" {{ arrivee.code }}>{{ arrivee.entite.getCodeAcces.getCode }}</a></td>
                         {% endif %}
-                        <td>{{ arrivee.NombrePlace }}</td>
+                        <td>{{ arrivee.entite.NombrePlace }}</td>
                     </tr>
 
                 {% endfor %}
