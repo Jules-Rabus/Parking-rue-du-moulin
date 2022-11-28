@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use App\Entity\Reservation;
@@ -18,6 +19,10 @@ use Symfony\Component\Mailer\MailerInterface;
 class ApiController extends AbstractController
 {
 
+    /**
+     * @Route("/ajout_reservation", name="api_ajout_reservation", methods={"POST"})
+     * @IsGranted("ROLE_ADMIN")
+     */
     #[Route('/ajout_reservation', name: 'api_ajout_reservation', methods:"POST")]
     public function ajoutReservation(Request $request, ManagerRegistry $doctrine, MailerInterface $mailer) : JsonResponse
     {
@@ -92,7 +97,10 @@ class ApiController extends AbstractController
         ],200,['Access-Control-Allow-Origin: *']);
     }
 
-    #[Route('/ajout_contact', name: 'api_ajout_contact', methods:"POST")]
+    /**
+     * @Route("/ajout_contact", name="api_ajout_contact", methods={"POST"})
+     * @IsGranted("ROLE_ADMIN")
+     */
     public function ajoutContact(Request $request, ManagerRegistry $doctrine) : JsonResponse
     {
         // On recupere le client
@@ -172,7 +180,10 @@ class ApiController extends AbstractController
         ],200,['Access-Control-Allow-Origin: *']);
     }
 
-    #[Route('/contact', name: 'api_contact', methods:"GET")]
+    /**
+     * @Route("/contact", name="api_contact", methods={"GET"})
+     * @IsGranted("ROLE_ADMIN")
+     */
     public function contact(Request $request, ManagerRegistry $doctrine): JsonResponse
     {
 
@@ -205,7 +216,9 @@ class ApiController extends AbstractController
 
     }
 
-    #[Route('/pre_reservation', name: 'api_pre_reservation', methods:"GET")]
+    /**
+     * @Route("/pre_reservation", name="api_pre_reservation", methods={"GET"})
+     */
     public function preReservation(Request $request, ManagerRegistry $doctrine): JsonResponse
     {
 
@@ -251,7 +264,9 @@ class ApiController extends AbstractController
         ],200,['Access-Control-Allow-Origin: *']);
     }
 
-    #[Route('/planning', name: 'api_planning', methods:"GET")]
+    /**
+     * @Route("/planning", name="api_planning", methods={"GET"})
+     */
     public function planning(Request $request, ManagerRegistry $doctrine): JsonResponse
     {
         // On recupere les elements venant de la requete
