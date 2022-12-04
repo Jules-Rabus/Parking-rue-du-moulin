@@ -40,6 +40,7 @@
                         <th>Nom</th>
                         <th>Contact</th>
                         <th>Nombre de réservation</th>
+                        <th>Sélection</th>
                     </tr>
                     </thead>
 
@@ -57,6 +58,7 @@
                         <th>Disponibilité</th>
                         <th v-if="clientEmit">Nombre de réservation</th>
                         <th v-if="clientEmit">Nom</th>
+                        <th v-if="retourContact.contacts != null && retourContact.contacts.length == 0">Message</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -65,10 +67,10 @@
                         <td v-if="retourReservation.nombrePlaceDisponible > 15" class='planning_vert'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
                         <td v-else-if="retourReservation.nombrePlaceDisponible > 6" class='planning_orange'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
                         <td v-else-if="retourReservation.nombrePlaceDisponible >= 0" class='planning_rouge'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
-
                         <td v-else>Indisponible</td>
                         <td v-if="clientEmit">{{ '{{ clientEmit.nombreReservation }}'}}</td>
                         <td v-if="clientEmit">{{ '{{ clientEmit.nom }}'}}</td>
+                        <td v-if="retourContact.contacts != null && retourContact.contacts.length == 0"><a :href='messageSiVousVoulez()'>Si vous voulez</a></td>
                     </tr>
                     </tbody>
                 </table>
@@ -89,7 +91,7 @@
     </script>
 
     <script type="text/x-template" id="client-template">
-        <td>{{ '{{ props.client.nom }}'}}</td>
+        <td><a :href='route'>{{ '{{ props.client.nom }}'}}</a></td>
         <td v-if="props.client.telephone">{{ '{{ props.client.telephone }}'}}</td>
         <td v-else>{{ '{{ props.client.email }}'}}</td>
 
@@ -176,11 +178,14 @@
             emits: ['appelEmit'],
             setup(props, {emit}){
 
+                const route = "/public/admin/client/" + props.client.id
+
                 function emitClient(){
                     emit('appelEmit',props.client)
                 }
 
                 return{
+                    route,
                     props,
                     emitClient
                 }
@@ -195,13 +200,14 @@
                 client: Object,
                 reservation : Object
             },
-            setup(props){
+            emits: ['appelEmit'],
+            setup(props,{emit}){
 
                 const responses = ref()
 
                 function ajouterReservation(){
 
-                    Axios.post('https://dev.parking-rue-du-moulin.fr/public/api/ajout_reservation' , { 'client' : props.client, 'reservation' : props.reservation })
+                    Axios.post('https://dev.parking-rue-du-moulin.fr/public/api/ajout_reservation' , { 'client' : props.client, 'reservation' : props.reservation, 'href' : false })
                         .then(response => responses.value = response.data)
                         .catch(error => {
                             console.error("Erreur dans le post de l'ajout de la reservation", error)
@@ -216,6 +222,7 @@
 
                 return{
                     ajouterReservation,
+                    responses,
                     reset
                 }
 
@@ -272,6 +279,7 @@
                 const dateDepart = ref(moment().add(4, 'days').format("yyyy-MM-DD"))
                 const retourReservation = ref([])
                 const retourContact = ref([])
+                const retourMessage = ref([])
                 const contact = ref('')
                 const clientEmit = ref()
 
@@ -300,6 +308,12 @@
                     requeteReservation()
                 }
 
+                function messageSiVousVoulez(){
+                    Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/message?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value + '&contact=' + contact.value)
+                        .then(response => retourMessage.value = response.data)
+                    return retourMessage.value.message
+                }
+
                 onMounted(() => {
                     requeteReservation()
                 })
@@ -310,11 +324,13 @@
                     emitClient,
                     emitAjoutContact,
                     emitAjoutReservation,
+                    messageSiVousVoulez,
                     nombrePlace,
                     dateArrivee,
                     dateDepart,
                     retourReservation,
                     retourContact,
+                    retourMessage,
                     contact,
                     clientEmit
                 }
