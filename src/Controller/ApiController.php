@@ -217,57 +217,7 @@ class ApiController extends AbstractController
     }
 
     /**
-     * @Route("/pre_reservation_client", name="api_pre_reservation_client", methods={"GET"})
-     */
-    public function preReservationClient(Request $request, ManagerRegistry $doctrine): JsonResponse
-    {
-
-        // On recupere les elements venant de la requete
-        $dateArrivee = $request->query->get('dateArrivee');
-        $dateDepart = $request->query->get('dateDepart');
-        $nombrePlace =$request->query->get('nombrePlace');
-
-        // On verifie la requete reçu
-        if(!$dateDepart || !$dateArrivee || $nombrePlace < 1 || $nombrePlace > 10){
-            // On retourne une erreur avec un code erreur http 400
-            return new JsonResponse("Erreur dans les arguments",400);
-        }
-
-        // Permet de confirmer les param d'entree de la requete
-        $retourReservation = [
-            "nombrePlace"=>$nombrePlace,
-            "dateArrivee"=>$dateArrivee,
-            "dateDepart"=>$dateDepart
-        ];
-        $dateArrivee = new \DateTime($dateArrivee);
-        $dateDepart = new \DateTime($dateDepart);
-
-
-        if( $dateDepart < $dateArrivee || new \DateTime() > $dateArrivee ){
-            // On retourne une erreur avec un code erreur http 400
-            return new JsonResponse("Erreur dans les dates",400);
-        }
-
-        // On cree une reservation et verifie sa disponibilite
-        $reservation = new Reservation();
-        $reservation->setDateArrivee($dateArrivee);
-        $reservation->setDateDepart($dateDepart);
-        $reservation->setNombrePlace($nombrePlace);
-        $entityManager = $doctrine->getManager();
-        if($disponible = $reservation->VerificationDisponibilites($entityManager) >= 0);
-
-        // On retourne un tableau avec les reponses de l'api un code http 200, sous forme de json
-        return new JsonResponse([
-            "prix"=>$reservation->getPrix(),
-            "reservation" => $retourReservation,
-            "disponible"=>$disponible,
-
-        ],200,['Access-Control-Allow-Origin: *']);
-    }
-
-    /**
      * @Route("/pre_reservation", name="api_pre_reservation", methods={"GET"})
-     * @IsGranted("ROLE_ADMIN")
      */
     public function preReservation(Request $request, ManagerRegistry $doctrine): JsonResponse
     {
@@ -292,7 +242,7 @@ class ApiController extends AbstractController
         $dateArrivee = new \DateTime($dateArrivee);
         $dateDepart = new \DateTime($dateDepart);
 
-        if($dateDepart < $dateArrivee || new \DateTime() >= $dateArrivee ){
+        if($dateDepart < $dateArrivee && !new \DateTime() < $dateArrivee ){
             // On retourne une erreur avec un code erreur http 400
             return new JsonResponse("Erreur dans les dates",400);
         }

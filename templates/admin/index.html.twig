@@ -4,23 +4,333 @@
 
 {% block body %}
 
-    {% if formError %}
-        <h2>{{ formError }}</h2>
-    {% endif %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.global.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 
-    {{ form_start(form) }}
-        {{ form_row(form.NombrePlace) }}
-        {{ form_row(form.DateArrivee) }}
-        {{ form_row(form.DateDepart) }}
-        {{ form_row(form.Telephone) }}
-        {{ form_row(form.Client) }}
-    <button type="submit">Réserver</button>
-    {{ form_end(form) }}
 
-    {% if formPrix %}
+    <script type="text/x-template" id="reservation-template">
+        <div>
+            <div>
+                <form>
+                    <div>
+                        <label id="dateArrive">Date d'arrivée</label>
+                        <input type="date" v-model="dateArrivee" @change="requeteReservation">
+                    </div>
+                    <div>
+                        <label id="dateDepart">Date de départ</label>
+                        <input type="date" v-model="dateDepart" :min="dateArrivee" @change="requeteReservation">
+                    </div>
+                    <div>
+                        <label id="nombrePlace">Nombre de Place</label>
+                        <input type="number" v-model="nombrePlace" max="10" min="1" @change="requeteReservation">
+                    </div>
+                    <div>
+                        <label id="contact">Contact</label>
+                        <input type="text" v-model="contact" id="contact" name="contact" @input="requeteContact">
+                    </div>
+                </form>
+            </div>
 
-        <h2>Tarif : {{ formPrix }} €</h2>
+            <div class="retourReservation">
 
-    {% endif %}
+                <table v-if="retourContact.contacts != null && retourContact.contacts.length && contact.length > 3">
+                    <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Contact</th>
+                        <th>Nombre de réservation</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr v-for="client in retourContact.contacts">
+                        <client :client="client" @appelEmit="emitClient" />
+                    </tr>
+                    </tbody>
+                </table>
+
+                <table v-if="retourReservation != null && retourReservation.prix">
+                    <thead>
+                    <tr>
+                        <th>Prix</th>
+                        <th>Disponibilité</th>
+                        <th v-if="clientEmit">Nombre de réservation</th>
+                        <th v-if="clientEmit">Nom</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>{{  '{{retourReservation.prix}}' }} €</td>
+                        <td v-if="retourReservation.nombrePlaceDisponible > 15" class='planning_vert'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
+                        <td v-else-if="retourReservation.nombrePlaceDisponible > 6" class='planning_orange'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
+                        <td v-else-if="retourReservation.nombrePlaceDisponible >= 0" class='planning_rouge'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
+
+                        <td v-else>Indisponible</td>
+                        <td v-if="clientEmit">{{ '{{ clientEmit.nombreReservation }}'}}</td>
+                        <td v-if="clientEmit">{{ '{{ clientEmit.nom }}'}}</td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <div v-if="retourReservation.nombrePlaceDisponible >= 0 && clientEmit && retourReservation.reservation.dateArrivee == dateArrivee &&
+            retourReservation.reservation.dateDepart == dateDepart && retourReservation.reservation.nombrePlace == nombrePlace">
+                    <ajoutReservation @appelEmit="emitAjoutReservation" :client="clientEmit" :reservation="retourReservation.reservation" />
+
+                </div>
+
+                <div v-if="retourContact.contacts != null && retourContact.contacts.length === 0 && contact.length > 3">
+                    <ajoutContact @appelEmit="emitAjoutContact" />
+
+                </div>
+
+            </div>
+        </div>
+    </script>
+
+    <script type="text/x-template" id="client-template">
+        <td>{{ '{{ props.client.nom }}'}}</td>
+        <td v-if="props.client.telephone">{{ '{{ props.client.telephone }}'}}</td>
+        <td v-else>{{ '{{ props.client.email }}'}}</td>
+
+        <td>{{ '{{ props.client.nombreReservation }}'}}</td>
+        <td><input type="radio" :id="props.client.id" :value="props.client" name="contact" @click="emitClient"></td>
+    </script>
+
+    <script type="text/x-template" id="ajoutReservation-template">
+        <button v-if="responses == null || responses != null && responses.erreur"  @click="ajouterReservation">Réserver</button>
+        <table v-else>
+            <tbody>
+            <tr>
+                <td><a :href="responses.confirmation.message">Confirmation</a></td>
+                <td><a :href="responses.explication.message">Explication</a></td>
+                <td>{{ '{{ responses.explication.type }}'}}</td>
+                <td><button @click="reset"></button></td>
+            </tr>
+            </tbody>
+        </table>
+    </script>
+
+    <script type="text/x-template" id="ajoutContact-template">
+        <h2>Aucun contact correspondant</h2>
+
+        <form v-if=" responses == null || responses != null && responses.erreur ">
+            <div>
+                <label id="nom">Nom</label>
+                <input type="text" v-model="client.nom">
+            </div>
+            <div>
+                <label id="contact">Contact</label>
+                <div v-if="responses && responses.erreur">
+                    <input type="text" v-model="client.contact" class="erreur" >
+                    <h3>{{ '{{ responses.message }}'}}</h3>
+                </div>
+
+                <input type="text" v-model="client.contact" v-else>
+            </div>
+            <button @click="ajouterContact">Ajouter Contact</button>
+        </form>
+        <div v-else>
+            <table>
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Contact</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>{{ '{{ responses.client.nom }}'}}</td>
+                    <td @click="emitContact">{{ '{{ responses.client.contact }}'}}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">{{ '{{ responses.message }}'}}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </script>
+
+    <div id="app">
+        <reservation></reservation>
+    </div>
+
+    <script>
+
+        const { ref, onMounted } = Vue
+        const Axios = axios.create({
+            withCredentials: false,
+            headers: {
+                'Accept': 'application/ld+json',
+                'Content-Type': 'application/ld+json',
+                'Authorization': 'Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NjY4OTA0OTgsImV4cCI6MTY3NDY2NjQ5OCwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6Imp1bGVzMjAwMjA0QGdtYWlsLmNvbSJ9.eCeKDdmEUYCmd8PjoHSMU5xd-uAzP4rtvVO_NAvOfUyF24-GbEjElzqg-ETsFgwq5Ucu-dLclUcmX5Lum5cEXKkaMk0fl6Vvdk3bLpf6tnsprBJe6zijaMhiLil6Roz_zriPqjGCs6r3mcIskbl_d_2ZLftfFn44G8pt8SFCKdTJkipjGAcWPH7NabVokxfTJUQJRtQXxgHmH3NhUXuwk54hbxSceKkkDmrStcy1iGhbsoJw8AXji_xmZEsjTD8yU82TEVQyZvheNu37i7ZEXN3tthBvoFJRsSbF8Nfu_eucrNluLzdaW4yNGjXJr2k9gE7An3_5vvxBMP-z8QT1zA"
+            }
+        })
+
+        const client = {
+            name: 'client',
+            template: '#client-template',
+            props: {
+                client: Object
+            },
+            emits: ['appelEmit'],
+            setup(props, {emit}){
+
+                function emitClient(){
+                    emit('appelEmit',props.client)
+                }
+
+                return{
+                    props,
+                    emitClient
+                }
+
+            }
+        }
+
+        const ajoutReservation = {
+            name: 'ajoutReservation',
+            template: '#ajoutReservation-template',
+            props: {
+                client: Object,
+                reservation : Object
+            },
+            setup(props){
+
+                const responses = ref()
+
+                function ajouterReservation(){
+
+                    Axios.post('https://dev.parking-rue-du-moulin.fr/public/api/ajout_reservation' , { 'client' : props.client, 'reservation' : props.reservation })
+                        .then(response => responses.value = response.data)
+                        .catch(error => {
+                            console.error("Erreur dans le post de l'ajout de la reservation", error)
+                        })
+
+                }
+
+                function reset(){
+                    responses.value = null
+                    emit('appelEmit')
+                }
+
+                return{
+                    ajouterReservation,
+                    reset
+                }
+
+            }
+        }
+
+        const ajoutContact = {
+            name: 'ajoutContact',
+            template: '#ajoutContact-template',
+            emits: ['appelEmit'],
+            setup({ emit }){
+
+                const client = ref({})
+                const responses = ref()
+
+                function ajouterContact(){
+
+                    if( client.value.nom == '' || client.value.contact == '') return
+
+                    Axios.post('https://dev.parking-rue-du-moulin.fr/public/api/ajout_contact' , client.value)
+                        .then(response => responses.value = response.data)
+                        .catch(error => {
+                            console.error("Erreur dans le post de l'ajout du contact", error)
+                        })
+
+                }
+
+                function emitContact(){
+                    emit('appelEmit',responses.value.client.contact)
+                }
+
+                return{
+                    client,
+                    responses,
+                    ajouterContact,
+                    emitContact
+                }
+
+            }
+        }
+
+
+        const reservation = {
+            name: 'reservation',
+            template: '#reservation-template',
+            components: {
+                client,
+                ajoutReservation,
+                ajoutContact
+            },
+            setup(){
+                const nombrePlace = ref(1)
+                const dateArrivee = ref(moment().add(1, 'days').format("yyyy-MM-DD"))
+                const dateDepart = ref(moment().add(4, 'days').format("yyyy-MM-DD"))
+                const retourReservation = ref([])
+                const retourContact = ref([])
+                const contact = ref('')
+                const clientEmit = ref()
+
+                function requeteReservation(){
+                    Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/pre_reservation?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value)
+                        .then(response => retourReservation.value = response.data)
+                }
+
+                function requeteContact(){
+                    if(contact.value.length > 3){
+                        Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/contact?contact=' + contact.value )
+                            .then(response => retourContact.value = response.data)
+                    }
+                }
+
+                function emitClient(client){
+                    clientEmit.value = client
+                }
+
+                function emitAjoutContact(ajout){
+                    contact.value = ajout
+                    requeteContact()
+                }
+
+                function emitAjoutReservation(){
+                    requeteReservation()
+                }
+
+                onMounted(() => {
+                    requeteReservation()
+                })
+
+                return{
+                    requeteReservation,
+                    requeteContact,
+                    emitClient,
+                    emitAjoutContact,
+                    emitAjoutReservation,
+                    nombrePlace,
+                    dateArrivee,
+                    dateDepart,
+                    retourReservation,
+                    retourContact,
+                    contact,
+                    clientEmit
+                }
+            }
+
+        }
+
+    </script>
+
+    <script>
+        Vue.createApp({
+            components: {
+                reservation,
+            }
+        }).mount('#app')
+
+    </script>
 
 {% endblock %}
