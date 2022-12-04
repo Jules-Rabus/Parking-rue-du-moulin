@@ -27,5 +27,52 @@
         </div>
     </div>
 
+    <div>
+        <div>
+            {{ form_start(formReservation) }}
+            {{ form_row(formReservation.DateArrivee) }}
+            {{ form_row(formReservation.DateDepart) }}
+            {{ form_row(formReservation.NombrePlace) }}
+            {{ form_end(formReservation) }}
+        </div>
+        <div>
+            <h3 id="prix"></h3>
+            <h3 id="disponibilite"></h3>
+        </div>
+
+    </div>
+
+    <script>
+
+        // Event listener Form
+        document.getElementById("reservation_client_DateArrivee").addEventListener("change", preReservation);
+        document.getElementById("reservation_client_DateDepart").addEventListener("change", preReservation);
+        document.getElementById("reservation_client_NombrePlace").addEventListener("change", preReservation);
+
+
+        function preReservation(){
+            let dateArrivee = document.getElementById("reservation_client_DateArrivee").value;
+            let dateDepart = document.getElementById("reservation_client_DateDepart").value;
+            let nombrePlace = document.getElementById("reservation_client_NombrePlace").value;
+            let url = "https://dev.parking-rue-du-moulin.fr/public/api/pre_reservation_client?dateArrivee=" + dateArrivee + "&dateDepart=" + dateDepart + "&nombrePlace=" + nombrePlace;
+            fetch(url, {
+                method: "GET",
+            })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (retour){
+                    console.log(retour);
+                    if(retour.prix) document.getElementById("prix").innerHTML = retour.prix + " €";
+                    document.getElementById("disponible").innerHTML = retour.disponible + "test";
+                })
+                .catch(function(error) {
+                    console.log(error);
+                });
+
+        }
+
+    </script>
+
 
 {% endblock %}
