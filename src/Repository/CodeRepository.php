@@ -73,12 +73,16 @@ class CodeRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
         ;
 
-        if(!$code){
+        if($code) return $code;
+
             $code = new Code();
             $code->setCode(rand(1000,9999));
             $code->setDateDebut($dateDebut);
             $code->setDateFin($dateFin);
             $this->add($code,$flush);
+
+            // Correction problème insertion bdd
+            sleep(1);
 
             $email = new Email();
             $email->from(new Address('gestion@parking-rue-du-moulin.fr','Gestion Parking'))
@@ -86,8 +90,6 @@ class CodeRepository extends ServiceEntityRepository
                 ->subject('Nouveau code '. $code->getCode())
                 ->text("Nouveau code à ajouter : " . $code->getCode());
             //$mailer->send($email);
-
-        }
 
         return $code;
     }
