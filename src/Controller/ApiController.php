@@ -30,7 +30,7 @@ class ApiController extends AbstractController
         $requete = $request->toArray();
 
 
-        if(  empty($requete['client']) || empty($requete['reservation']) ){
+        if(  empty($requete['client']) || empty($requete['reservation'] || empty($requete['href'])) ){
             // On retourne une erreur avec un code erreur http 400
             return new JsonResponse("Erreur dans le client",400);
         }
@@ -38,6 +38,7 @@ class ApiController extends AbstractController
 
         $client = $requete['client'];
         $reservation = $requete['reservation'];
+        $href = $requete['href'];
 
         $entityManager = $doctrine->getManager();
 
@@ -66,9 +67,9 @@ class ApiController extends AbstractController
                 $messageEntite = new Message($reservationEntite,$reservationEntite->NombreReservation($entityManager),$mailer);
 
                 $formulaire = ['debut'=> true, 'fin'=> true,'reservation'=>true,'code'=>false, 'explication' =>false ];
-                $confirmation = $messageEntite->TraitementFormulaire($formulaire,$doctrine);
-                $formulaire['explication'] = false;
-                $explication = $messageEntite->TraitementFormulaire($formulaire,$doctrine);
+                $confirmation = $messageEntite->TraitementFormulaire($formulaire,$doctrine,$href);
+                $formulaire['explication'] = true;
+                $explication = $messageEntite->TraitementFormulaire($formulaire,$doctrine,$href);
 
             }
             else{
@@ -207,17 +208,110 @@ class ApiController extends AbstractController
         }
         $contacts += $entityManager->getRepository(Client::class)->rechercheContactTelephone($contact);
 
-
         // On retourne un tableau avec les reponses de l'api un code http 200, sous forme de json
         return new JsonResponse([
-            "contacts"=>$contacts,
-            "contact"=>$contact
+            "contacts" => $contacts,
+            "contact" => $contact,
         ],200,['Access-Control-Allow-Origin: *']);
 
     }
 
     /**
+     * @Route("/pre_reservation_client", name="api_pre_reservation_client", methods={"GET"})
+     */
+    public function preReservationClient(Request $request, ManagerRegistry $doctrine): JsonResponse
+    {
+
+        // On recupere les elements venant de la requete
+        $dateArrivee = $request->query->get('dateArrivee');
+        $dateDepart = $request->query->get('dateDepart');
+        $nombrePlace =$request->query->get('nombrePlace');
+
+        // On verifie la requete reçu
+        if(!$dateDepart || !$dateArrivee || $nombrePlace < 1 || $nombrePlace > 10){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("Erreur dans les arguments",400);
+        }
+
+        // Permet de confirmer les param d'entree de la requete
+        $retourReservation = [
+            "nombrePlace"=>$nombrePlace,
+            "dateArrivee"=>$dateArrivee,
+            "dateDepart"=>$dateDepart
+        ];
+        $dateArrivee = new \DateTime($dateArrivee);
+        $dateDepart = new \DateTime($dateDepart);
+
+
+        if( $dateDepart < $dateArrivee || new \DateTime() > $dateArrivee ){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("Erreur dans les dates",400);
+        }
+
+        // On cree une reservation et verifie sa disponibilite
+        $reservation = new Reservation();
+        $reservation->setDateArrivee($dateArrivee);
+        $reservation->setDateDepart($dateDepart);
+        $reservation->setNombrePlace($nombrePlace);
+        $entityManager = $doctrine->getManager();
+        if($disponible = $reservation->VerificationDisponibilites($entityManager) >= 0);
+
+        // On retourne un tableau avec les reponses de l'api un code http 200, sous forme de json
+        return new JsonResponse([
+            "prix"=>$reservation->getPrix(),
+            "reservation" => $retourReservation,
+            "disponible"=>$disponible,
+
+        ],200,['Access-Control-Allow-Origin: *']);
+    }
+
+    /**
+     * @Route("/message", name="api_message", methods={"GET"})
+     * @IsGranted("ROLE_ADMIN")
+     */
+    public function message(Request $request, ManagerRegistry $doctrine, MailerInterface $mailer): JsonResponse
+    {
+        // On recupere les elements venant de la requete
+        $dateArrivee = $request->query->get('dateArrivee');
+        $dateDepart = $request->query->get('dateDepart');
+        $nombrePlace =$request->query->get('nombrePlace');
+        $contact =$request->query->get('contact');
+
+
+        // On verifie la requete reçu
+        if(!$dateDepart || !$dateArrivee || $nombrePlace < 1 || $nombrePlace > 10 || !$contact){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("Erreur dans les arguments",400);
+        }
+
+        $dateArrivee = new \DateTime($dateArrivee);
+        $dateDepart = new \DateTime($dateDepart);
+
+        if($dateDepart < $dateArrivee || new \DateTime() >= $dateArrivee ){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("Erreur dans les dates",400);
+        }
+
+        // On cree une reservation et verifie sa disponibilite
+        $reservation = new Reservation();
+        $reservation->setDateArrivee($dateArrivee);
+        $reservation->setDateDepart($dateDepart);
+        $reservation->setNombrePlace($nombrePlace);
+        $reservation->setTelephone($contact);
+        $entityManager = $doctrine->getManager();
+        $messageEntite = new Message($reservation,$reservation->NombreReservation($entityManager),$mailer, true);
+        $messageEntite->messageSiVousVoulez();
+        $message = $messageEntite->getMessageTelephone(false);
+
+        // On retourne un tableau avec les reponses de l'api un code http 200, sous forme de json
+        return new JsonResponse([
+            "message" => $message
+        ],200,['Access-Control-Allow-Origin: *']);
+    }
+
+    /**
      * @Route("/pre_reservation", name="api_pre_reservation", methods={"GET"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function preReservation(Request $request, ManagerRegistry $doctrine): JsonResponse
     {
@@ -242,7 +336,7 @@ class ApiController extends AbstractController
         $dateArrivee = new \DateTime($dateArrivee);
         $dateDepart = new \DateTime($dateDepart);
 
-        if($dateDepart < $dateArrivee && !new \DateTime() < $dateArrivee ){
+        if($dateDepart < $dateArrivee || new \DateTime() >= $dateArrivee ){
             // On retourne une erreur avec un code erreur http 400
             return new JsonResponse("Erreur dans les dates",400);
         }

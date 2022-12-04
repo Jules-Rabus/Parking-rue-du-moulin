@@ -219,20 +219,24 @@ class Message
     }
 
     // On creer le lien pour un message
-    public function getMessageTelephone() : string{
+    public function getMessageTelephone(bool $href = true) : string{
         $message = str_replace(' ','%20',($this->Debut . $this->Message . $this->Fin));
-        return 'href=sms:' . $this->contact() . ';?&body=' . $message ;
+        if($href) return 'href=sms:' . $this->contact() . ';?&body=' . $message ;
+
+        return 'sms:' . $this->contact() . ';?&body=' . $message ;
     }
 
     // On recupere le bon contact : mail/telephone
     public function contact() : string{
 
-        $client = $this->Reservation->getClient();
-
-        if( $email = $client->getEmail()){
-            return $email;
+        if($client = $this->Reservation->getClient()){
+            if( $email = $client->getEmail()){
+                return $email;
+            }
+            return $client->getTelephone();
         }
-        return $client->getTelephone();
+
+        return $this->getReservation()->getTelephone();
 
     }
 
@@ -304,8 +308,24 @@ class Message
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
     }
 
+    // template pour proposition reservation
+    public function messageSiVousVoulez(){
+
+        $this->Sujet = "Confirmez votre réservation";
+        $this->SujetCourt = "Si vous voulez";
+
+        if(!$this->NombreReservation){
+            $this->messageExplication();
+            $this->Message = $this->Message . "%0A%0A";
+        }
+
+        $this->Message = $this->Message . "Si vous voulez je vous confirme votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+            $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
+
+    }
+
     // traitement du formulaire pour les messages
-    public function traitementFormulaire($formulaire, $doctrine ) : array{
+    public function traitementFormulaire($formulaire, $doctrine,bool $href = true ) : array{
 
         if($formulaire['debut']){
             $this->Heure(2);
@@ -344,7 +364,7 @@ class Message
         if($Client =  $this->Reservation->getClient()->getEmail()){
             return ['message'=>$this->getMessageMail(),'type'=>'Mail'];
         }
-        return ['message'=>$this->getMessageTelephone(),'type'=>'Sms'];
+        return ['message'=>$this->getMessageTelephone($href),'type'=>'Sms'];
 
     }
 
