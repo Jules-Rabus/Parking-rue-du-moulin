@@ -30,7 +30,8 @@
             <li><a href="{{ path('app_admin_planning_jour', {date: "now"|date("Y-m-d")}  ) }}">{{ "now"|date("Y-m-d") }}</a></li>
             <li><a href="{{ path('app_admin_statistique') }}">Statistique</a></li>
             <li><a href="{{ path('app_admin_transfertbdd') }}">TransfertBdd</a></li>
-            <li><a href="{{ path('easy_admin') }}">EasyAdmin</a></li>
+            <li><a href="{{ path('app_admin_code') }}">Code</a></li>
+            <li><a href="{{ path('easy_admin') }}">Easy</a></li>
             <li><a href="{{ path('default') }}">Accueil</a></li>
             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                 <li><a href="{{ path('app_logout') }}"><img src="{{ asset('icons/logout.svg') }}"></a></li>

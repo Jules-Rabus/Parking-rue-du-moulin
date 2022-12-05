@@ -1,0 +1,109 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block title %}Code d'accès{% endblock %}
+
+{% block body %}
+
+    <h2>Code actuelle : </h2>
+
+    <table class='code'>
+        <thead>
+        <tr>
+            <th>Code</th>
+            <th>Date de Début</th>
+            <th>Date de Fin</th>
+            <th>Nombre de réservation</th>
+            <th>Dernière Réservation</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for code in codes.present %}
+            <tr>
+                <td>{{ code.code }}</td>
+                <td>
+                    {% if(code.DateDebut) %}
+                    {{ code.DateDebut | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                {% endif %}
+                <td>
+                    {% if(code.DateFin) %}
+                        {{ code.DateFin | format_datetime(locale='fr',pattern="dd-MM-Y") }}
+                    {% endif %}
+                </td>
+                <td>{{ code.getNombreReservation }}</td>
+                <td></td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Code à venir : </h2>
+
+    <table class='code'>
+        <thead>
+        <tr>
+            <th>Code</th>
+            <th>Date de Début</th>
+            <th>Date de Fin</th>
+            <th>Nombre de réservation</th>
+            <th>Dernière Réservation</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for code in codes.futur %}
+            <tr>
+                <td>{{ code.code }}</td>
+                <td>
+                    {% if(code.DateDebut) %}
+                    {{ code.DateDebut | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                {% endif %}
+                <td>
+                    {% if(code.DateFin) %}
+                        {{ code.DateFin | format_datetime(locale='fr',pattern="dd-MM-Y") }}
+                    {% endif %}
+                </td>
+                <td>{{ code.getNombreReservation }}</td>
+                <td></td>
+            </tr>
+
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Code passé : </h2>
+
+    <table class='code'>
+        <thead>
+        <tr>
+            <th>Code</th>
+            <th>Date de Début</th>
+            <th>Date de Fin</th>
+            <th>Nombre de réservation</th>
+            <th>Dernière Réservation</th>
+        </tr>
+        </thead>
+        <tbody>
+
+            {% for code in codes.passe %}
+                <tr>
+                    <td>{{ code.code }}</td>
+                    <td>
+                        {% if(code.DateDebut) %}
+                            {{ code.DateDebut | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                        {% endif %}
+                    <td>
+                        {% if(code.DateFin) %}
+                            {{ code.DateFin | format_datetime(locale='fr',pattern="dd-MM-Y") }}
+                        {% endif %}
+                    </td>
+                    <td>{{ code.getNombreReservation }}</td>
+                    <td></td>
+                </tr>
+
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

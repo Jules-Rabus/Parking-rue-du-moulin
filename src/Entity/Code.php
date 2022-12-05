@@ -114,4 +114,9 @@ class Code
 
         return $this;
     }
+
+    #[Groups(['user:read'])]
+    public function getNombreReservation() : int{
+        return count($this->getReservations());
+    }
 }

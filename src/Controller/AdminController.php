@@ -93,10 +93,20 @@ class AdminController extends AbstractController
         $dateBoucle = new \DateTime('first day of this month');
         $dates = array();
 
-        if($nombre_jours){
+        // On test pour revenir en arriere sur le planning
+        if($nombre_jours < 0){
             $dateRetour = new \DateTime();
-            $dateRetour->sub(new \DateInterval("P" . $nombre_jours . "D"));
+            $dateRetour->sub(new \DateInterval("P" . -$nombre_jours . "D"));
+
+            // par défaut on affiche a partir du debut du mois
             if($dateBoucle > $dateRetour){
+                $dateBoucle = $dateRetour;
+            }
+        }
+        else if ($nombre_jours > 0){
+            $dateRetour = new \DateTime();
+            $dateRetour->add(new \DateInterval("P" . $nombre_jours+1 . "D"));
+            if($dateBoucle < $dateRetour){
                 $dateBoucle = $dateRetour;
             }
         }
@@ -112,7 +122,9 @@ class AdminController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $nombre_jours = $aujourdhui->diff($form->getData()['date'])->days;
+            $diff = $aujourdhui->diff($form->getData()['date']);
+            $nombre_jours = $diff->days;
+            if($diff->invert) $nombre_jours = -$diff->days;
             return $this->redirectToRoute('app_admin_planning',['nombre_jours'=>$nombre_jours]);
         }
 
@@ -135,7 +147,7 @@ class AdminController extends AbstractController
                 $dateTest = (clone $dateBoucle)->modify('+1 day');
                 $dateTestSemaineCourte = (clone $dateBoucle)->modify('last day of this month');
 
-                // A chaque debut de mois ou de debut de semaine, on enregistre
+                // A chaque debut de mois ou de debut de semaine (L-D), on enregistre
                 if( $dateBoucle->format('W') != $dateTest->format('W') && $dateTestSemaineCourte->diff($dateBoucle)->days > 2
                     || $dateBoucle->format('m') != $dateTest->format('m')
                 ) {
@@ -449,6 +461,30 @@ class AdminController extends AbstractController
 
         return $this->render('admin/statistique.html.twig',['statistiquesDate'=>$statisquesDate,'statistiques'=>$statisques]);
 
+    }
+
+    #[Route('/code', name: 'app_admin_code')]
+    public function code(ManagerRegistry $doctrine) : Response
+    {
+        $codes = $this->getDoctrine()->getRepository(Code::class)->findAll();
+
+        // Tableau avec les codes triees
+        $codesTri = array('futur'=>[],'passe'=>[],'present'=>[]);
+        $aujourdhui = new \DateTime();
+
+        // Tri des codes
+        foreach ($codes as $code) {
+            if ($code->getDateDebut() > $aujourdhui) {
+                $codesTri['futur'][] = $code;
+            } else if ($code->getDateFin() < $aujourdhui) {
+                $codesTri['passe'][] = $code;
+            } else {
+                $codesTri['present'][] = $code;
+            }
+        }
+
+
+        return $this->render('admin/code.html.twig',['codes'=>$codesTri]);
     }
 
 
