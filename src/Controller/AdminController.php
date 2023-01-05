@@ -171,7 +171,6 @@ class AdminController extends AbstractController
      */
     public function planningJour(Request $request,ManagerRegistry $doctrine,\DateTime $date, MailerInterface $mailer): Response
     {
-
         //On creer le formulaire pour aller à la date du planning voulu
         $form = $this->createForm(PlanningJourType::class,NULL,['date'=>$date]);
         $form->handleRequest($request);
@@ -188,6 +187,7 @@ class AdminController extends AbstractController
         $departs = $entityManager->getRepository(Reservation::class)->FindBy(array("DateDepart"=>$date),array("DateArrivee"=>"ASC"));
         $dateEntite = $entityManager->getRepository(Date::class)->SelectorCreate($date);
         $voitures = $dateEntite->getRelation()->getValues();
+        $numeroPlaceDispo = $dateEntite->getNumeroPlaceDispo();
         $nombrePlaceDisponibles = $dateEntite->getNombrePlaceDisponibles();
         $nbrArrivee = $dateEntite->getnombreArrivee();
         $nbrDepart =  $dateEntite->getnombreDepart();
@@ -208,7 +208,7 @@ class AdminController extends AbstractController
         }
 
         return $this->renderForm('admin/planningjour.html.twig', ['form'=>$form,'date'=>$date,'aujourdhui'=>$aujourdhui,'arrivees'=>$arriveesTemplate,'departs'=>$departs,
-            "nombrePlaceDisponibles"=>$nombrePlaceDisponibles,'voitures'=>$voitures,'nbrArrivee'=>$nbrArrivee,'nbrDepart'=>$nbrDepart
+            "nombrePlaceDisponibles"=>$nombrePlaceDisponibles,'voitures'=>$voitures,'nbrArrivee'=>$nbrArrivee,'nbrDepart'=>$nbrDepart,'numeroPlaceDispo' =>$numeroPlaceDispo
         ]);
     }
 

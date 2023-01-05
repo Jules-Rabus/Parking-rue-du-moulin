@@ -39,6 +39,9 @@ class Code
     #[Groups(['code:read'])]
     private $reservations;
 
+    #[ORM\Column(nullable: true)]
+    private ?bool $ajout = null;
+
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
@@ -118,5 +121,17 @@ class Code
     #[Groups(['user:read'])]
     public function getNombreReservation() : int{
         return count($this->getReservations());
+    }
+
+    public function isAjout(): ?bool
+    {
+        return $this->ajout;
+    }
+
+    public function setAjout(?bool $ajout): self
+    {
+        $this->ajout = $ajout;
+
+        return $this;
     }
 }

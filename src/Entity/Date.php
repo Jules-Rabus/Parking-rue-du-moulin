@@ -98,7 +98,6 @@ class Date
             $dateBoucle = new \DateTime(($dateBoucle->add(new \DateInterval("P1D"))->format('Y-m-d')));
 
         }
-
     }
 
 
@@ -169,6 +168,24 @@ class Date
         return 0;
 
     }
-    
+
+    // Cette fonction permet de recuperer les numeros de place disponible pour cette date
+    public function getNumeroPlaceDispo() : array{
+        $reservations = $this->getRelation()->getValues();
+        $numeroDispo = array();
+
+        for($i = 1; $i <= 45; $i++){
+            $numeroDispo[$i] = true;
+        }
+
+        foreach ($reservations as $reservation){
+            if($index = $reservation->getNumeroPlace()){
+                $numeroDispo[$index] = false;
+            }
+        }
+
+        return $numeroDispo;
+
+    }
 
 }

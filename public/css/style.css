@@ -242,10 +242,13 @@ header nav ul li div img:hover{
         max-width: 45%;
     }
 
+    .numero_place_dispo_th{
+        width: 15% !important;
+    }
+
 }
 
 @media all and (max-width:800px) {
-
 
     footer nav ul li:nth-child(2){
         order: -1 ;
@@ -277,6 +280,14 @@ header nav ul li div img:hover{
 
     .reservation table{
         width: 100% !important;
+    }
+
+    .numero_place_dispo_th{
+        width: 20% !important;
+    }
+
+    .numero_place_dispo_cancel button img{
+        width: 36px;
     }
 
 }
@@ -541,4 +552,56 @@ form div{
     padding-bottom: 1rem;
 }
 
+.retourReservation div{
+    padding: 1rem;
+}
 
+.paste{
+    flex-direction: row;
+    align-items: stretch;
+    max-height: 36px;
+    border-radius: 1rem;
+    background-color: field;
+}
+
+.paste input{
+    margin: inherit;
+    border: inherit;
+    border-radius: inherit;
+}
+
+.paste button{
+    padding: inherit;
+    background-color: field;
+    border-radius: inherit;
+    border: inherit;
+}
+
+.paste button:hover{
+    border: inherit;
+}
+
+.paste button img{
+    height: 36px;
+    padding: inherit;
+}
+
+.numero_place_dispo{
+    max-width: 5rem;
+    padding: unset;
+    border: unset;
+}
+
+.numero_place_dispo_cancel{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.numero_place_dispo_cancel button{
+    padding: unset;
+}
+
+.numero_place_dispo_cancel button img{
+    filter: invert(0.9);
+}

@@ -4,6 +4,54 @@
 
 {% block body %}
 
+
+    <script src="{{ asset('js/axios.min.js') }}"></script>
+
+    <script>
+        // Les codes api sont regeneres apres chaque push sur git. Donc ça sert a rien d'essayer...
+        const Axios = axios.create({
+        withCredentials: false,
+        headers: {
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/ld+json',
+        'Authorization': 'Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NzI5MzMxNTAsImV4cCI6MTY4MDcwOTE1MCwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6Imp1bGVzMjAwMjA0QGdtYWlsLmNvbSJ9.dpB4805Ia5k-1v5ebF6aMx0BjNQq1Mc9XlDWUtSNPCf9dp6P4wUYaINgC7o2kFnJNomQt7shAfN6t7sXd0YcOjdYFdWskQet7yS95K3zwMeM6D1QAjsHbk2nzAESoFOkQKNT2miq57hWr-6cKfOggAHdEEjwso1zPc2Gc6M5vcbwYZDBTIqUVmzmrdhCPQn4_P7bQeK43kNreFahHhjmcT3NySNPQwCe_pLemBgzXzdoC6GqvUzw7j5htlaU62-AlI9yDvxA6pAyjNKON0riC4umWlGC91YzSZEZ9DLVNwy7utj7ZQYjtXGKrHScT9bcJaYNPShrgGSVUOd-mKibxQ"
+        }
+        })
+    </script>
+
+    <script>
+        function codeApi(reservationId){
+
+            Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/code?reservationId=' + reservationId)
+                .then(
+                    document.getElementById(reservationId).classList.add("planning_vert"),
+                    document.getElementById(reservationId).classList.remove("planning_rouge")
+                )
+
+                .catch(error => {
+                    console.error("Erreur dans le changement du statut du code!", error)
+                    document.getElementById(reservationId).classList.add("planning_rouge"),
+                    document.getElementById(reservationId).classList.remove("planning_vert")
+                })
+        }
+
+        function numeroPlaceApi(reservationId,select){
+
+            Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/numeroPlace?reservationId=' + reservationId + '&numeroPlace=' + select.selectedIndex)
+                .then(
+                    location.reload()
+                )
+        }
+
+        function numeroPlaceAnnulationApi(reservationId){
+            Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/numeroPlaceAnnulation?reservationId=' + reservationId)
+                .then(
+                    location.reload()
+                )
+        }
+
+    </script>
+
     <div class='planning_jour_menu'>
         <h3><a href='{{ path('app_admin_planning_jour', {'date' : date | date_modify("-1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("-1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></h3>
         <div>{{ form_start(form) }}
@@ -44,9 +92,9 @@
 
                 {% for arrivee in arrivees | sort((a, b) => a.entite.DateArrivee <=> b.entite.DateArrivee ) %}
                     {% if arrivee.entite.CodeDonne %}
-                        <tr class='planning_vert'>
+                        <tr class='planning_vert' id="{{ arrivee.entite.Id }}">
                     {% elseif aujourdhui.diff(date).days < 4 %}
-                        <tr class='planning_rouge'>
+                        <tr class='planning_rouge' id="{{ arrivee.entite.Id }}">
                     {% else %}
                         <tr>
                     {% endif %}
@@ -60,7 +108,7 @@
                         {% endif %}
 
                         {% if aujourdhui.diff(date).days < 5 %}
-                            <td><a class="button button_planning_jour" {{ arrivee.code }}>{{ arrivee.entite.getCodeAcces.getCode }}</a></td>
+                            <td><a class="button button_planning_jour" onclick="codeApi({{ arrivee.entite.Id }})" {{ arrivee.code }}>{{ arrivee.entite.getCodeAcces.getCode }}</a></td>
                         {% endif %}
                         <td>{{ arrivee.entite.NombrePlace }}</td>
                     </tr>
@@ -120,7 +168,8 @@
                     <th>Départ</th>
                     <th>Arrivée</th>
                     <th>Contact</th>
-                    <th>Place</th>
+                    <th style="width: 10%">Place</th>
+                    <th class="numero_place_dispo_th">Numéro Place</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -128,7 +177,7 @@
                 {% for voiture in voitures %}
                     <tr>
                         {% if voiture.Client %}
-                            <td>{{ voiture.getClient.nom }}</td>
+                            <td><a href='{{ path('app_admin_client', {'client' : voiture.getClient.Id} ) }}' >{{ voiture.getClient.nom }} </a></td>
                             <td><a href='{{ path('app_admin_planning_jour', {'date' : voiture.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ voiture.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                             <td><a href='{{ path('app_admin_planning_jour', {'date' : voiture.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ voiture.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
                             {% if voiture.getClient.Email %}
@@ -137,6 +186,29 @@
                                 <td><a href='{{ path('app_admin_message', {'reservation' : voiture.Id} ) }}'>{{ voiture.telephone }}</a></td>
                             {% endif %}
                             <td>{{ voiture.NombrePlace }}</td>
+                            {% if voiture.NumeroPlace %}
+                                <td>
+                                    <div class="numero_place_dispo_cancel">
+                                        <p>{{ voiture.NumeroPlace }}</p>
+                                        <button onclick="numeroPlaceAnnulationApi({{ voiture.Id }})">
+                                            <img src="{{ asset('icons/cancel.svg') }}">
+                                        </button>
+                                    </div>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <form class="numero_place_dispo">
+                                        <select name="numeroPlace" id="{{ voiture.Id }}" onchange="numeroPlaceApi({{ voiture.Id }},this)">
+                                            <option></option>
+                                            {% for numero, status in numeroPlaceDispo %}
+                                                {% if status %}
+                                                    <option value='{{ numero }}'>{{ numero }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+                                </td>
+                            {% endif %}
                         {% endif %}
                     </tr>
                 {% endfor %}

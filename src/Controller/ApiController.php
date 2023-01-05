@@ -60,9 +60,6 @@ class ApiController extends AbstractController
 
                 $code = $entityManager->getRepository(Code::class)->SelectOrCreate($reservationEntite->getDateArrivee(),$reservationEntite->getDateDepart(),$mailer);
                 $reservationEntite->setCodeAcces($code);
-
-                $entityManager->persist($reservationEntite);
-                $entityManager->flush();
                 
                 $messageEntite = new Message($reservationEntite,$reservationEntite->NombreReservation($entityManager),$mailer);
 
@@ -70,6 +67,9 @@ class ApiController extends AbstractController
                 $confirmation = $messageEntite->TraitementFormulaire($formulaire,$doctrine,$href);
                 $formulaire['explication'] = true;
                 $explication = $messageEntite->TraitementFormulaire($formulaire,$doctrine,$href);
+
+                $entityManager->persist($reservationEntite);
+                $entityManager->flush();
 
             }
             else{
@@ -94,7 +94,7 @@ class ApiController extends AbstractController
             "message" => "La réservation a bien été enregistré",
             "erreur" => 0,
             "confirmation" => $confirmation,
-            "explication" => $explication
+            "explication" => $explication,
         ],200,['Access-Control-Allow-Origin: *']);
     }
 
@@ -206,6 +206,10 @@ class ApiController extends AbstractController
         if ($contact[0] == 0 && ($contact[1] == 6 || $contact[1] == 7)){
             $contact = substr_replace(str_replace(' ','',$contact),"33",0,1);
         }
+        else if($contact[0] == ' '){
+            $contact = trim($contact);
+        }
+
         $contacts += $entityManager->getRepository(Client::class)->rechercheContactTelephone($contact);
 
         // On retourne un tableau avec les reponses de l'api un code http 200, sous forme de json
@@ -282,6 +286,15 @@ class ApiController extends AbstractController
         if(!$dateDepart || !$dateArrivee || $nombrePlace < 1 || $nombrePlace > 10 || !$contact){
             // On retourne une erreur avec un code erreur http 400
             return new JsonResponse("Erreur dans les arguments",400);
+        }
+
+        if(! ($contact[0] == 0 && ($contact[1] == 6 || $contact[1] == 7) || $contact[0] == ' ' && $contact[1] == 3 && $contact[2] == 3 || $contact[0] == 3 && $contact[1] == 3) ){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("Erreur dans le contact",400);
+        }
+
+        if($contact[0] == ' ' && $contact[1] == 3 && $contact[2] == 3){
+            $contact[0] = '+';
         }
 
         $dateArrivee = new \DateTime($dateArrivee);
@@ -392,5 +405,112 @@ class ApiController extends AbstractController
         // On retourne la reponse avec un code http 200
         return new JsonResponse($dates,200,['Access-Control-Allow-Origin: *']);
     }
+
+    /**
+     * @Route("/code", name="api_code", methods={"GET"})
+     * @IsGranted("ROLE_ADMIN")
+     */
+    function code(Request $request, ManagerRegistry $doctrine){
+
+        // On recupere l'id de la reservation
+        $reservationId = $request->query->get('reservationId');
+
+        // On verifie la requete reçu
+        if(!$reservationId ){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("Erreur dans les arguments",400);
+        }
+
+        $entityManager = $doctrine->getManager();
+        $reservation = $entityManager->getRepository(Reservation::class)->find($reservationId);
+
+        if(!$reservation ){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("La réservation n'existe pas",400);
+        }
+
+        $reservation->setCodeDonne(True);
+        $entityManager->persist($reservation);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            "codeDonne" => $reservation->getCodeDonne(),
+            "reservationId" => $reservationId,
+
+        ],200,['Access-Control-Allow-Origin: *']);
+
+    }
+
+    /**
+     * @Route("/numeroPlace", name="api_numeroPlace", methods={"GET"})
+     * @IsGranted("ROLE_ADMIN")
+     */
+    function numeroPlace(Request $request, ManagerRegistry $doctrine){
+
+        // On recupere l'id de la reservation
+        $reservationId = $request->query->get('reservationId');
+        $numeroPlace = $request->query->get('numeroPlace');
+
+        // On verifie la requete reçu
+        if(!$reservationId && !$numeroPlace && $numeroPlace > 0 && $numeroPlace <= 46 ){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("Erreur dans les arguments",400);
+        }
+
+        $entityManager = $doctrine->getManager();
+        $reservation = $entityManager->getRepository(Reservation::class)->find($reservationId);
+
+        if(!$reservation ){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("La réservation n'existe pas",400);
+        }
+
+        $reservation->setNumeroPlace($numeroPlace);
+        $entityManager->persist($reservation);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            "numeroPlace" => $reservation->getNumeroPlace(),
+            "reservationId" => $reservationId,
+
+        ],200,['Access-Control-Allow-Origin: *']);
+
+    }
+
+    /**
+     * @Route("/numeroPlaceAnnulation", name="api_numero_place_annulation", methods={"GET"})
+     * @IsGranted("ROLE_ADMIN")
+     */
+    function numeroPlaceAnnulation(Request $request, ManagerRegistry $doctrine){
+        
+        // On recupere l'id de la reservation
+        $reservationId = $request->query->get('reservationId');
+
+        // On verifie la requete reçu
+        if(!$reservationId){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("Erreur dans les arguments",400);
+        }
+
+        $entityManager = $doctrine->getManager();
+        $reservation = $entityManager->getRepository(Reservation::class)->find($reservationId);
+
+        if(!$reservation ){
+            // On retourne une erreur avec un code erreur http 400
+            return new JsonResponse("La réservation n'existe pas",400);
+        }
+
+        $reservation->setNumeroPlace(null);
+        $entityManager->persist($reservation);
+        $entityManager->flush();
+
+        return new JsonResponse([
+            "numeroPlace" => $reservation->getNumeroPlace(),
+            "reservationId" => $reservationId,
+
+        ],200,['Access-Control-Allow-Origin: *']);
+
+    }
+
 
 }

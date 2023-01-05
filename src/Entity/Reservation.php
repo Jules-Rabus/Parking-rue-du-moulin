@@ -61,6 +61,9 @@ class Reservation
     #[Groups(['reservation:read'])]
     private $CodeDonne;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $numeroPlace = null;
+
     public function __construct()
     {
         $this->dates = new ArrayCollection();
@@ -293,15 +296,18 @@ class Reservation
         return $this->Telephone;
     }
 
-    public function setTelephone(?string $Telephone): self
+    public function setTelephone(?string $telephone): self
     {
         // Conversion en +33 + et suppresion des espaces
 
-        if ($Telephone[0] == 0 && ($Telephone[1] == 6 || $Telephone[1] == 7)){
-            $this->Telephone = substr_replace(str_replace(' ','',$Telephone),"+33",0,1);
+        if ($telephone[0] == 0 && ($telephone[1] == 6 || $telephone[1] == 7)){
+            $this->Telephone = substr_replace(str_replace(' ','',$telephone),"+33",0,1);
         }
-        elseif(strstr($Telephone,"+33")){
-            $this->Telephone = str_replace(' ','',$Telephone);
+        elseif(strstr($telephone,"+33")){
+            $this->Telephone = str_replace(' ','',$telephone);
+        }
+        else{
+            $this->Telephone = $telephone;
         }
 
         return $this;
@@ -330,6 +336,17 @@ class Reservation
 
         return $this;
     }
-    
+
+    public function getNumeroPlace(): ?int
+    {
+        return $this->numeroPlace;
+    }
+
+    public function setNumeroPlace(?int $numeroPlace): self
+    {
+        $this->numeroPlace = $numeroPlace;
+
+        return $this;
+    }
 
 }

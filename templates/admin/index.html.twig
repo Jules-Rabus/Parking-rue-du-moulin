@@ -4,9 +4,9 @@
 
 {% block body %}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.45/vue.global.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="{{ asset('js/vue.global.min.js') }}"></script>
+    <script src="{{ asset('js/axios.min.js') }}"></script>
+    <script src="{{ asset('js/moment.js') }}"></script>
 
 
     <script type="text/x-template" id="reservation-template">
@@ -27,53 +27,61 @@
                     </div>
                     <div>
                         <label id="contact">Contact</label>
-                        <input type="text" v-model="contact" id="contact" name="contact" @input="requeteContact">
+                        <div class="paste">
+                            <input type="text" v-model="contact" id="contact" name="contact" @input="requeteContact">
+                            <button @click="paste" type="button"><img src="{{ asset('icons/paste.svg') }}"></button>
+                        </div>
                     </div>
                 </form>
             </div>
 
             <div class="retourReservation">
 
-                <table v-if="retourContact.contacts != null && retourContact.contacts.length && contact.length > 3">
-                    <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Contact</th>
-                        <th>Nombre de réservation</th>
-                        <th>Sélection</th>
-                    </tr>
-                    </thead>
+                <div>
+                    <table v-if="retourContact.contacts != null && retourContact.contacts.length && contact.length > 3">
+                        <thead>
+                        <tr>
+                            <th>Nom</th>
+                            <th>Contact</th>
+                            <th>Nombre de réservation</th>
+                            <th><button @click="reset">Reset</button></th>
+                        </tr>
+                        </thead>
 
-                    <tbody>
-                    <tr v-for="client in retourContact.contacts">
-                        <client :client="client" @appelEmit="emitClient" />
-                    </tr>
-                    </tbody>
-                </table>
+                        <tbody>
+                        <tr v-for="client in retourContact.contacts">
+                            <client :client="client" @appelEmit="emitClient" />
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <table v-if="retourReservation != null && retourReservation.prix">
-                    <thead>
-                    <tr>
-                        <th>Prix</th>
-                        <th>Disponibilité</th>
-                        <th v-if="clientEmit">Nombre de réservation</th>
-                        <th v-if="clientEmit">Nom</th>
-                        <th v-if="retourContact.contacts != null && retourContact.contacts.length == 0">Message</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{{  '{{retourReservation.prix}}' }} €</td>
-                        <td v-if="retourReservation.nombrePlaceDisponible > 15" class='planning_vert'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
-                        <td v-else-if="retourReservation.nombrePlaceDisponible > 6" class='planning_orange'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
-                        <td v-else-if="retourReservation.nombrePlaceDisponible >= 0" class='planning_rouge'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
-                        <td v-else>Indisponible</td>
-                        <td v-if="clientEmit">{{ '{{ clientEmit.nombreReservation }}'}}</td>
-                        <td v-if="clientEmit">{{ '{{ clientEmit.nom }}'}}</td>
-                        <td v-if="retourContact.contacts != null && retourContact.contacts.length == 0"><a :href='messageSiVousVoulez()'>Si vous voulez</a></td>
-                    </tr>
-                    </tbody>
-                </table>
+                <div>
+                    <table v-if="retourReservation != null && retourReservation.prix">
+                        <thead>
+                        <tr>
+                            <th>Prix</th>
+                            <th>Disponibilité</th>
+                            <th v-if="clientEmit">Nombre de réservation</th>
+                            <th v-if="clientEmit">Nom</th>
+                            <th>Message</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>{{  '{{retourReservation.prix}}' }} €</td>
+                            <td v-if="retourReservation.nombrePlaceDisponible > 15" class='planning_vert'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
+                            <td v-else-if="retourReservation.nombrePlaceDisponible > 6" class='planning_orange'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
+                            <td v-else-if="retourReservation.nombrePlaceDisponible >= 0" class='planning_rouge'>{{ '{{ retourReservation.nombrePlaceDisponible }}' }}</td>
+                            <td v-else>Indisponible</td>
+                            <td v-if="clientEmit">{{ '{{ clientEmit.nombreReservation }}'}}</td>
+                            <td v-if="clientEmit">{{ '{{ clientEmit.nom }}'}}</td>
+                            <td v-if="retourMessage.message != null"><a :href='{{ 'retourMessage.message' }}'>Si vous voulez</a></td>
+                            <td v-else>Message Impossible {{ '{{ retourMessage.message }}' }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div v-if="retourReservation.nombrePlaceDisponible >= 0 && clientEmit && retourReservation.reservation.dateArrivee == dateArrivee &&
             retourReservation.reservation.dateDepart == dateDepart && retourReservation.reservation.nombrePlace == nombrePlace">
@@ -82,7 +90,7 @@
                 </div>
 
                 <div v-if="retourContact.contacts != null && retourContact.contacts.length === 0 && contact.length > 3">
-                    <ajoutContact @appelEmit="emitAjoutContact" />
+                    <ajoutContact :contact='contact' @appelEmit="emitAjoutContact" />
 
                 </div>
 
@@ -100,14 +108,18 @@
     </script>
 
     <script type="text/x-template" id="ajoutReservation-template">
-        <button v-if="responses == null || responses != null && responses.erreur"  @click="ajouterReservation">Réserver</button>
+        <div class="flex" v-if="responses == null || responses != null && responses.erreur">
+            <button @click="ajouterReservation">Réserver</button>
+            <a v-if="retourMessage && retourMessage.message != null" class="button" :href="{{ 'retourMessage.message' }}">Si vous voulez</a>
+        </div>
+
         <table v-else>
             <tbody>
             <tr>
                 <td><a :href="responses.confirmation.message">Confirmation</a></td>
                 <td><a :href="responses.explication.message">Explication</a></td>
                 <td>{{ '{{ responses.explication.type }}'}}</td>
-                <td><button @click="reset"></button></td>
+                <td><button @click="reset">Reset</button></td>
             </tr>
             </tbody>
         </table>
@@ -159,13 +171,14 @@
 
     <script>
 
-        const { ref, onMounted } = Vue
+        // Les codes api sont regeneres apres chaque push sur git. Donc ça sert a rien d'essayer...
+        const { ref, onMounted, computed } = Vue
         const Axios = axios.create({
             withCredentials: false,
             headers: {
                 'Accept': 'application/ld+json',
                 'Content-Type': 'application/ld+json',
-                'Authorization': 'Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NjY4OTA0OTgsImV4cCI6MTY3NDY2NjQ5OCwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6Imp1bGVzMjAwMjA0QGdtYWlsLmNvbSJ9.eCeKDdmEUYCmd8PjoHSMU5xd-uAzP4rtvVO_NAvOfUyF24-GbEjElzqg-ETsFgwq5Ucu-dLclUcmX5Lum5cEXKkaMk0fl6Vvdk3bLpf6tnsprBJe6zijaMhiLil6Roz_zriPqjGCs6r3mcIskbl_d_2ZLftfFn44G8pt8SFCKdTJkipjGAcWPH7NabVokxfTJUQJRtQXxgHmH3NhUXuwk54hbxSceKkkDmrStcy1iGhbsoJw8AXji_xmZEsjTD8yU82TEVQyZvheNu37i7ZEXN3tthBvoFJRsSbF8Nfu_eucrNluLzdaW4yNGjXJr2k9gE7An3_5vvxBMP-z8QT1zA"
+                'Authorization': 'Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NzI5MzMxNTAsImV4cCI6MTY4MDcwOTE1MCwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6Imp1bGVzMjAwMjA0QGdtYWlsLmNvbSJ9.dpB4805Ia5k-1v5ebF6aMx0BjNQq1Mc9XlDWUtSNPCf9dp6P4wUYaINgC7o2kFnJNomQt7shAfN6t7sXd0YcOjdYFdWskQet7yS95K3zwMeM6D1QAjsHbk2nzAESoFOkQKNT2miq57hWr-6cKfOggAHdEEjwso1zPc2Gc6M5vcbwYZDBTIqUVmzmrdhCPQn4_P7bQeK43kNreFahHhjmcT3NySNPQwCe_pLemBgzXzdoC6GqvUzw7j5htlaU62-AlI9yDvxA6pAyjNKON0riC4umWlGC91YzSZEZ9DLVNwy7utj7ZQYjtXGKrHScT9bcJaYNPShrgGSVUOd-mKibxQ"
             }
         })
 
@@ -178,7 +191,10 @@
             emits: ['appelEmit'],
             setup(props, {emit}){
 
-                const route = "/public/admin/client/" + props.client.id
+                const route = computed(() => {
+                    return "/public/admin/client/" + props.client.id
+                })
+
 
                 function emitClient(){
                     emit('appelEmit',props.client)
@@ -204,9 +220,14 @@
             setup(props,{emit}){
 
                 const responses = ref()
+                const retourMessage = ref([])
+
+                function messageSiVousVoulez(){
+                    Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/message?dateArrivee=' + props.reservation.dateArrivee + '&dateDepart=' + props.reservation.dateDepart + '&nombrePlace=' + props.reservation.nombrePlace + '&contact=' + props.client.telephone)
+                        .then(response => retourMessage.value = response.data)
+                }
 
                 function ajouterReservation(){
-
                     Axios.post('https://dev.parking-rue-du-moulin.fr/public/api/ajout_reservation' , { 'client' : props.client, 'reservation' : props.reservation, 'href' : false })
                         .then(response => responses.value = response.data)
                         .catch(error => {
@@ -220,8 +241,14 @@
                     emit('appelEmit')
                 }
 
+                onMounted(() => {
+                    messageSiVousVoulez()
+                })
+
                 return{
+                    messageSiVousVoulez,
                     ajouterReservation,
+                    retourMessage,
                     responses,
                     reset
                 }
@@ -232,8 +259,11 @@
         const ajoutContact = {
             name: 'ajoutContact',
             template: '#ajoutContact-template',
+            props:{
+                contact: String
+            },
             emits: ['appelEmit'],
-            setup({ emit }){
+            setup(props,{ emit }){
 
                 const client = ref({})
                 const responses = ref()
@@ -253,6 +283,10 @@
                 function emitContact(){
                     emit('appelEmit',responses.value.client.contact)
                 }
+
+                onMounted(() => {
+                    client.value.contact = props.contact
+                })
 
                 return{
                     client,
@@ -292,7 +326,14 @@
                     if(contact.value.length > 3){
                         Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/contact?contact=' + contact.value )
                             .then(response => retourContact.value = response.data)
+                        messageSiVousVoulez()
                     }
+                }
+
+                function paste(){
+                    navigator.clipboard.readText()
+                        .then(clipText => contact.value = clipText)
+                    setTimeout(requeteContact,100)
                 }
 
                 function emitClient(client){
@@ -309,9 +350,17 @@
                 }
 
                 function messageSiVousVoulez(){
+
+                    if(! (contact.value.charAt(0) == 0 && (contact.value.charAt(1) == 6 || contact.value.charAt(1) == 7) || contact.value.charAt(0) == '+' && contact.value.charAt(1) == 3 && contact.value.charAt(2) == 3 || contact.value.charAt(0) == 3 && contact.value.charAt(1) == 3 )) return;
+
                     Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/message?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value + '&contact=' + contact.value)
                         .then(response => retourMessage.value = response.data)
-                    return retourMessage.value.message
+                }
+
+                function reset(){
+                    contact.value = ''
+                    retourContact.value = []
+                    retourMessage.value = []
                 }
 
                 onMounted(() => {
@@ -321,6 +370,7 @@
                 return{
                     requeteReservation,
                     requeteContact,
+                    paste,
                     emitClient,
                     emitAjoutContact,
                     emitAjoutReservation,
@@ -332,7 +382,8 @@
                     retourContact,
                     retourMessage,
                     contact,
-                    clientEmit
+                    clientEmit,
+                    reset
                 }
             }
 

@@ -165,6 +165,7 @@ class Message
         $apresMidi = (new \DateTime())->setTime(16,0,0);
         $soir = (new \DateTime())->setTime(19,0,0);
         $jour = (new \DateTime())->format('l');
+        $aujourdhui = new \DateTime();
 
         // En fonction des informations on etablit la bonne formule de politesse
 
@@ -178,7 +179,7 @@ class Message
         }
 
         if( $heure < $apresMidi && $heure > $midi  ){
-            $fin = "Bon après midi";
+            $fin = "Bonne après midi";
         }
         if( $heure > $apresMidi && $heure < $soir && $heure < $soleil){
             $fin = "Bonne fin de journée";
@@ -191,6 +192,12 @@ class Message
         }
         if ($jour == "Monday" && $heure > $midi && !($heure < $soleil || $heure < $soir)){
             $fin = "Bonne semaine";
+        }
+        if($aujourdhui->format("m") == 12 && $aujourdhui->format("d") > 20){
+            $fin = "Bonnes fêtes";
+        }
+        if($aujourdhui->format("m") == 01 && $aujourdhui->format("d") < 10){
+            $fin = "Bonne année";
         }
 
         // Moment: 1 = tout, 2 : début , 3 : fin
@@ -255,8 +262,8 @@ class Message
 
     // fonction pour mettre un 's' en fonction du nombre de vehicule
     public function place() : string{
-
-        if( $nombrePlace = $this->Reservation->getNombrePlace() > 1){
+        $nombrePlace = $this->Reservation->getNombrePlace();
+        if( $nombrePlace > 1){
             return "de " . $nombrePlace .  " places";
         }
         return "d'une place" ;
@@ -279,15 +286,31 @@ class Message
 
         $this->Sujet = "Confirmation de votre réservation";
         $this->SujetCourt = "Confirmation";
+        $aujourdhui = new \DateTime();
 
         if(!$this->NombreReservation){
             $this->messageExplication();
             $this->Message = $this->Message . "%0A%0A";
         }
 
+        // Message classique
         $this->Message = $this->Message . "Je vous confirme votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
 
+        // Message avec code
+        if( $this->Reservation->getDateArrivee()->diff($aujourdhui)->days < 5){
+            $message = $this->Message;
+            $this->MessageCode();
+            $this->Message = $message . "%0A%0A" . $this->Message;
+
+            // Dans ce cas on veut enregistrer qu'on a donne le code
+            $this->Reservation->setCodeDonne = true;
+        }
+        else{
+            $this->Message = $this->Message . "%0A%0AJe vous remercie de me recontacter par sms/mail/telephone 48h00 avant votre arrivée au parking afin d'obtenir votre code d'accès, il sera également valable pour votre retour.";
+        }
+
+        //Message avec explication du code
     }
 
     // template pour l'allongement d'une reservation

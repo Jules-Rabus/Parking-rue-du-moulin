@@ -89,7 +89,7 @@ class CodeRepository extends ServiceEntityRepository
                 ->to('jules200204@gmail.com')
                 ->subject('Nouveau code '. $code->getCode())
                 ->text("Nouveau code à ajouter : " . $code->getCode());
-            //$mailer->send($email);
+            $mailer->send($email);
 
         return $code;
     }

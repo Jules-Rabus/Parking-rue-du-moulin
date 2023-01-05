@@ -56,7 +56,7 @@ class ReservationRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
-    public function NombreReservationTelephone(int $Telephone){
+    public function NombreReservationTelephone(string $Telephone){
         return $this->createQueryBuilder('reservation')
             ->select('COUNT(reservation.id)')
             ->andWhere('reservation.Telephone = :telephone')
