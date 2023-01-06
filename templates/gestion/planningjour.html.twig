@@ -1,0 +1,207 @@
+{% extends 'basegestion.html.twig' %}
+
+{% block title %}{{ date | format_datetime(locale='fr',pattern="dd-MM-Y") }} : Planning{% endblock %}
+
+{% block body %}
+
+
+    <script src="{{ asset('js/axios.min.js') }}"></script>
+
+    <script>
+        // Les codes api sont regeneres apres chaque push sur git. Donc ça sert a rien d'essayer...
+        const Axios = axios.create({
+        withCredentials: false,
+        headers: {
+        'Accept': 'application/ld+json',
+        'Content-Type': 'application/ld+json',
+        'Authorization': 'Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NzI5NTcwMzAsImV4cCI6MTY4MDczMzAzMCwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6Imp1bGVzMjAwMjA0QGdtYWlsLmNvbSJ9.YX0bMdGFF0KxGWCyI4NtHqlFipGM6oWqYzBJFqylF5P07QIPzfHc4LQatnpUt9Ncw1ios6YANIl8BNhJNM5jay-vQ5kUOm6gwSuF9M2siiBz9xQm6SQR_lrzoMZGT_3Pz2GaGfOLEcGYzasqQv8Gw_TOTXs8EaRXMaiaCsFXP96960K_Um1P9zZbLMsEDIZuKmxwIgcB84D63nBSFEhW-wk1-RMju2x5MuC7Gw25gxs3hJu-bxuB1yJaTFJUaL_Cs0T41jjS02ph2NYrr1wns8igbnhBtrMBALrOhfpLyJpfYqrRUcnEUZu2KRx0k7g07EJza0biRA3e3PkrZbOIZQ"
+        }
+        })
+    </script>
+
+    <script>
+        function numeroPlaceApi(reservationId,select){
+
+            Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/numeroPlace?reservationId=' + reservationId + '&numeroPlace=' + select.selectedIndex)
+                .then(
+                    location.reload()
+                )
+        }
+
+        function numeroPlaceAnnulationApi(reservationId){
+            Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/numeroPlaceAnnulation?reservationId=' + reservationId)
+                .then(
+                    location.reload()
+                )
+        }
+
+    </script>
+
+    <div class='planning_jour_menu'>
+        <h3><a href='{{ path('app_gestion_planning_jour', {'date' : date | date_modify("-1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("-1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></h3>
+        <div>{{ form_start(form) }}
+             {{ form_row(form.date) }}
+             <button type="submit">Chercher</button>
+             {{ form_end(form) }}
+        </div>
+        <h3><a href='{{ path('app_gestion_planning_jour', {'date' : date | date_modify("+1 day") | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ date | date_modify("+1 day") | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></h3>
+    </div>
+
+    <div class='planning_jour'>
+
+        <h2>{{ date | format_datetime(locale='fr',pattern="EEEE : dd-MM-Y") | capitalize }} : {{ nombrePlaceDisponibles }}</h2>
+
+        {% if arrivees == null and departs == null %}
+
+            <h3>Il n'a aucun mouvement ce jour</h3>
+
+        {% endif %}
+
+        {% if arrivees %}
+
+            <h3>Arrivée : {{ nbrArrivee}}</h3>
+
+            <table class='planning_jour'>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Départ</th>
+                        <th>Contact</th>
+                        {% if aujourdhui.diff(date).days < 5 %}
+                            <th>Code</th>
+                        {% endif %}
+                        <th>Place</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                {% for arrivee in arrivees | sort((a, b) => a.entite.DateArrivee <=> b.entite.DateArrivee ) %}
+                    {% if arrivee.entite.CodeDonne %}
+                        <tr class='planning_vert' id="{{ arrivee.entite.Id }}">
+                    {% elseif aujourdhui.diff(date).days < 4 %}
+                        <tr class='planning_rouge' id="{{ arrivee.entite.Id }}">
+                    {% else %}
+                        <tr>
+                    {% endif %}
+                        <td>{{ arrivee.entite.getClient.nom }}</td>
+                        <td><a href='{{ path('app_gestion_planning_jour', {'date' : arrivee.entite.DateDepart  | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ arrivee.entite.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+
+                        {% if arrivee.entite.getClient.Email %}
+                            <td>{{ arrivee.entite.getClient.Email }}</td>
+                        {% else %}
+                            <td>{{ arrivee.entite.telephone }}</td>
+                        {% endif %}
+
+                        {% if aujourdhui.diff(date).days < 5 %}
+                            <td><a class="button button_planning_jour" {{ arrivee.code }}>{{ arrivee.entite.getCodeAcces.getCode }}</a></td>
+                        {% endif %}
+                        <td>{{ arrivee.entite.NombrePlace }}</td>
+                    </tr>
+
+                {% endfor %}
+
+            {% endif %}
+
+            </tbody>
+        </table>
+
+        {% if departs %}
+
+            <h3>Départ : {{nbrDepart}}</h3>
+
+            <table class='planning_jour'>
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Arrivée</th>
+                    <th>Contact</th>
+                    <th>Place</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for depart in departs %}
+                    <tr>
+                        {% if depart.Client %}
+                            <td>{{ depart.getClient.nom }}</td>
+                            <td><a href='{{ path('app_gestion_planning_jour', {'date' : depart.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ depart.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                            {% if depart.getClient.Email %}
+                                <td>{{ depart.getClient.Email }}</td>
+                            {% else %}
+                                <td>{{ depart.telephone }}</td>
+                            {% endif %}
+                            <td>{{ depart.NombrePlace }}</td>
+                        {% endif %}
+
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+            </table>
+            {% endif %}
+
+
+        {% if voitures %}
+
+            <h3>Voiture présente :</h3>
+
+            <table class='planning_jour'>
+                <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Départ</th>
+                    <th>Arrivée</th>
+                    <th>Contact</th>
+                    <th style="width: 10%">Place</th>
+                    <th class="numero_place_dispo_th">Numéro Place</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                {% for voiture in voitures %}
+                    <tr>
+                        {% if voiture.Client %}
+                            <td>{{ voiture.getClient.nom }}</td>
+                            <td><a href='{{ path('app_gestion_planning_jour', {'date' : voiture.DateDepart | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ voiture.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                            <td><a href='{{ path('app_gestion_planning_jour', {'date' : voiture.DateArrivee | format_datetime(locale='fr',pattern="Y-MM-dd") }) }}' >{{ voiture.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></td>
+                            {% if voiture.getClient.Email %}
+                                <td>{{ voiture.getClient.Email }}</td>
+                            {% else %}
+                                <td>{{ voiture.telephone }}</td>
+                            {% endif %}
+                            <td>{{ voiture.NombrePlace }}</td>
+                            {% if voiture.NumeroPlace %}
+                                <td>
+                                    <div class="numero_place_dispo_cancel">
+                                        <p>{{ voiture.NumeroPlace }}</p>
+                                        <button onclick="numeroPlaceAnnulationApi({{ voiture.Id }})">
+                                            <img src="{{ asset('icons/cancel.svg') }}">
+                                        </button>
+                                    </div>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <form class="numero_place_dispo">
+                                        <select name="numeroPlace" id="{{ voiture.Id }}" onchange="numeroPlaceApi({{ voiture.Id }},this)">
+                                            <option></option>
+                                            {% for numero, status in numeroPlaceDispo %}
+                                                {% if status %}
+                                                    <option value='{{ numero }}'>{{ numero }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+                                </td>
+                            {% endif %}
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+
+                {% endif %}
+
+                </tbody>
+            </table>
+    </div>
+
+{% endblock %}

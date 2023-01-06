@@ -1,0 +1,103 @@
+{% extends 'baseadmin.html.twig' %}
+
+{% block title %}Planning{% endblock %}
+
+{% block body %}
+
+    <div>
+        <div class='flex'>
+            {{ form_start(form) }}
+            {{ form_row(form.date) }}
+            <button type="submit">Chercher</button>
+            {{ form_end(form) }}
+            <div class='planning_rapide'>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>L-D</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                            <th>5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        {% for key ,semaines in planningRapide %}
+
+                            <tr>
+                                <td>{{ key | format_datetime(locale='fr',pattern="LLL") | capitalize }}</td>
+
+                            {% for keyDate ,semaine in semaines  %}
+
+                                {% if semaine > 15 %}
+                                    <td class='planning_vert'>
+                                {% elseif semaine > 10 %}
+                                    <td class='planning_orange'>
+                                {% else %}
+                                    <td class='planning_rouge'>
+                                {% endif %}
+                                    <a href='#{{key | format_datetime(locale='fr',pattern="LLL") }}-{{keyDate}}'>{{ semaine }}</a></td>
+
+                            {% endfor %}
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <h2><a class="lien" href="#{{ date | format_datetime(locale='fr',pattern="LLL-dd")}}"> Aujourd'hui : {{ date | format_datetime(locale='fr',pattern="dd-MM-Y") }}</a></h2>
+
+        <table class='planning'>
+            <thead>
+                <tr>
+                    <th class='planning'>Date</th>
+                    <th>Place</th>
+                    <th>Mouvement</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for key ,date in dates %}
+
+                    {% if key | format_datetime(locale='fr',pattern="dd") == 01  %}
+
+                        <tr>
+                            <td colspan="3"><h2>{{ key | format_datetime(locale='fr',pattern="LLLL") | capitalize }}</h2></td>
+                        </tr>
+
+                    {% endif %}
+
+                    {% if date.nombrePlaceDisponibles > 15 %}
+                        <tr class='planning_vert' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd") }}'>
+                    {% elseif date.nombrePlaceDisponibles > 6 %}
+                        <tr class='planning_orange' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd")}}'>
+                    {% else %}
+                        <tr class='planning_rouge' id='{{ key | format_datetime(locale='fr',pattern="LLL-dd")}}'>
+                    {% endif %}
+                        <td><a href='{{ path('app_gestion_planning_jour', {'date' : key | format_datetime(locale='fr',pattern="Y-MM-dd") })  }}'>{{ key | format_datetime(locale='fr',pattern="EEEE dd-MM-Y") | capitalize  }}</a></td>
+                        <td>{{ date.nombrePlaceDisponibles }}</td>
+                        <td class='planning_flex'>
+                            {% if date.Arrivee > 5 %}
+                                <div class='planning_rouge'>Arrivée : {{ date.Arrivee }}</div>
+                            {% else %}
+                                <div>Arrivée : {{ date.Arrivee }}</div>
+                            {% endif %}
+
+                            {% if date.Depart > 5 %}
+                                <div class='planning_rouge'>Départ : {{ date.Depart }}</div>
+                            {% else %}
+                                <div>Départ : {{ date.Depart }}</div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+{% endblock %}

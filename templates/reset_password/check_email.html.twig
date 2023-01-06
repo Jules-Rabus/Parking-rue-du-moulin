@@ -4,7 +4,7 @@
 
 {% block body %}
     <p>
-        Si un compte existe avec cette adresse mail, un mail vous a été envoyé avec un lien pour réinitialiser votre mot de passe.
+        Si un compte existe avec cette adresse mail, un mail vous a été envoyé avec un lien pour réinitialiser vôtre mot de passe.
         Ce lien expira dans {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
     </p>
     <p>Si vous ne recevez pas ce mail, vérifiez vos spams ou <a href="{{ path('app_forgot_password_request') }}">réessayer</a>.</p>

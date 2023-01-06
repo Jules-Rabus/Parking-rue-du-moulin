@@ -348,8 +348,9 @@ class ApiController extends AbstractController
             ];
         $dateArrivee = new \DateTime($dateArrivee);
         $dateDepart = new \DateTime($dateDepart);
+        $aujourdhui = new \DateTime();
 
-        if($dateDepart < $dateArrivee || new \DateTime() >= $dateArrivee ){
+        if($dateDepart < $dateArrivee || $aujourdhui->format('Y-m-d') > $dateArrivee->format('Y-m-d') ){
             // On retourne une erreur avec un code erreur http 400
             return new JsonResponse("Erreur dans les dates",400);
         }

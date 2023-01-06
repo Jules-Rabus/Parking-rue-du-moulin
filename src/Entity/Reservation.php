@@ -298,9 +298,9 @@ class Reservation
 
     public function setTelephone(?string $telephone): self
     {
-        // Conversion en +33 + et suppresion des espaces
+        // Conversion en +33 + et suppression des espaces
 
-        if ($telephone[0] == 0 && ($telephone[1] == 6 || $telephone[1] == 7)){
+        if ($telephone != null && $telephone[0] == 0 && ($telephone[1] == 6 || $telephone[1] == 7)){
             $this->Telephone = substr_replace(str_replace(' ','',$telephone),"+33",0,1);
         }
         elseif(strstr($telephone,"+33")){

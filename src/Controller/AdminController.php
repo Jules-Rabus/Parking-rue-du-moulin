@@ -226,6 +226,8 @@ class AdminController extends AbstractController
 
         if ($formSql->isSubmitted() && $formSql->isValid()) {
 
+            /*
+
             if( $formSql->get('check')->getData()){
 
                 $jsonFile = $formJson->get('json')->getData();
@@ -260,10 +262,13 @@ class AdminController extends AbstractController
                 $entityManager->persist($transfertbdd);
                 $entityManager->flush();
             }
+            */
         }
 
         // On verifie que le formulaire est envoye et valide
         if ($formJson->isSubmitted() && $formJson->isValid()) {
+
+            /*
             $jsonFile = $formJson->get('json')->getData();
 
             // On verifie qu'on a bien le fichier json est non null
@@ -314,6 +319,62 @@ class AdminController extends AbstractController
                 $entityManager->flush();
 
             }
+            */
+
+            // On recupere les clients en double
+            $entityManager = $doctrine->getManager();
+            $sql = $doctrine->getConnection('default');
+            $requete = $sql->prepare("SELECT *,count(*) FROM client WHERE telephone IN (SELECT DISTINCT telephone FROM client WHERE telephone) GROUP BY telephone HAVING count(*) > 1");
+            $requete = $requete->execute();
+            $resultats = $requete->fetchAllAssociative();
+
+            foreach ($resultats as $resultat){
+
+                // On recupere les clients un par un
+                $requete = $sql->prepare("SELECT * FROM client WHERE telephone = :tel");
+                $requete->bindValue("tel", $resultat['telephone']);
+                $requete = $requete->execute();
+                $resultats2 = $requete->fetchAllAssociative();
+                $clients = array();
+
+                // On recupere l'entite de chaque client
+                foreach ($resultats2 as $resultat2){
+                    $clients[] = $entityManager->getRepository(Client::class)->Find($resultat2['id']);
+                }
+                $maxReservation = $clients[0]->getId();
+
+                // On cherche quel client a le plus de reservation
+                foreach ($clients as $client){
+                    $nombreReservation = $client->getNombreReservation();
+                    if($nombreReservation> $maxReservation){
+                        $maxReservation = $client->getId();
+                    }
+                }
+
+                // On recupere le client auquel on va rajouter les reservations en double
+                $clientRajout = $entityManager->getRepository(Client::class)->Find($maxReservation);
+
+                foreach($clients as $client){
+
+                    // On traite le tout afin de supprimer les doublons
+                    if($client->getId() != $maxReservation){
+                        $reservations = $client->getReservations()->getValues();
+
+                        // On supprime et rajoute chaque reservation
+                        foreach ($reservations as $reservation){
+                            $reservation->setTelephone(null);
+                            $clientRajout->addReservation($reservation);
+                            $client->removeReservation($reservation);
+                        }
+
+                        // on supprime le client et mets a jour dans la bdd
+                        $entityManager->remove($client);
+                        $entityManager->flush();
+
+                    }
+                }
+            }
+
         }
 
         return $this->renderForm('admin/transfertbdd.html.twig', [
@@ -359,6 +420,12 @@ class AdminController extends AbstractController
                 // On modifie la reservation si elle est possible et correcte
                 if($reservation->VerificationDisponibilites($entityManager,true) != -1) {
                     if ($reservation->getDateDepart() >= $reservation->getDateArrivee()) {
+
+                        // On remodifie le code avec les bonnes dates
+                        $code = $entityManager->getRepository(Code::class)->SelectOrCreate($reservation->getDateArrivee(),$reservation->getDateDepart(),$mailer);
+                        $reservation->setCodeAcces($code);
+                        $reservation->setCodeDonne(false);
+
                         $entityManager->persist($reservation);
                         $entityManager->flush();
                     }
