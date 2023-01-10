@@ -75,7 +75,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
 
-    public function setEmail(string $email): self
+    public function setEmail(?string $email): self
     {
         $this->email = $email;
 
@@ -159,7 +159,7 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->nom;
     }
 
-    public function setNom(string $nom): self
+    public function setNom(?string $nom): self
     {
         $this->nom = $nom;
 
@@ -225,14 +225,14 @@ class Client implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // Conversion en +33 + et suppression des espaces
 
-        if ($telephone != null && $telephone[0] == 0 && ($telephone[1] == 6 || $telephone[1] == 7)){
-            $this->Telephone = substr_replace(str_replace(' ','',$telephone),"+33",0,1);
+        if ($telephone != null && $telephone[0] == 0 && ($telephone[1] == 6 || $telephone[1] == 7) ){
+            $this->telephone = substr_replace(str_replace(' ','',$telephone),"+33",0,1);
         }
-        elseif(strstr($telephone,"+33")){
-            $this->Telephone = str_replace(' ','',$telephone);
+        elseif($telephone != null && str_contains($telephone,"+33")){
+            $this->telephone = str_replace(' ','',$telephone);
         }
         else{
-            $this->Telephone = $telephone;
+            $this->telephone = $telephone;
         }
 
         return $this;

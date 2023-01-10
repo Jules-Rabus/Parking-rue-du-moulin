@@ -1,0 +1,25 @@
+{% extends 'baseclient.html.twig' %}
+
+{% block title %}Gestion du compte{% endblock %}
+
+{% block body %}
+
+<div class="flex">
+    {{ form_start(formModification) }}
+    {{ form_row(formModification.nom) }}
+    {{ form_row(formModification.telephone) }}
+    <button type="submit">Modifier</button>
+    {{ form_end(formModification) }}
+
+    {{ form_start(formSuppression) }}
+    <div class="check_suppression">
+        {{ form_widget(formSuppression.check) }}
+        {{ form_label(formSuppression.check) }}
+    </div>
+    <button type="submit">Valider la suppression</button>
+    {{ form_end(formSuppression) }}
+</div>
+
+
+{% endblock %}
+

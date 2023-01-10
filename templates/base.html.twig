@@ -14,7 +14,7 @@
         <link rel="icon" href="{{ asset('icons/favicon.ico') }}">
         <script type="text/javascript" src="{{ asset('js/burger.js') }}" defer></script>
 
-        <title>{% block title %}Parking Rue Du Moulin{% endblock %}</title>
+        <title>{% block title %}Parking-Rue-Du-Moulin{% endblock %}</title>
         {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -32,6 +32,7 @@
             <ul>
                 <li><a href="{{ path('default') }}">Accueil</a></li>
                 {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <li><a href="{{ path('app_client') }}"><img alt="User" src="{{ asset('icons/user.svg') }}"></a></li>
                     <li><a href="{{ path('app_logout') }}"><img alt="Logout" src="{{ asset('icons/logout.svg') }}"></a></li>
                     {% if is_granted('ROLE_ADMIN') %}
                         <li><a href="{{ path('app_admin') }}">Admin</a></li>
@@ -54,13 +55,13 @@
             <li>
                 <div>
                     <a href="sms:+33671731835">
-                        <img alt="Téléphone" src="{{ asset('icons/phone.svg') }}">
+                        <img alt="Téléphone" src="{{ asset('icons/phone.svg') }}" height="36px" width="36px">
                         <p>06.71.73.18.35</p>
                     </a>
                 </div>
                 <div>
                     <a href="mailto:elonico7@hotmail.fr">
-                        <img alt="Mail" src="{{ asset('icons/email.svg') }}">
+                        <img alt="Mail" src="{{ asset('icons/email.svg') }}" height="36px" width="36px">
                         <p>elonico7@hotmail.fr</p>
                     </a>
                 </div>
@@ -76,13 +77,13 @@
             <li>
                 <div>
                     <a href="https://goo.gl/maps/pYakmZUcuUQaFpR46" target="_blank">
-                        <img alt="Location parking" src="{{ asset('icons/location.svg') }}">
+                        <img alt="Location parking" src="{{ asset('icons/location.svg') }}" height="36px" width="36px">
                         <p>Localisation</p>
                     </a>
                 </div>
                 <div>
                     <a href="reglement-parking.pdf" target="_blank">
-                        <img alt="Règlement Parking" src="{{ asset('icons/check.svg') }}">
+                        <img alt="Règlement Parking" src="{{ asset('icons/check.svg') }}" height="36px" width="36px">
                         <p>Règlement intérieur</p>
                     </a>
                 </div>

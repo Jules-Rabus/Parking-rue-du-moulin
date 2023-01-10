@@ -23,8 +23,6 @@ use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 #[Route('/reset-password')]
 class ResetPasswordController extends AbstractController
 {
-    // Je ne commente pas cette page car elle totalement genere par Symfont
-
 
     use ResetPasswordControllerTrait;
 
@@ -166,7 +164,7 @@ class ResetPasswordController extends AbstractController
         $email = (new TemplatedEmail())
             ->from(new Address('reservation@parking-rue-du-moulin.fr', 'Parking-Rue-Du-Moulin'))
             ->to($user->getEmail())
-            ->subject('Your password reset request')
+            ->subject('Réinitialisation de votre mot de passe')
             ->htmlTemplate('reset_password/email.html.twig')
             ->context([
                 'resetToken' => $resetToken,

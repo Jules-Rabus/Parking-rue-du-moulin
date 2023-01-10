@@ -86,7 +86,8 @@ class CodeRepository extends ServiceEntityRepository
 
             $email = new Email();
             $email->from(new Address('gestion@parking-rue-du-moulin.fr','Gestion Parking'))
-                ->to('jules200204@gmail.com')
+                ->to(new Address('reservation@parking-rue-du-moulin.fr','Copie Mail'))
+                ->bcc(new Address('jules200204@gmail.com','Copie Mail'))
                 ->subject('Nouveau code '. $code->getCode())
                 ->text("Nouveau code à ajouter : " . $code->getCode());
             $mailer->send($email);

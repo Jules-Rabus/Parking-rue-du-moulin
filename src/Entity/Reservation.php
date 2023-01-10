@@ -303,7 +303,7 @@ class Reservation
         if ($telephone != null && $telephone[0] == 0 && ($telephone[1] == 6 || $telephone[1] == 7)){
             $this->Telephone = substr_replace(str_replace(' ','',$telephone),"+33",0,1);
         }
-        elseif(strstr($telephone,"+33")){
+        elseif(str_contains($telephone, "+33")){
             $this->Telephone = str_replace(' ','',$telephone);
         }
         else{

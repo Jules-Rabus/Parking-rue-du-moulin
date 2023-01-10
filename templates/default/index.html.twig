@@ -27,50 +27,101 @@
         </div>
     </div>
 
-    <div>
-        <div>
-            {{ form_start(formReservation) }}
-            {{ form_row(formReservation.DateArrivee) }}
-            {{ form_row(formReservation.DateDepart) }}
-            {{ form_row(formReservation.NombrePlace) }}
-            {{ form_end(formReservation) }}
-        </div>
-        <div>
-            <h3 id="prix"></h3>
-            <h3 id="disponibilite"></h3>
-        </div>
-
+    <div id="app">
+        <preReservation></preReservation>
     </div>
 
-    <script>
+    <script src="{{ asset('js/vue.global.min.js') }}" loading="lazy"></script>
+    <script src="{{ asset('js/axios.min.js') }}" loading="lazy"></script>
+    <script src="{{ asset('js/moment.js') }}" loading="lazy"></script>
 
-        // Event listener Form
-        document.getElementById("reservation_client_DateArrivee").addEventListener("change", preReservation);
-        document.getElementById("reservation_client_DateDepart").addEventListener("change", preReservation);
-        document.getElementById("reservation_client_NombrePlace").addEventListener("change", preReservation);
+    <script type="text/x-template" id="prereservation-template">
+        <div class="flex reservation">
+            <form>
+                <div class="presentation_reservation">
+                    <div>
+                        <label id="dateArrive">Date d'arrivée</label>
+                        <input type="date" v-model="dateArrivee" :min="minDate" @change="requeteReservation">
+                    </div>
+                    <div>
+                        <label id="dateDepart">Date de départ</label>
+                        <input type="date" v-model="dateDepart" :min="dateArrivee" @change="requeteReservation">
+                    </div>
+                    <div>
+                        <label id="nombrePlace">Nombre de Place</label>
+                        <input type="number" v-model="nombrePlace" max="5" min="1" @change="requeteReservation">
+                    </div>
+                    <div v-if="retourPreReservation && retourPreReservation.dureeJours && dateArrivee && dateDepart && retourPreReservation.reservation.dateArrivee == dateArrivee && retourPreReservation.reservation.dateDepart == dateDepart">
+                        <label>Durée de la réservation</label>
+                        <p class="style_button">{{ '{{ retourPreReservation.dureeJours }}' }} jours</p>
+                    </div>
+                    <div v-if="retourPreReservation && retourPreReservation.prix && dateArrivee && dateDepart && retourPreReservation.reservation.dateArrivee == dateArrivee && retourPreReservation.reservation.dateDepart == dateDepart">
+                        <label>Prix</label>
+                        <p class="style_button">{{ '{{ retourPreReservation.prix }}' }} €</p>
+                    </div>
+                    <div v-if="retourPreReservation && retourPreReservation.disponible && retourPreReservation.disponibleReservation && dateArrivee && dateDepart && retourPreReservation.reservation.dateArrivee == dateArrivee && retourPreReservation.reservation.dateDepart == dateDepart">
+                        <label>Disponibilité</label>
+                            <a class="button" style="text-decoration: underline" :href="route" v-if="retourPreReservation.disponibleReservation == true">Réserver</a>
+                            <p class="button" v-else-if="retourPreReservation.disponible == true">Disponible</p>
+                            <p class="button" v-else>Indisponible</p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </script>
 
+    <script loading="lazy">
 
-        function preReservation(){
-            let dateArrivee = document.getElementById("reservation_client_DateArrivee").value;
-            let dateDepart = document.getElementById("reservation_client_DateDepart").value;
-            let nombrePlace = document.getElementById("reservation_client_NombrePlace").value;
-            let url = "https://dev.parking-rue-du-moulin.fr/public/api/pre_reservation_client?dateArrivee=" + dateArrivee + "&dateDepart=" + dateDepart + "&nombrePlace=" + nombrePlace;
-            fetch(url, {
-                method: "GET",
-            })
-                .then(function (response) {
-                    return response.json();
+        const { ref, onMounted } = Vue
+        const Axios = axios.create({
+            withCredentials: false,
+            headers: {
+                'Accept': 'application/ld+json',
+                'Content-Type': 'application/ld+json',
+            }
+        })
+
+        const prereservation = {
+            name: 'prereservation',
+            template: '#prereservation-template',
+            setup(){
+                const nombrePlace = ref(1)
+                const dateArrivee = ref(moment().add(1, 'days').format("yyyy-MM-DD"))
+                const dateDepart = ref(moment().add(4, 'days').format("yyyy-MM-DD"))
+                const retourPreReservation = ref([])
+                const minDate = moment().add(1, 'days').format("yyyy-MM-DD")
+                const route = "/public/client/reservation"
+
+                function requeteReservation(){
+                    Axios.get('https://dev.parking-rue-du-moulin.fr/public/api/pre_reservation_client?dateArrivee=' + dateArrivee.value + '&dateDepart=' + dateDepart.value + '&nombrePlace=' + nombrePlace.value)
+                        .then(response => retourPreReservation.value = response.data)
+                }
+
+                onMounted(() => {
+                    requeteReservation()
                 })
-                .then(function (retour){
-                    console.log(retour);
-                    if(retour.prix) document.getElementById("prix").innerHTML = retour.prix + " €";
-                    document.getElementById("disponible").innerHTML = retour.disponible + "test";
-                })
-                .catch(function(error) {
-                    console.log(error);
-                });
+
+                return{
+                    requeteReservation,
+                    nombrePlace,
+                    dateArrivee,
+                    dateDepart,
+                    minDate,
+                    retourPreReservation,
+                    route
+                }
+            }
 
         }
+
+    </script>
+
+    <script loading="lazy">
+        Vue.createApp({
+            components: {
+                prereservation,
+            }
+        }).mount('#app')
 
     </script>
 

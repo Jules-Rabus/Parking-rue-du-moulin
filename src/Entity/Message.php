@@ -250,12 +250,12 @@ class Message
     // template pour envoyer un code
     public function messageCode(){
 
-        $this->Sujet = "Votre code d'accès au parking";
+        $this->Sujet = "Vôtre code d'accès au parking";
         $this->SujetCourt = "Code";
-        $this->Message = "Votre code d'accès sera le : " . $this->Reservation->getCodeAcces()->getCode();
+        $this->Message = "Vôtre code d'accès sera le : " . $this->Reservation->getCodeAcces()->getCode();
 
         if($this->NombreReservation < 2 ){
-            $this->Message = $this->Message . " , il sera également valable pour votre retour.%0A%0AJe vous rappelle également que le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus ou en espèces à l'arrivée sur le parking via des enveloppes pré-remplies.";
+            $this->Message = $this->Message . " , il sera également valable pour vôtre retour.%0A%0AJe vous rappelle également que le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus ou en espèces à l'arrivée sur le parking via des enveloppes pré-remplies.";
         }
 
     }
@@ -276,25 +276,20 @@ class Message
         $this->Sujet = "Explication du fonctionnement";
         $this->SujetCourt = "Explication";
         $this->Message = "Le parking se situe entre le 17 et le 19 rue du moulin à Tillé (portail noir) à 650 mètres à pied de l'aéroport.%0AL'accès au parking se fait via un portail motorisé à digicode. " .
-            "Je vous remercie de me recontacter par sms/mail/telephone 48h00 avant votre arrivée au parking afin d'obtenir votre code d'accès, il sera également valable pour votre retour.%0A" .
-            "Le paiement s'éffectue à votre arrivée au moyen d'enveloppes pré-remplies disponibles à l'entrée du parking et à déposer dans la boite au lettre jaune et verte situé le long du grillage.%0A" .
-            "Le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus soit en espèces.%0AVous restez en possession des clés de votre véhicule.%0ASi vous avez des questions n'hésitez pas." ;
+            "Je vous remercie de me recontacter par sms/mail/telephone 48h00 avant vôtre arrivée au parking afin d'obtenir vôtre code d'accès, il sera également valable pour vôtre retour.%0A" .
+            "Le paiement s'éffectue à vôtre arrivée au moyen d'enveloppes pré-remplies disponibles à l'entrée du parking et à déposer dans la boite au lettre jaune et verte situé le long du grillage.%0A" .
+            "Le paiement se fait soit par chèque à l'ordre de M.Rabus/Mme Rabus soit en espèces.%0AVous restez en possession des clés de vôtre véhicule.%0ASi vous avez des questions n'hésitez pas." ;
     }
 
     // template pour la confirmation d'une reservation
     public function messageReservation(){
 
-        $this->Sujet = "Confirmation de votre réservation";
+        $this->Sujet = "Confirmation de vôtre réservation";
         $this->SujetCourt = "Confirmation";
         $aujourdhui = new \DateTime();
 
-        if(!$this->NombreReservation){
-            $this->messageExplication();
-            $this->Message = $this->Message . "%0A%0A";
-        }
-
         // Message classique
-        $this->Message = $this->Message . "Je vous confirme votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->Message = $this->Message . "Je vous confirme vôtre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
 
         // Message avec code
@@ -307,7 +302,7 @@ class Message
             $this->Reservation->setCodeDonne = true;
         }
         else{
-            $this->Message = $this->Message . "%0A%0AJe vous remercie de me recontacter par sms/mail/telephone 48h00 avant votre arrivée au parking afin d'obtenir votre code d'accès, il sera également valable pour votre retour.";
+            $this->Message = $this->Message . "%0A%0AJe vous remercie de me recontacter par sms/mail/telephone 48h00 avant vôtre arrivée au parking afin d'obtenir vôtre code d'accès, il sera également valable pour vôtre retour.";
         }
 
         //Message avec explication du code
@@ -316,25 +311,25 @@ class Message
     // template pour l'allongement d'une reservation
     public function messageAllongement(){
 
-        $this->Sujet = "Allongement de votre réservation";
+        $this->Sujet = "Allongement de vôtre réservation";
         $this->SujetCourt = "Allongement";
-        $this->Message = "Je vous confirme l'allongement de votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->Message = "Je vous confirme l'allongement de vôtre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
     }
 
     // template pour l'annulation d'une reservation
     public function messageAnnulation(){
 
-        $this->Sujet = "Annulation de votre réservation";
+        $this->Sujet = "Annulation de vôtre réservation";
         $this->SujetCourt = "Annulation";
-        $this->Message = "Je vous confirme l'annulation de votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->Message = "Je vous confirme l'annulation de vôtre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
     }
 
     // template pour proposition reservation
     public function messageSiVousVoulez(){
 
-        $this->Sujet = "Confirmez votre réservation";
+        $this->Sujet = "Confirmez vôtre réservation";
         $this->SujetCourt = "Si vous voulez";
 
         if(!$this->NombreReservation){
@@ -342,7 +337,7 @@ class Message
             $this->Message = $this->Message . "%0A%0A";
         }
 
-        $this->Message = $this->Message . "Si vous voulez je vous confirme votre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
+        $this->Message = $this->Message . "Si vous voulez je vous confirme vôtre réservation " . $this->place() . " de parking du " .$this->Reservation->getDateArrivee()->format('d/m') . " au " .
             $this->Reservation->getDateDepart()->format('d/m') . " au tarif de " . $this->Reservation->getprix() . "€.";
 
     }

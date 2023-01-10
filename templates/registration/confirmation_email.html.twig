@@ -1,7 +1,78 @@
-<h1>Confirmez votre mail</h1>
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Confirmez vôtre mail</title>
+    {% apply inline_css %}
+        <style>
 
-<p>
-    Merci de bien vouloir confirmer vôtre mail en cliquant sur le lien: <br><br>
-    <a href="{{ signedUrl }}">Confirmez mon mail</a>.
-    Ce lien expira dans {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
-</p>
+            div{
+                text-align: center;
+                font-family: sans-serif;
+                background-color: #1b1f36;
+                padding: 10px;
+            }
+
+            table{
+                width: 100%;
+                table-layout: fixed;
+                border: 2px solid black;
+                border-collapse: collapse;
+            }
+
+            table th,td{
+                border: 2px solid black;
+                padding: 1rem;
+                color: white;
+            }
+            article{
+                text-align: center;
+            }
+
+            article h1{
+                font-size: 1.75rem;
+                color: white;
+            }
+
+            p{
+                font-size: 1rem;
+                color: white;
+            }
+
+            a{
+                color: white;
+                text-decoration: none;
+            }
+
+            h1{
+                color: white;
+            }
+
+            footer{
+                padding: 0.5rem;
+                text-align: center;
+            }
+
+            footer p:last-child{
+                font-weight: bold;
+            }
+
+        </style>
+    {% endapply %}
+</head>
+<body>
+    <div>
+        <article>
+            <h1>Merci de bien vouloir confirmer vôtre mail en cliquant sur le lien :</h1>
+            <p><a href="{{ signedUrl }}">Lien de confirmation : Confirmez mon mail</a><br>Ce lien expira dans {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.</p>
+        </article>
+
+        <footer>
+            <p>Téléphone :<a href='sms:+33671731835'> +33.6.71.73.18.35</a></p>
+            <p><a target='_blank' href='https://parking-rue-du-moulin.fr/public' >Parking-Rue-Du-Moulin.fr</a></p>
+            <p>Merci de ne pas répondre à cet e-mail automatique</p>
+        </footer>
+    </div>
+</body>
+</html>

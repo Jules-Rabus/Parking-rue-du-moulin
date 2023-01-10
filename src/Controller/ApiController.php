@@ -155,7 +155,7 @@ class ApiController extends AbstractController
             }
 
             $clientEntite->setTelephone($telephone);
-
+           
         }
         else{
             // On retourne un message decrivant l'erreur et un code erreur : 3
@@ -166,7 +166,7 @@ class ApiController extends AbstractController
         }
 
         $clientEntite->setNom($client['nom']);
-        $clientEntite->setPassword(random_bytes(10));
+        $clientEntite->setPassword(random_bytes(40));
 
         $entityManager->persist($clientEntite);
         $entityManager->flush();
@@ -175,6 +175,7 @@ class ApiController extends AbstractController
 
         // On retourne un tableau avec les reponses de l'api un code http 200, sous forme de json
         return new JsonResponse([
+            "contact"=>$clientEntite->getTelephone(),
             "client"=>$client,
             "message"=> "Le contact a bien été ajouté",
             "erreur" => 0
@@ -232,7 +233,7 @@ class ApiController extends AbstractController
         $nombrePlace =$request->query->get('nombrePlace');
 
         // On verifie la requete reçu
-        if(!$dateDepart || !$dateArrivee || $nombrePlace < 1 || $nombrePlace > 10){
+        if(!$dateDepart || !$dateArrivee || $nombrePlace < 1 || $nombrePlace > 5){
             // On retourne une erreur avec un code erreur http 400
             return new JsonResponse("Erreur dans les arguments",400);
         }
@@ -258,6 +259,7 @@ class ApiController extends AbstractController
         $reservation->setDateDepart($dateDepart);
         $reservation->setNombrePlace($nombrePlace);
         $entityManager = $doctrine->getManager();
+        if($disponibleReservation = $reservation->VerificationDisponibilites($entityManager) >= 5);
         if($disponible = $reservation->VerificationDisponibilites($entityManager) >= 0);
 
         // On retourne un tableau avec les reponses de l'api un code http 200, sous forme de json
@@ -265,6 +267,8 @@ class ApiController extends AbstractController
             "prix"=>$reservation->getPrix(),
             "reservation" => $retourReservation,
             "disponible"=>$disponible,
+            "disponibleReservation"=>$disponibleReservation,
+            "dureeJours"=>$reservation->duree()
 
         ],200,['Access-Control-Allow-Origin: *']);
     }
@@ -299,8 +303,9 @@ class ApiController extends AbstractController
 
         $dateArrivee = new \DateTime($dateArrivee);
         $dateDepart = new \DateTime($dateDepart);
+        $aujourdhui = new \DateTime();
 
-        if($dateDepart < $dateArrivee || new \DateTime() >= $dateArrivee ){
+        if($dateDepart->format('Y-m-d') < $dateArrivee->format('Y-m-d') || $aujourdhui->format('Y-m-d') >= $dateArrivee->format('Y-m-d') ){
             // On retourne une erreur avec un code erreur http 400
             return new JsonResponse("Erreur dans les dates",400);
         }
@@ -350,7 +355,7 @@ class ApiController extends AbstractController
         $dateDepart = new \DateTime($dateDepart);
         $aujourdhui = new \DateTime();
 
-        if($dateDepart < $dateArrivee || $aujourdhui->format('Y-m-d') > $dateArrivee->format('Y-m-d') ){
+        if($dateDepart->format('Y-m-d') < $dateArrivee->format('Y-m-d') || $aujourdhui->format('Y-m-d') > $dateArrivee->format('Y-m-d') ){
             // On retourne une erreur avec un code erreur http 400
             return new JsonResponse("Erreur dans les dates",400);
         }

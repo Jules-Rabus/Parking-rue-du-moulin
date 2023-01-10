@@ -44,7 +44,7 @@
                             <th>Nom</th>
                             <th>Contact</th>
                             <th>Nombre de réservation</th>
-                            <th><button @click="reset">Reset</button></th>
+                            <th><button type="button" @click="reset">Reset</button></th>
                         </tr>
                         </thead>
 
@@ -109,7 +109,7 @@
 
     <script type="text/x-template" id="ajoutReservation-template">
         <div class="flex" v-if="responses == null || responses != null && responses.erreur">
-            <button @click="ajouterReservation">Réserver</button>
+            <button type="button" @click="ajouterReservation">Réserver</button>
             <a v-if="retourMessage && retourMessage.message != null" class="button" :href="{{ 'retourMessage.message' }}">Si vous voulez</a>
         </div>
 
@@ -119,7 +119,7 @@
                 <td><a :href="responses.confirmation.message">Confirmation</a></td>
                 <td><a :href="responses.explication.message">Explication</a></td>
                 <td>{{ '{{ responses.explication.type }}'}}</td>
-                <td><button @click="reset">Reset</button></td>
+                <td><button type="button" @click="reset">Reset</button></td>
             </tr>
             </tbody>
         </table>
@@ -142,7 +142,7 @@
 
                 <input type="text" v-model="client.contact" v-else>
             </div>
-            <button @click="ajouterContact">Ajouter Contact</button>
+            <button type="button" @click="ajouterContact">Ajouter Contact</button>
         </form>
         <div v-else>
             <table>
@@ -178,7 +178,7 @@
             headers: {
                 'Accept': 'application/ld+json',
                 'Content-Type': 'application/ld+json',
-                'Authorization': 'Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NzI5NTcwMzAsImV4cCI6MTY4MDczMzAzMCwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6Imp1bGVzMjAwMjA0QGdtYWlsLmNvbSJ9.YX0bMdGFF0KxGWCyI4NtHqlFipGM6oWqYzBJFqylF5P07QIPzfHc4LQatnpUt9Ncw1ios6YANIl8BNhJNM5jay-vQ5kUOm6gwSuF9M2siiBz9xQm6SQR_lrzoMZGT_3Pz2GaGfOLEcGYzasqQv8Gw_TOTXs8EaRXMaiaCsFXP96960K_Um1P9zZbLMsEDIZuKmxwIgcB84D63nBSFEhW-wk1-RMju2x5MuC7Gw25gxs3hJu-bxuB1yJaTFJUaL_Cs0T41jjS02ph2NYrr1wns8igbnhBtrMBALrOhfpLyJpfYqrRUcnEUZu2KRx0k7g07EJza0biRA3e3PkrZbOIZQ"
+                'Authorization': 'Bearer ' + "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NzMwMzMyNzYsImV4cCI6MTY4MDgwOTI3Niwicm9sZXMiOlsiUk9MRV9BRE1JTiIsIlJPTEVfR0VTVElPTiIsIlJPTEVfVVNFUiJdLCJ1c2VybmFtZSI6Imp1bGVzMjAwMjA0QGdtYWlsLmNvbSJ9.Ylkb1SsGGuw593A88fS0RxCPemiLDa9VYn0Fpn33_7u7IT2BPXo7SCeU0qRQ77YWOmHovdGPlvuR2m6h5smK0D8Rkk9VE05omIMuBzMRSJxGJn4XryY_qJdEiOmYXw1r46tj6hDExRccnpTwN3FD1z7pljZj-nSCpPbSTZdJgmAG33cWRBW-zkVc21-atshpthXFa39iamYPBM2IdGhfgQqdkVkqCbBE1G-7Iqz36NQ7V3YKZsJyTadQHt2wGhEDFkZfYWtI6jJza68hMnLMTnmHbm0KzSeHSfQRFvw8PuUG-kh6Dvot5k7IbHkLKmIpRgFkHG_egt5APPj1RXkoSQ"
             }
         })
 

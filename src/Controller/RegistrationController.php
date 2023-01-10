@@ -9,9 +9,11 @@ use App\Security\EmailVerifier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
@@ -27,7 +29,7 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, ClientAuthenthiticatorAuthenticator $authenticator, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, ClientAuthenthiticatorAuthenticator $authenticator, EntityManagerInterface $entityManager, MailerInterface $mailer): Response
     {
         // On creer le formulaire d'inscription
         $user = new Client();
@@ -35,6 +37,15 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            if($entityManager->getRepository(Client::class)->FindBy(array("email"=>$user->getEmail()))){
+
+                return $this->render('registration/register.html.twig', [
+                    'registrationForm' => $form->createView(),
+                    'erreurUnique' => "Cette email est déjà utilisé"
+                ]);
+            }
+
             $user->setPassword(
             $userPasswordHasher->hashPassword(
                     $user,
@@ -54,6 +65,15 @@ class RegistrationController extends AbstractController
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
+            $email = new Email();
+            $email->from(new Address('gestion@parking-rue-du-moulin.fr','Gestion Parking'))
+                ->to(new Address('reservation@parking-rue-du-moulin.fr','Copie Mail'))
+                ->bcc(new Address('jules200204@gmail.com','Copie Mail'))
+                ->subject('Nouveau client '. $user->getEmail())
+                ->text("Nouveau client : " . $user->getEmail() . " , ID : " . $user->getId());
+            $mailer->send($email);
+
+
             return $userAuthenticator->authenticateUser(
                 $user,
                 $authenticator,
@@ -63,6 +83,7 @@ class RegistrationController extends AbstractController
 
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
+            'erreurUnique' => null
         ]);
     }
 
@@ -80,7 +101,7 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_register');
         }
 
-        $this->addFlash('success', 'Votre mail a bien été enregistré.');
+        $this->addFlash('success', 'Vôtre mail a bien été enregistré.');
 
         return $this->redirectToRoute('app_register');
     }

@@ -1,70 +1,97 @@
-{% apply inline_css %}
-    <style>
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Vôtre code d'accès : {{ message.Reservation.CodeAcces.Code }}</title>
+    {% apply inline_css %}
+        <style>
 
-        body{
-            text-align: center;
-            font-family: sans-serif;
-        }
+            div{
+                text-align: center;
+                font-family: sans-serif;
+                background-color: #1b1f36;
+                padding: 10px;
+            }
 
-        table{
-            width: 100%;
-            table-layout: fixed;
-            border: 2px solid black;
-            border-collapse: collapse;
-        }
+            table{
+                width: 100%;
+                table-layout: fixed;
+                border: 2px solid black;
+                border-collapse: collapse;
+            }
 
-        table th,td{
-            border: 2px solid black;
-            padding: 1rem;
-        }
-        article{
-            text-align: center;
-        }
+            table th,td{
+                border: 2px solid black;
+                padding: 1rem;
+                color: white;
+            }
+            article{
+                text-align: center;
+            }
 
-        article h1{
-            font-size: 2rem;
-        }
+            article h1{
+                font-size: 1.75rem;
+                color: white;
+            }
 
-        footer{
-            padding: 0.5rem;
-            text-align: center;
-        }
+            p{
+                font-size: 1rem;
+                color: white;
+            }
 
-        footer p:last-child{
-            font-weight: bold;
-        }
+            a{
+                color: white;
+                text-decoration: none;
+            }
 
-    </style>
-{% endapply %}
+            h1{
+                color: white;
+            }
 
-<article>
-    <h1>Votre code d'accès : {{ message.Reservation.CodeAcces.Code }}</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Date d'arrivée</th>
-                <th>Date de départ</th>
-                <th>Nombre de véhicule</th>
-                <th>Tarif de la réservation</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{  message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
-                <td>{{  message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
-                <td>{{  message.Reservation.NombrePlace }}</td>
-                <td>{{  message.Reservation.getPrix }} €</td>
-            </tr>
-        </tbody>
-    </table>
-</article>
+            footer{
+                padding: 0.5rem;
+                text-align: center;
+            }
 
-<article>
-    <p>Adresse du parking : Entre le 17 et le 19 rue du moulin à Tillé (portail noir).</p>
-</article>
+            footer p:last-child{
+                font-weight: bold;
+            }
 
-<footer>
-    <p>Téléphone :<a href='sms:+33671731835'> +33.6.71.73.18.35</a></p>
-    <p>Parking-Rue-Du-Moulin</p>
-    <p>Merci de ne pas répondre à cet e-mail automatique</p>
-</footer>
+        </style>
+    {% endapply %}
+</head>
+<body>
+    <article>
+        <h1>Vôtre code d'accès : {{ message.Reservation.CodeAcces.Code }}</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date d'arrivée</th>
+                    <th>Date de départ</th>
+                    <th>Nombre de véhicule</th>
+                    <th>Tarif de la réservation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{  message.Reservation.DateArrivee | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                    <td>{{  message.Reservation.DateDepart | format_datetime(locale='fr',pattern="dd-MM-Y") }}</td>
+                    <td>{{  message.Reservation.NombrePlace }}</td>
+                    <td>{{  message.Reservation.getPrix }} €</td>
+                </tr>
+            </tbody>
+        </table>
+    </article>
+
+    <article>
+        <p>Adresse du parking : Entre le 17 et le 19 rue du moulin à Tillé (portail noir).</p>
+    </article>
+
+    <footer>
+        <p>Téléphone :<a href='sms:+33671731835'> +33.6.71.73.18.35</a></p>
+        <p><a target='_blank' href='https://parking-rue-du-moulin.fr/public' > Parking-Rue-Du-Moulin.fr</a></p>
+        <p>Merci de ne pas répondre à cet e-mail automatique</p>
+    </footer>
+</body>
+</html>

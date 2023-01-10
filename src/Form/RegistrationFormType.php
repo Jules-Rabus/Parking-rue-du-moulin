@@ -13,6 +13,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Unique;
 
 class RegistrationFormType extends AbstractType
 {
@@ -23,26 +25,18 @@ class RegistrationFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'exemple@exemple.fr',
                     'autocomplete' => 'email'
-                ]
+                ],
             ])
             ->add('nom', TextType::class , [
                 'attr' => [
-                    'placeholder' => 'Ex : Martin'
+                    'placeholder' => 'Ex : Martin',
+                    'autocomplete' => 'name'
                 ],
                 'constraints' =>[
                     new NotBlank([
-                        'message' => 'Merci d\'entrer votre nom'
+                        'message' => 'Merci d\'entrer vôtre nom'
                     ])
                 ]
-            ])
-            ->add('agreeTerms', CheckboxType::class, [
-                'mapped' => false,
-                'constraints' => [
-                    new IsTrue([
-                        'message' => 'Vous devez accepter les conditions d\'utilisations',
-                    ]),
-                ],
-                'label' => 'Terme d\'utilisation'
             ])
             ->add('plainPassword', PasswordType::class, [
                 // instead of being set onto the object directly,
@@ -55,14 +49,26 @@ class RegistrationFormType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank([
-                        'message' => 'Merci d\' entrer un mot de passe',
+                        'message' => 'Merci d\'entrer un mot de passe',
                     ]),
                     new Length([
                         'min' => 6,
-                        'minMessage' => 'Votre mot de passe doit être de minimun {{ limit }} caractères',
+                        'minMessage' => 'Vôtre mot de passe doit être de minimum {{ limit }} caractères',
                         // max length allowed by Symfony for security reasons
                         'max' => 4096,
                     ]),
+                    new Regex([
+                        'pattern' => '/\d+/i',
+                        'message' => 'Merci d\'entrer au moins numéro',
+                    ]),
+                    new Regex([
+                        'pattern' => '/[#?!@$%^&*-]+/i',
+                        'message' => 'Merci d\'entrer au moins un caractère spécial : #?!@$%^&*-',
+                    ]),
+                    new Regex([
+                        'pattern' => '/[A-Z]+/',
+                        'message' => 'Merci d\'entrer au moins une majuscule',
+                    ])
                 ],
             ])
         ;

@@ -12,8 +12,7 @@ class DefaultController extends AbstractController
     #[Route('/', name: 'default')]
     public function index(): Response
     {
-        $form = $this->createForm(ReservationClientType::class,null);
-        return $this->renderForm('default/index.html.twig',['formReservation' => $form]);
+        return $this->render('default/index.html.twig');
     }
 
 

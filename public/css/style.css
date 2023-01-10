@@ -22,7 +22,7 @@ main {
     justify-content: space-around;
     align-items: center;
     gap: 1rem;
-    padding: 0.5rem;
+    padding: 2rem 0.5rem;
 }
 
 main > div{
@@ -455,8 +455,20 @@ form input[type=date], input[type=number]{
     width: fit-content;
 }
 
-button, form button, .button{
+.style_button{
+    color: #e6e6e6;
+    background-color: #1b1f36;
+    border: 3px solid #181924;
+    padding: 0.75rem;
+    border-radius: 1rem;
+}
+
+button, form button, .button, .check_suppression input + label{
     all: unset;
+    -webkit-transition: all 0.4s ease;
+    -moz-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    -ms-transition: all 0.4s ease;
     transition: all 0.4s ease;
     color: #e6e6e6;
     background-color: #1b1f36;
@@ -466,7 +478,7 @@ button, form button, .button{
     cursor: pointer;
 }
 
-button:hover, form button:hover, .button:hover{
+button:hover, form button:hover, .button:hover, .check_suppression input + label:hover{
     border: 3px solid #ED5153;
 }
 
@@ -532,7 +544,7 @@ form div{
     justify-content: space-evenly;
     flex-wrap: wrap;
     text-align: center;
-
+    align-items: stretch;
 }
 
 .menu_reservation{
@@ -561,7 +573,7 @@ form div{
     align-items: stretch;
     max-height: 36px;
     border-radius: 1rem;
-    background-color: field;
+    background-color: white;
 }
 
 .paste input{
@@ -572,7 +584,7 @@ form div{
 
 .paste button{
     padding: inherit;
-    background-color: field;
+    background-color: white;
     border-radius: inherit;
     border: inherit;
 }
@@ -584,6 +596,7 @@ form div{
 .paste button img{
     height: 36px;
     padding: inherit;
+    filter: invert();
 }
 
 .numero_place_dispo{
@@ -604,4 +617,55 @@ form div{
 
 .numero_place_dispo_cancel button img{
     filter: invert(0.9);
+}
+
+.check_suppression{
+    flex-direction: row;
+}
+
+.check_suppression{
+    text-align: center;
+}
+
+.check_suppression input[type="checkbox"]{
+    width: 2rem;
+    height: 2rem;
+    max-width: inherit;
+    appearance: none;
+    border: inherit;
+    border-radius: 0.25rem;
+    background-color: white;
+    color: white;
+    font-size: 1.5rem;
+    padding: 0;
+    line-height: 2rem;
+}
+
+.check_suppression input[type="checkbox"]:checked {
+    background-color: #487ced;
+}
+
+.check_suppression input[type="checkbox"]:checked:hover {
+    background-color: #3273f6;
+}
+
+.check_suppression input[type="checkbox"] + label{
+    transition: all 1s ease;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    -ms-transition: all 1s ease;
+}
+
+.check_suppression input[type="checkbox"]:checked:after{
+    content: "X";
+}
+
+.check_suppression input[type="checkbox"]:checked + label{
+    font-size: 125%;
+    background-color: darkred;
+}
+
+.check_suppression input[type="checkbox"]:checked + label{
+    background-color: darkred;
 }
